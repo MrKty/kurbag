@@ -14,7 +14,12 @@ import {
 import React from "react";
 
 
-const NavBar = () => {
+const NavBar = (props) => {
+
+    const handleDropdownClick = (type) => {
+        props.handleClick(type);
+    };
+
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
@@ -61,9 +66,18 @@ const NavBar = () => {
                                     title={"Switch View"}
                                     id="basic-nav-dropdown"
                                 >
-                                    <NavDropdown.Item href="#">Option 1</NavDropdown.Item>
-                                    <NavDropdown.Item href="#">Option 2</NavDropdown.Item>
-                                    <NavDropdown.Item href="#">Option 3</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => handleDropdownClick(1)}>
+                                        Career Expert
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => handleDropdownClick(2)}>
+                                        Recruiter
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => handleDropdownClick(3)}>
+                                        Company
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => handleDropdownClick(4)}>
+                                        Institution
+                                    </NavDropdown.Item>
                                 </NavDropdown>
                             </div>
                         </Nav.Link>
