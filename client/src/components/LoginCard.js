@@ -2,9 +2,10 @@ import {Alert, Button, Card, Col, Form} from "react-bootstrap";
 import React from "react";
 
 function LoginCard() {
+    // visually hidden property only be shown to the screen readers
     return <Card className="text-center w-50 mx-auto shadow rounded-3">
         <Card.Body>
-            <Card.Title className={"p-2 fw-bold mt-3 display-6 color-green" }>LOGIN</Card.Title>
+            <Card.Title className={"p-2 fw-bold mt-3 display-6 color-green" }>Welcome Back</Card.Title>
             <Form>
                 <Form.Group controlId="formBasicEmail" className={"p-2 mt-3"}>
                     <Form.Label className={"visually-hidden"}>Email address</Form.Label>
