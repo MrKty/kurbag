@@ -27,7 +27,7 @@ const SignupCard = () => {
     };
 
     return (
-        <Card className="mx-auto shadow rounded-3" style={{maxWidth: '500px'}}>
+        <Card className="mx-auto w-50 shadow rounded-3">
             <Card.Body>
                 <h2 className="text-center mb-3 fw-bold color-green">Create A New Account</h2>
                 <Form onSubmit={handleSubmit}>
