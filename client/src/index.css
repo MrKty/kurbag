@@ -23,4 +23,7 @@ code {
     color: rgba(14,164,122,255);
 }
 
-
+.logo-image {
+    display: block;
+    width: 5vw;
+}
