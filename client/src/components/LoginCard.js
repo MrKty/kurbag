@@ -2,7 +2,7 @@ import {Alert, Button, Card, Col, Form} from "react-bootstrap";
 import React from "react";
 
 function LoginCard() {
-    return <Card className="text-center w-50 mx-auto">
+    return <Card className="text-center w-50 mx-auto shadow rounded-3">
         <Card.Body>
             <Card.Title className={"p-2 fw-bold mt-3 display-6 color-green" }>LOGIN</Card.Title>
             <Form>
