@@ -194,6 +194,10 @@ const SignupCard = () => {
                 <div className="mt-2 text-center">
                     Already have an account? <a href="/login" className={"no-underline"}>Log In</a>
                 </div>
+                <div className={"text-center"}>OR</div>
+                <div className="text-center">
+                    <a href="/create-organization" className={"no-underline"}>Create Organization Account</a>
+                </div>
             </Card.Body>
         </Card>
     );
