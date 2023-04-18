@@ -1,21 +1,25 @@
 import React, {useState} from 'react';
-import {Row, Col, Image, Badge, Modal, Button, Container, Card} from 'react-bootstrap';
+import {Row, Col, Image, Badge, Modal, Button, Container, Card, Form} from 'react-bootstrap';
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
 
 function ApplicantSubtag({subtag}) {
     return (
-        <Badge className="mb-2" bg="secondary">
+        <Badge className="mb-2 me-2" bg="secondary">
             {subtag}
         </Badge>
     );
 }
 
-function ApplicationCard({ application, handleClick }) {
+function ApplicationCard({application, handleClick}) {
     const {name, date, tag, subTags, photo} = application;
     const [show, setShow] = useState(false);
+    const [selectedCertificates, setSelectedCertificates] = useState([]);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleCertificateSelect = (event) => {
+        setSelectedCertificates([...selectedCertificates, event.target.files[0]]);
+    };
 
     return (
         <>
@@ -44,33 +48,44 @@ function ApplicationCard({ application, handleClick }) {
                     <Modal.Title>Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Image src={photo} rounded fluid className="mb-3"/>
-                    <div className="fw-bold">{name}</div>
-                    <div className="text-muted">{date}</div>
+                    <Row>
+                        <Col>
+                            <Image src={photo} rounded fluid className="mb-3"/>
+                        </Col>
+                        <Col>
+                            <div className="fw-bold">Applicant Name:</div>
+                            <div className="fw-bold">Application Date:</div>
+                        </Col>
+                        <Col>
+                            <a href={"#"} className={"no-underline"}>{name}</a>
+                            <div className="">{date}</div>
+                        </Col>
+                    </Row>
                     <hr/>
-                    <div className="fw-bold">{tag}:</div>
+                    <div><span className={"fw-bold"}>Main Expertise Area:</span> {tag}</div>
+                    <div className={"fw-bold"}>Sub Expertise Areas:</div>
                     {subTags.map((subtag) => (
                         <ApplicantSubtag key={subtag} subtag={subtag}/>
                     ))}
                     <hr/>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu quam vel massa imperdiet
-                        iaculis. Donec
-                        consequat ipsum vel tellus eleifend porttitor. Nullam quis lectus ex. Vestibulum dignissim est
-                        vitae libero
-                        laoreet, quis imperdiet magna blandit. Vestibulum ante ipsum primis in faucibus orci luctus et
-                        ultrices
-                        posuere cubilia curae; Proin bibendum, metus ac posuere eleifend, eros orci feugiat dolor, vel
-                        tincidunt
-                        quam erat eget velit.
-                    </p>
+                    <label htmlFor={"motivation"} className={"fw-bold"}>Motivation:</label>
+                    <Row className="">
+                        <div
+                            id="motivation"
+                            className="border border-dark rounded col-12 mx-auto p-1"
+                            contentEditable="true"
+                            style={{minHeight: '6em'}}
+                        />
+                    </Row>
+                    <Form.Group>
+                        <Form.Label>Certificates:</Form.Label>
+                        <Form.Control type="file" accept="image/*" onChange={handleCertificateSelect} multiple className="mb-3" />
+                    </Form.Group>
+
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save Changes
+                    <Button variant="success" onClick={handleClose} className={"fw-bold w-100"}>
+                        Approve
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -86,40 +101,40 @@ function CareerExpertApplications() {
             id: 1,
             name: "John Doe",
             date: "2022-02-14",
-            tag: "Internship",
-            subTags: ["Marketing", "Sales"],
+            tag: "Career",
+            subTags: ["Remote Work", "Internships"],
             photo: "https://randomuser.me/api/portraits/men/1.jpg",
         },
         {
             id: 2,
             name: "Jane Doe",
             date: "2022-02-12",
-            tag: "Full-time",
-            subTags: ["Engineering"],
+            tag: "Career",
+            subTags: ["Freelancer", "Retirement"],
             photo: "https://randomuser.me/api/portraits/women/2.jpg",
         },
         {
             id: 3,
             name: "Bob Smith",
             date: "2022-02-10",
-            tag: "Internship",
-            subTags: ["Finance"],
+            tag: "Career",
+            subTags: ["Internships"],
             photo: "https://randomuser.me/api/portraits/men/3.jpg",
         },
         {
             id: 4,
             name: "Alice Johnson",
             date: "2022-02-09",
-            tag: "Part-time",
-            subTags: ["Design", "UI/UX"],
+            tag: "Career",
+            subTags: ["Remote Work", "Internships"],
             photo: "https://randomuser.me/api/portraits/women/4.jpg",
         },
         {
             id: 5,
             name: "Michael Brown",
             date: "2022-02-08",
-            tag: "Full-time",
-            subTags: ["Engineering"],
+            tag: "Career",
+            subTags: ["Retirement", "Freelancer"],
             photo: "https://randomuser.me/api/portraits/men/5.jpg",
         },
     ];
