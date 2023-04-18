@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
 import {Container, Row, Col, Button} from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
+import CareerExpertNavBar from "../components/CareerExpertNavBar";
 
 const Blogs = () => {
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
+    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
 
     const handleClick = (type) => {
         if (userType === type) {
             // Rerender the page
             // Add your code to rerender the page here
             console.log('Rerendering page');
+            setUserType(0);
         } else {
             // Open the popup
             setShowModal(true);
+            setUserType(type);
         }
     };
 
@@ -22,9 +26,17 @@ const Blogs = () => {
         setShowModal(false);
     };
 
+    useEffect(() => {
+        if (userType === 1) {
+            setShouldRenderNavBar(true);
+        } else {
+            setShouldRenderNavBar(false);
+        }
+    }, [userType]);
+
     return (
         <Container fluid>
-            <NavBar handleClick={handleClick}/>
+            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} underlined={"/career-expert/blogs"}/> : <NavBar handleClick={handleClick}/>}
             <Row className="justify-content-center">
                 <Col xs={10} md={8} lg={6}>
                     <div className="text-center">
@@ -36,7 +48,7 @@ const Blogs = () => {
                 </Col>
             </Row>
 
-            <CareerExpertModal showModal={showModal} handleClose={handleClose} />
+            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
         </Container>
     );
 };

@@ -27,3 +27,14 @@ code {
     display: block;
     width: 5vw;
 }
+
+.selected-link {
+    border-bottom: 2px solid black;
+}
+
+.center-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
