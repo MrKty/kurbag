@@ -12,6 +12,7 @@ import OrganizationCreator from "./layouts/OrganizationCreator";
 import OrganizationHomePage from "./layouts/OrganizationHomePage";
 import OrganizationEmployeePage from "./layouts/OrganizationEmployeePage";
 import BlogViewer from "./layouts/BlogViewer";
+import RecruiterViewer from "./layouts/RecruiterViewer";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/org-home" element={<OrganizationHomePage/>}/>
                 <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
                 <Route path="/blog-viewer" element={<BlogViewer/>}/>
+                <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>

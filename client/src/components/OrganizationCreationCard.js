@@ -110,6 +110,28 @@ const OrganizationCreationCard = () => {
                                 required
                             />
                         </Form.Group>
+                        <Form.Group className="mb-3" controlId="email">
+                            <Form.Label className={"visually-hidden"}>Email</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder={"Enter Organization Email"}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="password">
+                            <Form.Label className={"visually-hidden"}>Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder={"Enter Password"}
+                                required
+                            />
+                        </Form.Group>
 
                         <Form.Group className="mb-3" controlId="organizationType">
                             <Form.Label>Organization Type</Form.Label>
