@@ -9,6 +9,10 @@ import Jobs from "./layouts/Jobs";
 import CareerExpertApplications from "./layouts/CareerExpertApplications";
 import BlogEditor from "./layouts/BlogEditor";
 import OrganizationCreator from "./layouts/OrganizationCreator";
+import OrganizationHomePage from "./layouts/OrganizationHomePage";
+import OrganizationEmployeePage from "./layouts/OrganizationEmployeePage";
+import BlogViewer from "./layouts/BlogViewer";
+
 
 function App() {
     return (
@@ -22,6 +26,9 @@ function App() {
                 <Route path="/approve-applications" element={<CareerExpertApplications/>}/>
                 <Route path="/write-blog" element={<BlogEditor/>}/>
                 <Route path="/create-organization" element={<OrganizationCreator/>}/>
+                <Route path="/org-home" element={<OrganizationHomePage/>}/>
+                <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
+                <Route path="/blog-viewer" element={<BlogViewer/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>

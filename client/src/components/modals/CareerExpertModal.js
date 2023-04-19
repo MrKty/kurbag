@@ -28,7 +28,7 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group>
-                        <Form.Label>Main Tags:</Form.Label>
+                        <Form.Label>Select a main tag you want to apply:</Form.Label>
                         <Form.Control as="select" value={selectedTag} onChange={(event) => handleTagSelect(event.target.value)} className="mb-3">
                             <option value="">Select a tag</option>
                             <option value="career">Career</option>
@@ -43,7 +43,7 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                     </Form.Group>
                     {selectedTag && (
                         <Form.Group>
-                            <Form.Label>Please select subtags:</Form.Label>
+                            <Form.Label>Select sub tags you want to apply:</Form.Label>
                             <div className="mb-3">
                                 <Form.Check type="checkbox" label="Remote Work" />
                             </div>

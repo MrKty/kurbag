@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Navbar, Container, Nav, Image, Form, InputGroup, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAlt, faCheckCircle, faExchangeAlt, faBook, faSearch } from '@fortawesome/free-solid-svg-icons';
+import {faFileAlt, faCheckCircle, faExchangeAlt, faBook, faSearch, faAdd} from '@fortawesome/free-solid-svg-icons';
 import logo from '../icons/app_logo.svg';
 
 const CareerExpertNavBar = (props) => {
