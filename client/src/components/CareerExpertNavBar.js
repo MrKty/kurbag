@@ -23,7 +23,7 @@ const CareerExpertNavBar = (props) => {
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Form className={"col-5 me-auto"}>
+                    <Form className={"col-4 me-auto"}>
                         <InputGroup className="mb-3">
                             <Form.Control type="search" placeholder="Search Anything" aria-label="Search" />
                             <Button variant="outline-secondary">
@@ -32,6 +32,12 @@ const CareerExpertNavBar = (props) => {
                         </InputGroup>
                     </Form>
                     <Nav className="ms-auto">
+                        <Nav.Link href="blogs" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/blogs" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/blogs")}>
+                            <div className="d-flex flex-column">
+                                <FontAwesomeIcon icon={faAdd} size="2x" />
+                                <div className="mt-1">New Expertise Request</div>
+                            </div>
+                        </Nav.Link>
                         <Nav.Link href="blogs" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/blogs" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/blogs")}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBook} size="2x" />

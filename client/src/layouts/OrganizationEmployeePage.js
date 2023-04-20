@@ -2,6 +2,7 @@ import {Container, Row, Col, Button, Card} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUser, faUserPlus} from '@fortawesome/free-solid-svg-icons';
 import OrganizationNavBar from "../components/OrganizationNavBar";
+import FilterBar from "../components/FilterBar";
 
 const OrganizationEmployeePage = () => {
     // dummy data for illustration purposes
@@ -86,7 +87,7 @@ const OrganizationEmployeePage = () => {
     return (
         <Container fluid>
             <OrganizationNavBar handleClick={null}/>
-
+            <FilterBar filters={["Position", "Year Of Experience"]}/>
             <Card className={"mx-4 mt-3 mb-3"}>
             {employees.map((employee) => (
                     <Row key={employee.id} className="p-2 m-1 align-items-center border-bottom border-3">

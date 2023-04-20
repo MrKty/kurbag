@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Row, Col, Image, Badge, Modal, Button, Container, Card, Form} from 'react-bootstrap';
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
+import FilterBar from "../components/FilterBar";
 
 function ApplicantSubtag({subtag}) {
     return (
@@ -203,6 +204,7 @@ function CareerExpertApplications() {
     return (
         <Container fluid>
             <CareerExpertNavBar underlined={'/career-expert/approve-applications'}/>
+            <FilterBar filters={["Date", "Main Tag"]}/>
             <div className="center-wrapper">
                 {applications.map((application) => (
                     <Col key={application.id} md={8}>

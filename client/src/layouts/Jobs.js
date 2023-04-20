@@ -8,11 +8,12 @@ import {
     faPaperPlane,
     faPlus,
     faSave,
-    faCheck
+    faCheck //kullan bunu apply edince
 } from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import React, {useState} from "react";
 import NavBar from "../components/NavBar";
+import FilterBar from "../components/FilterBar";
 
 const JobListing = ({position, company, location, image, description}) => (
     <Row className="border-bottom p-2" style={{backgroundColor: company === "Sony" ? "white" : "#ecebeb"}}>
@@ -91,9 +92,9 @@ const JobDescription = (props) => {
             </Row>
             <Row className={"py-2"}>
                 <Col className={"col-2"}>
-                    <Button variant="success" onClick={() => handleApplyClick(0)}>
-                        <FontAwesomeIcon icon={faCheck} className={"px-2"}/>
-                        Applied
+                    <Button variant="primary" onClick={() => handleApplyClick(0)}>
+                        <FontAwesomeIcon icon={faPaperPlane} className={"px-2"}/>
+                        Apply
                     </Button>
                 </Col>
                 <Col className={"col-2"}>
@@ -742,6 +743,7 @@ const data = [
 const Jobs = () => (
     <Container fluid>
         <NavBar handleClick={null}/>
+        <FilterBar filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
         <Row>
             <Col className="col-3 mt-3 me-2">
                 <Card className={"border p-2"}>
