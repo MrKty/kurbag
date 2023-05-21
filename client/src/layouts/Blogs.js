@@ -21,11 +21,11 @@ const BlogCard = ({coverPhoto, title, summary, name, likeNumber, commentNumber})
             </Card.Body>
             <Card.Footer>
                 <Row>
-                    <Col className="card-likes">
-                        <FontAwesomeIcon icon={faHeart}/> {likeNumber}
+                    <Col className="d-flex card-likes bg-danger justify-content-center">
+                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faHeart}/> {likeNumber}
                     </Col>
-                    <Col className="card-comments">
-                        <FontAwesomeIcon icon={faComment}/> {commentNumber}
+                    <Col className="d-flex card-comments bg-danger justify-content-center">
+                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faComment}/> {commentNumber}
                     </Col>
                 </Row>
             </Card.Footer>

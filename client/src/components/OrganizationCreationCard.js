@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {Form, Button, Card, Row, Col} from "react-bootstrap";
 
+//TODO BOOTSTRAP KARTLARINDA HEIGHT-OVERFLOW OLUNCA SIDEBAR'I CARD İÇİNDE GÖSTERME. ŞUAN DIŞINDA GÖSTERİYO.
+
 const OrganizationCreationCard = () => {
     const [formData, setFormData] = useState({
         organizationName: '',
