@@ -73,7 +73,7 @@ const Blogs = () => {
 
     return (
         <Container fluid>
-            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} underlined={"/career-expert/blogs"}/> :
+            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="blogs"/> :
                 <NavBar handleClick={handleClick} activeLink="blogs"/>}
             <Row className="justify-content-center">
                 <Col xs={10} md={10} lg={10}>

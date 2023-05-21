@@ -4,11 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faFileAlt, faCheckCircle, faExchangeAlt, faBook, faSearch, faAdd} from '@fortawesome/free-solid-svg-icons';
 import logo from '../icons/app_logo.svg';
 
+
 const CareerExpertNavBar = (props) => {
-    const [selectedLink, setSelectedLink] = useState(props.underlined);
+    const [activeLink, setActiveLink] = useState(props.activeLink);
 
     const handleLinkClick = (link) => {
-        setSelectedLink(link);
+        setActiveLink(link);
     };
 
     const handleReturnClick = () => {
@@ -32,25 +33,37 @@ const CareerExpertNavBar = (props) => {
                         </InputGroup>
                     </Form>
                     <Nav className="ms-auto">
-                        <Nav.Link href="blogs" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/blogs" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/blogs")}>
+                        <Nav.Link
+                            href="blogs"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'home' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('home')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faAdd} size="2x" />
                                 <div className="mt-1">New Expertise Request</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="blogs" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/blogs" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/blogs")}>
+                        <Nav.Link
+                            href="blogs"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'blogs' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('blogs')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBook} size="2x" />
                                 <div className="mt-1">Previous Blogs</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="write-blog" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/write-blog" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/write-blog")}>
+                        <Nav.Link
+                            href="write-blog"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'write-blog' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('write-blog')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faFileAlt} size="2x" />
                                 <div className="mt-1">Write New Blog</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="/approve-applications" className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/approve-applications" ? " border-bottom border-dark" : "")} onClick={() => handleLinkClick("/career-expert/approve-applications")}>
+                        <Nav.Link
+                            href="/approve-applications"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'approve-applications' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('approve-applications')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faCheckCircle} size="2x" />
                                 <div className="mt-1">Approve Pending Applications</div>

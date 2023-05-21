@@ -201,9 +201,12 @@ function CareerExpertApplications() {
         setSelectedApplication(null);
     };
 
+    const handleClick = () => {
+    };
+
     return (
         <Container fluid>
-            <CareerExpertNavBar underlined={'/career-expert/approve-applications'}/>
+            <CareerExpertNavBar handleClick={handleClick} activeLink="approve-applications"/>
             <FilterBar filters={["Date", "Main Tag"]}/>
             <div className="center-wrapper">
                 {applications.map((application) => (

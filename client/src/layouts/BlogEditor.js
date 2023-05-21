@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {Button, Card, Col, Container, Form, Image, Row} from "react-bootstrap";
@@ -9,9 +9,11 @@ function BlogEditor() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedTag, setSelectedTag] = useState('');
 
+
     const handleImageChange = (event) => {
         setSelectedImage(event.target.files[0]);
     };
+
 
     const handleTagSelect = (tag) => {
         setSelectedTag(tag);
@@ -24,6 +26,9 @@ function BlogEditor() {
 
     const handleAddPhoto = () => {
         // implement logic for adding a photo to the content
+    };
+
+    const handleClick = () => {
     };
 
     const handleAddVideo = () => {
@@ -40,7 +45,7 @@ function BlogEditor() {
 
     return (
         <>
-            <CareerExpertNavBar></CareerExpertNavBar>
+            <CareerExpertNavBar handleClick={handleClick} activeLink="write-blog"/>
             <Card className={"w-75 mx-auto m-2"}>
                 <Row>
                     <Col>
