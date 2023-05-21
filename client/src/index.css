@@ -38,3 +38,8 @@ code {
     align-items: center;
     flex-direction: column;
 }
+
+.active-link {
+    border-bottom: 2px solid black;
+}
+

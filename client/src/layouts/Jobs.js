@@ -742,7 +742,7 @@ const data = [
 
 const Jobs = () => (
     <Container fluid>
-        <NavBar handleClick={null}/>
+        <NavBar handleClick={null} activeLink="jobs"/>
         <FilterBar filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
         <Row>
             <Col className="col-3 mt-3 me-2">
