@@ -43,3 +43,11 @@ code {
     border-bottom: 2px solid black;
 }
 
+.message-bubble {
+    background-color: white;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+

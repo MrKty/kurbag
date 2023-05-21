@@ -45,6 +45,29 @@ const Messages = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
 
+    const sampleMessages = [
+        {
+            sender: 'Mert Unlu',
+            time:   '14:06',
+            content:'Ilk mesaj bro'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:07',
+            content:'Ikinci gun'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:15',
+            content:'Three-peat'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '16:36',
+            content:'4 to the last.'
+        },
+    ]
+
 /*
     useEffect(() => {
 
@@ -96,9 +119,24 @@ const Messages = () => {
         }
     };
 */
+    const handleClick = () => {
+    };
+
+    const MessageCard = ({ content, time, sender }) => {
+        return (
+            <Card>
+                <Card.Body>
+                    <Card.Text>{content}</Card.Text>
+                    <Card.Subtitle className="text-muted">{time}</Card.Subtitle>
+                    <Card.Subtitle className="mt-2">From: {sender}</Card.Subtitle>
+                </Card.Body>
+            </Card>
+        );
+    };
+
     return (
         <Container>
-            <NavBar handleClick={null} activeLink="messages"/>
+            <NavBar handleClick={handleClick} activeLink="messages"/>
             <Row className={"ms-0 justify-content-center p-2"}>
                 <Col className="col-3 mt-3 me-2" style={{backgroundColor: "#b6cdbd"}}>
                     <h2>Recent Conversations</h2>
@@ -153,13 +191,13 @@ const Messages = () => {
                     <h2>Conversation</h2>
                     {1 ? (
                         <div>
-                            <div className="messages">
-                                {messages.map((message) => (
-                                    <div key={message.id} className="message">
-                                        <strong>{message.sender}</strong>: {message.content}
-                                    </div>
+                            <Row className="messages ms-3">
+                                {sampleMessages.map((message) => (
+                                    <Row className="message-bubble">
+                                        <strong>{message.sender}({message.time})</strong> {message.content}
+                                    </Row>
                                 ))}
-                            </div>
+                            </Row>
                             <div className="new-message">
                                 <Form>
                                     <Form.Control
