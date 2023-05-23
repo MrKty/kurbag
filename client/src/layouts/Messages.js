@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Form, Button, Card, Image } from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 
 
@@ -49,87 +49,217 @@ const Messages = () => {
         {
             sender: 'Mert Unlu',
             time:   '14:06',
-            content:'Ilk mesaj bro'
+            content:'Ilk mesaj'
         },
         {
             sender: 'Mert Unlu',
             time:   '14:07',
-            content:'Ikinci gun'
+            content:'Ikinci mesaj'
         },
         {
             sender: 'Mert Unlu',
             time:   '14:15',
-            content:'Three-peat'
+            content:'Three'
         },
         {
             sender: 'Mert Unlu',
             time:   '16:36',
-            content:'4 to the last.'
+            content:'4 and the last.'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:06',
+            content:'Ilk mesaj'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:07',
+            content:'Ikinci mesaj'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:15',
+            content:'Three'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '16:36',
+            content:'4 and the last.'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:06',
+            content:'Ilk mesaj'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:07',
+            content:'Did you watch the latest episode? jahsgdjhasgdhjasgdas asjdhgajshdgjahsgdasjhgd asdjhgasjhdgashjgdahjsdgs ajshdgasjhdgasjhgdjhasgd jahgsdjhgashjdgsajhgdjas jhasdgjhsagd'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '14:15',
+            content:'Did you watch the latest episode? jahsgdjhasgdhjasgdas asjdhgajshdgjahsgdasjhgd asdjhgasjhdgashjgdahjsdgs ajshdgasjhdgasjhgdjhasgd jahgsdjhgashjdgsajhgdjas jhasdgjhsagd'
+        },
+        {
+            sender: 'Mert Unlu',
+            time:   '16:36',
+            content:'4 and the last.'
         },
     ]
 
-/*
-    useEffect(() => {
+    const sampleConversations = [
+        {
+            id: 1,
+            receiver: {
+                name: 'John Doe',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '10:30 AM',
+            lastMessage: 'Hey, how are you?',
+        },
+        {
+            id: 2,
+            receiver: {
+                name: 'Jane Smith',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '12:45 PM',
+            lastMessage: 'Are you free this weekend?',
+        },
+        {
+            id: 3,
+            receiver: {
+                name: 'Alex Johnson',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '3:20 PM',
+            lastMessage: 'Can you send me the document?',
+        },
+        {
+            id: 4,
+            receiver: {
+                name: 'Emily Brown',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '5:10 PM',
+            lastMessage: 'Lets meet at the café.',
+        },
+        {
+            id: 5,
+            receiver: {
+                name: 'Michael Wilson',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '7:30 PM',
+            lastMessage: 'Did you watch the latest episode? jahsgdjhasgdhjasgdas asjdhgajshdgjahsgdasjhgd asdjhgasjhdgashjgdahjsdgs ajshdgasjhdgasjhgdjhasgd jahgsdjhgashjdgsajhgdjas jhasdgjhsagd',
+        },
+        {
+            id: 6,
+            receiver: {
+                name: 'Sophia Lee',
+                profilePhoto: 'https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ',
+            },
+            time: '9:15 PM',
+            lastMessage: 'See you tomorrow!',
+        },
+    ];
 
-        // Fetch conversations from the server
-        const fetchConversations = async () => {
-            try {
-                const response = await fetch('/api/conversations');
-                const data = await response.json();
-                setConversations(data);
-            } catch (error) {
-                console.error('Error fetching conversations:', error);
-            }
-        };
-        fetchConversations();
-    }, []);
 
-    useEffect(() => {
-        // Fetch messages for the selected conversation
-        const fetchMessages = async () => {
-            if (selectedConversation) {
+    /*
+        useEffect(() => {
+
+            // Fetch conversations from the server
+            const fetchConversations = async () => {
                 try {
-                    const response = await fetch(`/api/conversations/${selectedConversation.id}/messages`);
+                    const response = await fetch('/api/conversations');
                     const data = await response.json();
-                    setMessages(data);
+                    setConversations(data);
                 } catch (error) {
-                    console.error('Error fetching messages:', error);
+                    console.error('Error fetching conversations:', error);
                 }
+            };
+            fetchConversations();
+        }, []);
+
+        useEffect(() => {
+            // Fetch messages for the selected conversation
+            const fetchMessages = async () => {
+                if (selectedConversation) {
+                    try {
+                        const response = await fetch(`/api/conversations/${selectedConversation.id}/messages`);
+                        const data = await response.json();
+                        setMessages(data);
+                    } catch (error) {
+                        console.error('Error fetching messages:', error);
+                    }
+                }
+            };
+            fetchMessages();
+        }, [selectedConversation]);
+
+        const handleConversationClick = (conversation) => {
+            setSelectedConversation(conversation);
+        };
+
+        const handleSendMessage = async () => {
+            if (!newMessage) return;
+
+            try {
+                await fetch(`/api/conversations/${selectedConversation.id}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: newMessage }),
+                });
+                setNewMessage('');
+            } catch (error) {
+                console.error('Error sending message:', error);
             }
         };
-        fetchMessages();
-    }, [selectedConversation]);
-
-    const handleConversationClick = (conversation) => {
-        setSelectedConversation(conversation);
-    };
-
-    const handleSendMessage = async () => {
-        if (!newMessage) return;
-
-        try {
-            await fetch(`/api/conversations/${selectedConversation.id}/messages`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: newMessage }),
-            });
-            setNewMessage('');
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    };
-*/
+    */
     const handleClick = () => {
     };
+
+
 
     const MessageCard = ({ content, time, sender }) => {
         return (
             <Card>
                 <Card.Body>
-                    <Card.Text>{content}</Card.Text>
+                    <Card.Title>{sender}</Card.Title>
                     <Card.Subtitle className="text-muted">{time}</Card.Subtitle>
-                    <Card.Subtitle className="mt-2">From: {sender}</Card.Subtitle>
+                    <Card.Text className="mt-2">{content}</Card.Text>
                 </Card.Body>
+            </Card>
+        );
+    };
+
+
+    const Conversation = ({ id, receiver, time, lastMessage }) => {
+        return (
+            <Card>
+                <Row className="conversation">
+                    <Col className={"profile-image align-self-center"} md={3}>
+                        <Image src={receiver.profilePhoto} alt={receiver.name} roundedCircle fluid />
+                    </Col>
+                    <Col md={9}>
+                        <Row className="conversation-details">
+                            <Col>
+                                <h5>{receiver.name}</h5>
+                            </Col>
+                        </Row>
+                        <Row className="conversation-details">
+                            <Col>
+                                <p className="last-message">{lastMessage}</p>
+                            </Col>
+                        </Row>
+                        <Row className="conversation-details">
+                            <Col>
+                                <p className="time text-muted">{time}</p>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
             </Card>
         );
     };
@@ -140,49 +270,19 @@ const Messages = () => {
             <Row className={"ms-0 justify-content-center p-2"}>
                 <Col className="col-3 mt-3 me-2" style={{backgroundColor: "#b6cdbd"}}>
                     <h2>Recent Conversations</h2>
-                    <Col className="col-12 mt-3 mx-auto" style={{backgroundColor: "#ecebeb"}}>
+                    <Col className="col-12 mt-3 mx-auto" style={{backgroundColor: "#ecebeb", overflowY:"auto", maxHeight:"500px" }}>
                         <Card className={"border p-2"}>
-                            <Row className="border-bottom p-2 ">
-                                <Col className={"col-3 me-2"}>
-                                    <img
-                                        src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                                        alt="Profile"
-                                        className="rounded"
-                                        width="50"
-                                        height="50"
-                                    />
-                                </Col>
-                                <Col className={"col-4 me-2 align-self-center"}>
-                                    Mert Ünlü
-                                </Col>
-                            </Row>
-                            <Row className="border-bottom p-2 ">
-                                <Col className={"col-3 me-2"}>
-                                    <img
-                                        src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                                        alt="Profile"
-                                        className="rounded"
-                                        width="50"
-                                        height="50"
-                                    />
-                                </Col>
-                                <Col className={"col-4 me-2 align-self-center"}>
-                                    Mert Ünlü
-                                </Col>
-                            </Row>
-                            <Row className="border-bottom p-2 ">
-                                <Col className={"col-3 me-2"}>
-                                    <img
-                                        src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                                        alt="Profile"
-                                        className="rounded"
-                                        width="50"
-                                        height="50"
-                                    />
-                                </Col>
-                                <Col className={"col-4 me-2 align-self-center"}>
-                                    Mert Ünlü
-                                </Col>
+
+                            <Row className="conversations ms-3">
+                                {sampleConversations.map((conversation) => (
+                                    <Row className="message-card mb-2">
+                                        <Conversation
+                                            id={conversation.id}
+                                            time={conversation.time}
+                                            receiver={conversation.receiver}
+                                            lastMessage={conversation.lastMessage}></Conversation>
+                                    </Row>
+                                ))}
                             </Row>
                         </Card>
                     </Col>
@@ -191,13 +291,15 @@ const Messages = () => {
                     <h2>Conversation</h2>
                     {1 ? (
                         <div>
-                            <Row className="messages ms-3">
-                                {sampleMessages.map((message) => (
-                                    <Row className="message-bubble">
-                                        <strong>{message.sender}({message.time})</strong> {message.content}
-                                    </Row>
-                                ))}
-                            </Row>
+                            <Col className="col-12 mt-3 w-100" style={{backgroundColor: "#b6cdbd", overflowY:"auto", maxHeight:"500px"}}>
+                                <Row className="messages ms-3">
+                                    {sampleMessages.map((message) => (
+                                        <Row className="message-bubble mb-2">
+                                            <MessageCard content={message.content} time={message.time} sender={message.sender}></MessageCard>
+                                        </Row>
+                                    ))}
+                                </Row>
+                            </Col>
                             <div className="new-message">
                                 <Form>
                                     <Form.Control
@@ -206,7 +308,7 @@ const Messages = () => {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                     />
-                                    <Button variant="outline-primary" className={"d-block mx-auto mt-2"} >
+                                    <Button variant="outline-primary" className={"d-block mx-auto mt-2 mb-2"} >
                                         Send
                                     </Button>
                                 </Form>
