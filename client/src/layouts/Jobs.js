@@ -11,9 +11,10 @@ import {
     faCheck //kullan bunu apply edince
 } from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import NavBar from "../components/NavBar";
 import FilterBar from "../components/FilterBar";
+import CareerExpertModal from "../components/modals/CareerExpertModal";
 
 const JobListing = ({position, company, location, image, description}) => (
     <Row className="border-bottom p-2" style={{backgroundColor: company === "Sony" ? "white" : "#ecebeb"}}>
@@ -740,100 +741,136 @@ const data = [
     // more data objects here...
 ];
 
-const Jobs = () => (
-    <Container fluid>
-        <NavBar handleClick={null} activeLink="jobs"/>
-        <FilterBar filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
-        <Row>
-            <Col className="col-3 mt-3 me-2">
-                <Card className={"border p-2"}>
-                    <Row>
-                        <Col className={"col-9"}>
-                            <h4>Saved Jobs</h4>
-                        </Col>
-                        <Col>
-                            <FontAwesomeIcon icon={faAngleUp} className={"px-2"}/>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className={"col-9"}>
-                            <h4>Applied Jobs</h4>
-                        </Col>
-                        <Col>
-                            <FontAwesomeIcon icon={faAngleDown} className={"px-2"}/>
-                        </Col>
-                    </Row>
-                    <Row className="border-bottom p-2">
-                        <Col md={3}>
-                            <img
-                                src="https://static.vecteezy.com/system/resources/previews/009/469/630/non_2x/google-logo-isolated-editorial-icon-free-vector.jpg"
-                                alt="Profile"
-                                className="rounded"
-                                width="75"
-                                height="75"
-                            />
-                        </Col>
-                        <Col md={9}>
-                            <Row><h5>Web Developer</h5></Row>
-                            <Row>
-                                <Col>
-                                    <p className="mt-2 me-auto fw-bold">Google</p>
-                                </Col>
-                                <Col>
-                                    <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending</button>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col md={3}>
-                            <img
-                                src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                                alt="Profile"
-                                className="rounded"
-                                width="75"
-                                height="75"
-                            />
-                        </Col>
-                        <Col md={9}>
-                            <Row><h5>Data Analyst</h5></Row>
-                            <Row>
-                                <Col>
-                                    <p className="mt-2 me-auto fw-bold">Sony</p>
-                                </Col>
-                                <Col>
-                                    <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending</button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Card>
-            </Col>
-            <Col className="col-3 mt-3" style={{backgroundColor: "#ecebeb"}}>
-                {data.map(job => (
-                    <JobListing
-                        key={job.position}
-                        position={job.position}
-                        company={job.company}
-                        location={job.location}
-                        image={job.image}
-                    />
-                ))}
-            </Col>
-            <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb"}}>
-                <JobDescription
-                    position="Data Analyst"
-                    company="Sony"
-                    companyLocation="Istanbul, Turkey"
-                    jobLocation="Remote"
-                    postingDate="April 19, 2023"
-                    jobType="Full-time"
-                    aboutJob="We are seeking a highly analytical Data Analyst to join our team. You will be responsible for analyzing large data sets and providing insights to help guide business decisions."
-                    aboutHiringManager="The hiring manager for this position is John Smith. He has been with the company for 5 years and is excited to welcome a new member to the team."
-                    aboutCompany="Sony is a leading gaming company that creates innovative and engaging games for players around the world. We are passionate about what we do and are always looking for talented individuals to join our team."
-                    companyLogo="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                />
-            </Col>
-        </Row>
-    </Container>
-);
 
+const Jobs = () => {
+
+    const [showModal, setShowModal] = useState(false);
+    const [userType, setUserType] = useState(0);
+    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
+
+    const handleClick = (type) => {
+        if (userType === type) {
+            // Rerender the page
+            // Add your code to rerender the page here
+            console.log('Rerendering page');
+            setUserType(0);
+        } else {
+            // Open the popup
+            setShowModal(true);
+            setUserType(type);
+        }
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
+    };
+
+    useEffect(() => {
+        if (userType === 1) {
+            setShouldRenderNavBar(true);
+        } else {
+            setShouldRenderNavBar(false);
+        }
+    }, [userType]);
+
+    return (
+        <Container fluid>
+            <NavBar handleClick={handleClick} activeLink="jobs"/>
+            <FilterBar
+                filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
+            <Row>
+                <Col className="col-3 mt-3 me-2">
+                    <Card className={"border p-2"}>
+                        <Row>
+                            <Col className={"col-9"}>
+                                <h4>Saved Jobs</h4>
+                            </Col>
+                            <Col>
+                                <FontAwesomeIcon icon={faAngleUp} className={"px-2"}/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className={"col-9"}>
+                                <h4>Applied Jobs</h4>
+                            </Col>
+                            <Col>
+                                <FontAwesomeIcon icon={faAngleDown} className={"px-2"}/>
+                            </Col>
+                        </Row>
+                        <Row className="border-bottom p-2">
+                            <Col md={3}>
+                                <img
+                                    src="https://static.vecteezy.com/system/resources/previews/009/469/630/non_2x/google-logo-isolated-editorial-icon-free-vector.jpg"
+                                    alt="Profile"
+                                    className="rounded"
+                                    width="75"
+                                    height="75"
+                                />
+                            </Col>
+                            <Col md={9}>
+                                <Row><h5>Web Developer</h5></Row>
+                                <Row>
+                                    <Col>
+                                        <p className="mt-2 me-auto fw-bold">Google</p>
+                                    </Col>
+                                    <Col>
+                                        <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending
+                                        </button>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col md={3}>
+                                <img
+                                    src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+                                    alt="Profile"
+                                    className="rounded"
+                                    width="75"
+                                    height="75"
+                                />
+                            </Col>
+                            <Col md={9}>
+                                <Row><h5>Data Analyst</h5></Row>
+                                <Row>
+                                    <Col>
+                                        <p className="mt-2 me-auto fw-bold">Sony</p>
+                                    </Col>
+                                    <Col>
+                                        <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending
+                                        </button>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Col>
+                <Col className="col-3 mt-3" style={{backgroundColor: "#ecebeb"}}>
+                    {data.map(job => (
+                        <JobListing
+                            key={job.position}
+                            position={job.position}
+                            company={job.company}
+                            location={job.location}
+                            image={job.image}
+                        />
+                    ))}
+                </Col>
+                <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb"}}>
+                    <JobDescription
+                        position="Data Analyst"
+                        company="Sony"
+                        companyLocation="Istanbul, Turkey"
+                        jobLocation="Remote"
+                        postingDate="April 19, 2023"
+                        jobType="Full-time"
+                        aboutJob="We are seeking a highly analytical Data Analyst to join our team. You will be responsible for analyzing large data sets and providing insights to help guide business decisions."
+                        aboutHiringManager="The hiring manager for this position is John Smith. He has been with the company for 5 years and is excited to welcome a new member to the team."
+                        aboutCompany="Sony is a leading gaming company that creates innovative and engaging games for players around the world. We are passionate about what we do and are always looking for talented individuals to join our team."
+                        companyLogo="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+                    />
+                </Col>
+            </Row>
+            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
+        </Container>
+    );
+}
 export default Jobs
