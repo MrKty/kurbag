@@ -100,8 +100,9 @@ const NavBar = (props) => {
                                 </NavDropdown>
                             </div>
                         </Nav.Link>
-
-                        <Nav.Link href="#" className="d-flex align-items-center me-2">
+                        <Nav.Link href="/notifications"
+                                  className={`d-flex align-items-center me-2 ${activeLink === 'notifications' ? 'active-link' : ''}`}
+                                  onClick={() => handleLinkClick('notifications')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBell} size="2x"/>
                                 <div className="mt-1">Notifications</div>
