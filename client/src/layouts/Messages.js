@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Form, Button, Card, Image } from 'react-bootstrap';
 import NavBar from "../components/NavBar";
+import CareerExpertNavBar from "../components/CareerExpertNavBar";
+import CareerExpertModal from "../components/modals/CareerExpertModal";
 
 
 const data = [
@@ -40,10 +42,6 @@ const data = [
 ];
 
 const Messages = () => {
-    const [conversations, setConversations] = useState([]);
-    const [selectedConversation, setSelectedConversation] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
 
     const sampleMessages = [
         {
@@ -198,9 +196,7 @@ const Messages = () => {
             fetchMessages();
         }, [selectedConversation]);
 
-        const handleConversationClick = (conversation) => {
-            setSelectedConversation(conversation);
-        };
+
 
         const handleSendMessage = async () => {
             if (!newMessage) return;
@@ -217,10 +213,44 @@ const Messages = () => {
             }
         };
     */
-    const handleClick = () => {
+
+    const [conversations, setConversations] = useState([]);
+    const [selectedConversation, setSelectedConversation] = useState(false); //TODO -- NOT BOOLEAN
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [userType, setUserType] = useState(0);
+    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
+
+    const handleClick = (type) => {
+        if (userType === type) {
+            // Rerender the page
+            // Add your code to rerender the page here
+            console.log('Rerendering page');
+            setUserType(0);
+        } else {
+            // Open the popup
+            setShowModal(true);
+            setUserType(type);
+        }
     };
 
+    const handleClose = () => {
+        setShowModal(false);
+    };
 
+    useEffect(() => {
+        if (userType === 1) {
+            setShouldRenderNavBar(true);
+        } else {
+            setShouldRenderNavBar(false);
+        }
+    }, [userType]);
+
+    //TODO NOT TRUE FALSE -- NEED AN INDEX
+    const handleConversationClick = () => {
+        setSelectedConversation(true);
+    };
 
     const MessageCard = ({ content, time, sender }) => {
         return (
@@ -266,7 +296,8 @@ const Messages = () => {
 
     return (
         <Container>
-            <NavBar handleClick={handleClick} activeLink="messages"/>
+            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="messages"/> :
+                <NavBar handleClick={handleClick} activeLink="messages"/>}
             <Row className={"ms-0 justify-content-center p-2"}>
                 <Col className="col-3 mt-3 me-2" style={{backgroundColor: "#b6cdbd"}}>
                     <h2>Recent Conversations</h2>
@@ -275,7 +306,7 @@ const Messages = () => {
 
                             <Row className="conversations ms-3">
                                 {sampleConversations.map((conversation) => (
-                                    <Row className="message-card mb-2">
+                                    <Row className="message-card mb-2" onClick={handleConversationClick}>
                                         <Conversation
                                             id={conversation.id}
                                             time={conversation.time}
@@ -289,7 +320,7 @@ const Messages = () => {
                 </Col>
                 <Col className="col-5 mt-3 w-50" style={{backgroundColor: "#b6cdbd"}}>
                     <h2>Conversation</h2>
-                    {1 ? (
+                    {selectedConversation ? (
                         <div>
                             <Col className="col-12 mt-3 w-100" style={{backgroundColor: "#b6cdbd", overflowY:"auto", maxHeight:"500px"}}>
                                 <Row className="messages ms-3">
@@ -319,6 +350,7 @@ const Messages = () => {
                     )}
                 </Col>
             </Row>
+            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
         </Container>
     );
 };

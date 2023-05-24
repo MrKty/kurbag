@@ -43,7 +43,7 @@ const NavBar = (props) => {
                     </Form>
                     <Nav>
                         <Nav.Link
-                            href="/"
+                            href="/Home"
                             className={`d-flex align-items-center me-2 ${activeLink === 'home' ? 'active-link' : ''}`}
                             onClick={() => handleLinkClick('home')}>
                             <div className="d-flex flex-column">
