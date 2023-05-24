@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Container, Row, Col, Button, Card, Badge, Image} from 'react-bootstrap';
+import {Container, Row, Col, Button, Card, Badge, Image, ToggleButton, Form, DropdownButton, Dropdown} from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
@@ -7,6 +7,11 @@ import CareerExpertNavBar from "../components/CareerExpertNavBar";
 import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
+
+import DropdownToggle from "react-bootstrap/DropdownToggle";
+import DropdownMenu from "react-bootstrap/DropdownMenu";
+import DropdownItem from "react-bootstrap/DropdownItem";
+
 
 
 
@@ -153,6 +158,52 @@ const HomePage = () => {
     const [userType, setUserType] = useState(0);
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
 
+    const [filtering, setFiltering] = useState(0);
+    const [sorting, setSorting] = useState(0);
+
+    const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+    const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+
+    const [careerExpertOnly, setCareerExpertOnly] = useState(false);
+
+    const toggleFilterDropdown = () => {
+        setFilterDropdownOpen(!filterDropdownOpen);
+    };
+
+    const toggleSortDropdown = () => {
+        setSortDropdownOpen(!sortDropdownOpen);
+    };
+
+    const handleFilterSelection = (option) => {
+        let filterValue = 0;
+        if (option === 'Recent') {
+            filterValue = 1;
+        } else if (option === 'Most Liked') {
+            filterValue = 2;
+        } else if (option === 'Most Commented') {
+            filterValue = 3;
+        }
+        setFiltering(filterValue);
+    };
+
+    const handleSortingSelection = (option) => {
+        let sortingValue = 0;
+        if (option === 'Recent') {
+            sortingValue = 1;
+        } else if (option === 'Most Liked') {
+            sortingValue = 2;
+        } else if (option === 'Most Commented') {
+            sortingValue = 3;
+        }
+        setSorting(sortingValue);
+    };
+
+
+    const handleCareerExpertToggle = () => {
+        setCareerExpertOnly(!careerExpertOnly);
+    };
+
+
     const handleClick = (type) => {
         if (userType === type) {
             // Rerender the page
@@ -183,6 +234,64 @@ const HomePage = () => {
         <Container fluid>
             {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="home"/> :
                 <NavBar handleClick={handleClick} activeLink="home"/>}
+            <Col className="d-flex bd-highlight mt-3 mb-2">
+                <Col className="d-flex col-8">
+                    <Row className="justify-content-center">
+                        <Dropdown className="me-2" show={filterDropdownOpen} onToggle={toggleFilterDropdown}>
+                            <DropdownToggle variant="primary" id="dropdown-sorting">
+                                Sorting Options
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem
+                                    onClick={() => handleFilterSelection('Recent')}
+                                    active={filtering === 1}
+                                >
+                                    Recent
+                                </DropdownItem>
+                                <DropdownItem
+                                    onClick={() => handleFilterSelection('Most Liked')}
+                                    active={filtering === 2}
+                                >
+                                    Most Liked
+                                </DropdownItem>
+                                <DropdownItem
+                                    onClick={() => handleFilterSelection('Most Commented')}
+                                    active={filtering === 3}
+                                >
+                                    Most Commented
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </Row>
+                    <Row>
+                        <Dropdown show={sortDropdownOpen} onToggle={toggleSortDropdown}>
+                            <DropdownToggle variant="primary" id="dropdown-filtering">
+                                Filter Options
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem
+                                    onClick={() => handleSortingSelection('Recent')}
+                                    active={sorting === 1}
+                                >
+                                    Normal User Posts
+                                </DropdownItem>
+                                <DropdownItem
+                                    onClick={() => handleSortingSelection('Most Liked')}
+                                    active={sorting === 2}
+                                >
+                                    Company Posts
+                                </DropdownItem>
+                                <DropdownItem
+                                    onClick={() => handleSortingSelection('Most Commented')}
+                                    active={sorting === 3}
+                                >
+                                    Institution Post
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </Row>
+                </Col>
+            </Col>
             <Col className="d-inline-block justify-content-center">
                 {samplePosts.map((post) => (
                     <Row className="justify-content-center">
