@@ -15,6 +15,7 @@ import OrganizationHomePage from "./layouts/OrganizationHomePage";
 import OrganizationEmployeePage from "./layouts/OrganizationEmployeePage";
 import BlogViewer from "./layouts/BlogViewer";
 import RecruiterViewer from "./layouts/RecruiterViewer";
+import Profile from "./layouts/Profile";
 import HomePage from "./layouts/HomePage";
 
 
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
                 <Route path="/blog-viewer" element={<BlogViewer/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
+                <Route path="/profile" element={<Profile/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>
