@@ -79,7 +79,7 @@ const Blogs = () => {
                 <Col xs={10} md={10} lg={10}>
                     <div>
                         <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>From Your Followings</h2>
-                        <div className={"mb-2"} style={{display: "flex", flexWrap: "wrap"}}>
+                        <div className={"mb-2 d-flex flex-wrap"}>
                             {tags.map((tag) => (
                                 <Badge
                                     key={tag}

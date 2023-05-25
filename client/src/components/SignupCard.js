@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {Form, Button, Card, Row, Col} from "react-bootstrap";
+import sendRequest from "../utils/request";
+import bcrypt from 'bcryptjs';
 
 const SignupCard = () => {
     const [formData, setFormData] = useState({
@@ -23,7 +25,21 @@ const SignupCard = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
+
+        // Hash the password
+        const hashedPassword = bcrypt.hashSync(formData.password, 10);
+
+        // Create an object with the hashed password
+        const signupData = {
+            ...formData,
+            password: hashedPassword,
+        };
+
+        sendRequest('signup', 'POST', signupData, (data) => {
+            // Handle the response from the backend
+            // For example, you can display a success message or handle authentication
+            console.log(data);
+        });
     };
 
     return (

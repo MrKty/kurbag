@@ -104,6 +104,7 @@ function BlogEditor() {
                                     <FontAwesomeIcon icon={faImage} size={'3x'}/>
                                 </div>
                             )}
+
                             <input type="file" id="image-upload" onChange={handleImageChange}
                                    className={"visually-hidden"}/>
                         </label>

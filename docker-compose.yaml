@@ -1,0 +1,23 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 3006:3006
+    environment:
+      MYSQL_HOST: kurbag-database.cvcoj4rml3kh.eu-north-1.rds.amazonaws.com
+      MYSQL_PORT: 3306
+      MYSQL_USER: mrkty
+      MYSQL_PASSWORD: 12345678
+      MYSQL_DATABASE: kurbagdb
