@@ -25,6 +25,7 @@ const NavBar = (props) => {
 
     const handleDropdownClick = (type) => {
         props.handleClick(type);
+        //window.location.href = "/previous-blogs";
     };
 
     return (

@@ -158,13 +158,15 @@ const HomePage = () => {
     const [userType, setUserType] = useState(0);
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
 
+    const [careerExpertOnly, setCareerExpertOnly] = useState(false);
+
     const [filtering, setFiltering] = useState(0);
     const [sorting, setSorting] = useState(0);
 
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
     const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
-    const [careerExpertOnly, setCareerExpertOnly] = useState(false);
+
 
     const toggleFilterDropdown = () => {
         setFilterDropdownOpen(!filterDropdownOpen);

@@ -17,6 +17,7 @@ import BlogViewer from "./layouts/BlogViewer";
 import RecruiterViewer from "./layouts/RecruiterViewer";
 import Profile from "./layouts/Profile";
 import HomePage from "./layouts/HomePage";
+import PreviousBlogs from "./layouts/PreviousBlogs";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/home" element={<HomePage/>}/>
                 <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
                 <Route path="/blog-viewer" element={<BlogViewer/>}/>
+                <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="*" element={<NotFound/>}/>
