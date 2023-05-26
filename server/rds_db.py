@@ -25,7 +25,7 @@ def create_tables():
             (
                 user_id int AUTO_INCREMENT,
                 mail_addr varchar(50),
-                password varchar(20) NOT NULL,
+                password varchar(100) NOT NULL,
                 phone_no varchar(20),
                 about_info varchar(150),
                 profile_pic varchar(128),
@@ -303,3 +303,16 @@ def get_details():
     cur.execute("SELECT *  FROM Person")
     details = cur.fetchall()
     return details
+
+
+def fetch_one(cursor):
+    row = cursor.fetchone()
+    if row:
+        # Get the column names from the cursor description
+        column_names = [desc[0] for desc in cursor.description]
+
+        # Create a dictionary using the column names and row values
+        user = dict(zip(column_names, row))
+    else:
+        user = None
+    return user

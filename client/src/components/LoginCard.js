@@ -5,26 +5,34 @@ import sendRequest from "../utils/request";
 function LoginCard() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         // Create an object with the login data
         const loginData = {
-            email: "sasdas",
-            password: "sdads",
+            email,
+            password
         };
 
         sendRequest('login', 'POST', loginData, (data) => {
             // Handle the response from the backend
-            // For example, you can display a success message or handle authentication
-            console.log(data);
+            if (data.message === 'Logged in successfully!') {
+                // Redirect to the home URL
+                window.location.href = "/home";
+            } else {
+                // Display error message
+                //TODO popup olarak gösterilecek
+                setErrorMessage(data.message);
+            }
         });
     };
 
     return (
         <Card className="text-center w-50 mx-auto shadow rounded-3">
             <Card.Body>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                 <Card.Title className="p-2 fw-bold mt-3 display-6 color-green">
                     Welcome Back
                 </Card.Title>

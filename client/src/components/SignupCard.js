@@ -26,13 +26,9 @@ const SignupCard = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Hash the password
-        const hashedPassword = bcrypt.hashSync(formData.password, 10);
-
         // Create an object with the hashed password
         const signupData = {
-            ...formData,
-            password: hashedPassword,
+            ...formData
         };
 
         sendRequest('signup', 'POST', signupData, (data) => {
@@ -148,8 +144,8 @@ const SignupCard = () => {
                                     'October',
                                     'November',
                                     'December',
-                                ].map((month) => (
-                                    <option key={month} value={month}>
+                                ].map((month, index) => (
+                                    <option key={index + 1} value={index + 1}>
                                         {month}
                                     </option>
                                 ))}

@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Form, Button, Card, Row, Col} from "react-bootstrap";
+import sendRequest from "../utils/request";
 
 //TODO BOOTSTRAP KARTLARINDA HEIGHT-OVERFLOW OLUNCA SIDEBAR'I CARD İÇİNDE GÖSTERME. ŞUAN DIŞINDA GÖSTERİYO.
 
@@ -10,7 +11,12 @@ const OrganizationCreationCard = () => {
         organizationSize: '',
         organizationAddress: '',
         organizationWebsite: '',
-        organizationIndustry: '',
+        organizationPhoneNo: '',
+        companyIndustry: '',
+        companyType: '',
+        institutionType: '',
+        email: '',
+        password: '',
     });
 
     const handleChange = (e) => {
@@ -22,7 +28,17 @@ const OrganizationCreationCard = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
+
+        // Create an object with the hashed password
+        const signupData = {
+            ...formData
+        };
+
+        sendRequest('create-organization', 'POST', signupData, (data) => {
+            // Handle the response from the backend
+            // For example, you can display a success message or handle authentication
+            console.log(data);
+        });
     };
 
     const showContent = formData.organizationType === 'Company' ? (
@@ -32,7 +48,7 @@ const OrganizationCreationCard = () => {
                 <Form.Control
                     as="select"
                     name="industry"
-                    value={formData.industry}
+                    value={formData.companyIndustry}
                     onChange={handleChange}
                     required
                 >
