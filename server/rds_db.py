@@ -260,20 +260,20 @@ def create_tables():
             );
             
             CREATE TABLE IF NOT EXISTS Certificate (
-                expert_id int,
+                applicant_id int,
                 cert_id int,
                 cert_url varchar(128),
-                PRIMARY KEY (expert_id, cert_id),
-                FOREIGN KEY (expert_id) REFERENCES User (user_id)
+                PRIMARY KEY (applicant_id, cert_id),
+                FOREIGN KEY (applicant_id) REFERENCES User (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Sends_Request (
         	    applicant_id int,
                 expert_id int,
+                isApproved boolean,
                 date datetime,
                 motivation_letter text,
                 tag_id int,
-                certificate varchar(128),
                 PRIMARY KEY (applicant_id, expert_id),
                 FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
                 FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 

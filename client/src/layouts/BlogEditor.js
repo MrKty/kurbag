@@ -4,31 +4,31 @@ import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {Button, Card, Col, Container, Form, Image, Row} from "react-bootstrap";
 import image from "../icons/add-image.png"
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
+import sendRequest from "../utils/request";
+import firebase from "firebase/compat/app";
+import "firebase/compat/storage";
 
 function BlogEditor() {
-    const [selectedImage, setSelectedImage] = useState(null);
     const [selectedTag, setSelectedTag] = useState('');
-
-
-    const handleImageChange = (event) => {
-        setSelectedImage(event.target.files[0]);
-    };
-
+    const [coverPhoto, setCoverPhoto] = useState(null);
+    const [title, setTitle] = useState("");
+    const [summary, setSummary] = useState("");
+    const [content, setContent] = useState("");
 
     const handleTagSelect = (tag) => {
         setSelectedTag(tag);
     };
 
-    const [coverPhoto, setCoverPhoto] = useState("");
-    const [title, setTitle] = useState("");
-    const [summary, setSummary] = useState("");
-    const [content, setContent] = useState("");
-
-    const handleAddPhoto = () => {
-        // implement logic for adding a photo to the content
+    const handleImageChange = (event) => {
+        setCoverPhoto(event.target.files[0]);
     };
 
     const handleClick = () => {
+    };
+
+    /*
+    const handleAddPhoto = () => {
+        // implement logic for adding a photo to the content
     };
 
     const handleAddVideo = () => {
@@ -39,8 +39,27 @@ function BlogEditor() {
         // implement logic for adding a code block to the content
     };
 
-    const handlePublish = () => {
-        // implement logic for publishing the blog
+     */
+
+    const handlePublish = async () => {
+        if (coverPhoto) {
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(coverPhoto.name);
+            await fileRef.put(coverPhoto);
+            const url = await fileRef.getDownloadURL();
+
+            const requestData = {
+                coverPhotoUrl: url,
+                title: title,
+                summary: summary,
+                content: content,
+                selectedTag: selectedTag,
+            };
+
+            sendRequest("blogEditor", "POST", requestData, (data) => {
+                // Handle the response from the backend
+            });
+        }
     };
 
     return (
@@ -92,9 +111,9 @@ function BlogEditor() {
                 <Row className={'my-4'}>
                     <Col className={'text-center'}>
                         <label htmlFor="image-upload">
-                            {selectedImage ? (
+                            {coverPhoto ? (
                                 <Image
-                                    src={URL.createObjectURL(selectedImage)}
+                                    src={URL.createObjectURL(coverPhoto)}
                                     alt="Selected"
                                     className={'w-100'}
                                 />
@@ -122,6 +141,7 @@ function BlogEditor() {
                                 className="border border-dark rounded col-9 mx-auto p-1"
                                 contentEditable="true"
                                 style={{minHeight: '3em'}}
+                                onBlur={(event) => setTitle(event.target.innerHTML)}
                                 dangerouslySetInnerHTML={{__html: title}}
                             />
                         </Row>
@@ -139,6 +159,7 @@ function BlogEditor() {
                                 className="border border-dark rounded col-9 mx-auto p-1"
                                 contentEditable="true"
                                 style={{minHeight: '6em'}}
+                                onBlur={(event) => setSummary(event.target.innerHTML)}
                                 dangerouslySetInnerHTML={{__html: summary}}
                             />
                         </Row>
@@ -156,6 +177,7 @@ function BlogEditor() {
                                 className="border border-dark rounded col-9 mx-auto p-1"
                                 contentEditable="true"
                                 style={{minHeight: '30em'}}
+                                onBlur={(event) => setContent(event.target.innerHTML)}
                                 dangerouslySetInnerHTML={{__html: content}}
                             />
                         </Row>

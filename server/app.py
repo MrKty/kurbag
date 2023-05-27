@@ -9,10 +9,12 @@ import rds_db as db
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.secret_key = 'cs353_db_project'
 CORS(app)  # Initialize Flask-CORS
-mysql = MySQL(app)
 
+# Configure the app to use sessions
+app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = 'cs353_db_project'
+mysql = MySQL(app)
 db.create_tables()
 
 
@@ -196,9 +198,13 @@ def apply_career_expert():
     motivation = form_data['motivation']
     certificates = form_data['selectedCertificates'][0]
     print(selected_tag, motivation, certificates)
+    print(session.get('user_id'))
+    print(session.get('loggedIn'))
 
     # Perform additional operations, such as storing the data in a database
     cursor = db.get_cursor()
+
+
     cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (email,))
     account = cursor.fetchone()
     if account:
@@ -279,6 +285,15 @@ def blog_page():
     ]
 
     return jsonify(blogs)
+
+
+@app.route('/blogEditor', methods=['POST'])
+def blog_editor():
+    data = request.json  # Get the form data from the request body
+    print(data)
+
+    return None
+
 
 
 if __name__ == "__main__":

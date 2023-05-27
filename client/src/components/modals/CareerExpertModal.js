@@ -66,23 +66,6 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                             <option value="marketing">Marketing</option>
                         </Form.Control>
                     </Form.Group>
-                    {selectedTag && (
-                        <Form.Group>
-                            <Form.Label>Select sub tags you want to apply:</Form.Label>
-                            <div className="mb-3">
-                                <Form.Check type="checkbox" label="Remote Work" />
-                            </div>
-                            <div className="mb-3">
-                                <Form.Check type="checkbox" label="Internships" />
-                            </div>
-                            <div className="mb-3">
-                                <Form.Check type="checkbox" label="Retirement" />
-                            </div>
-                            <div className="mb-3">
-                                <Form.Check type="checkbox" label="Freelancer" />
-                            </div>
-                        </Form.Group>
-                    )}
                     <Form.Group>
                         <Form.Label>Motivation:</Form.Label>
                         <Form.Control as="textarea" rows={3} value={motivation} onChange={(event) => setMotivation(event.target.value)} className="mb-3" />
