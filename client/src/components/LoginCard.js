@@ -19,6 +19,9 @@ function LoginCard() {
         sendRequest('login', 'POST', loginData, (data) => {
             // Handle the response from the backend
             if (data.message === 'Logged in successfully!') {
+                // Store the ID in the local storage
+                localStorage.setItem('userId', data.id);
+                localStorage.setItem('userType', data.userType);
                 // Redirect to the home URL
                 window.location.href = "/home";
             } else {

@@ -7,6 +7,12 @@ const sendRequest = (url, method, data, callback) => {
     };
 
     if (data) {
+        if (url !== "login" && url !== "signup" && url !== "create-organization") {
+            data = {
+                ...data,
+                id: localStorage.getItem('userId')
+            }
+        }
         options.body = JSON.stringify(data);
     }
 

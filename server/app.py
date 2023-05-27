@@ -6,28 +6,37 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import rds_db as db
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+from flask_session import Session
 
 app = Flask(__name__)
-CORS(app)  # Initialize Flask-CORS
 
-# Configure the app to use sessions
+app.secret_key = "27eduCBA09"
 app.config['SESSION_TYPE'] = 'filesystem'
-app.secret_key = 'cs353_db_project'
+app.config.from_object(__name__)
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+Session(app)
+CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
+
+# Initiate database
 db.create_tables()
+db.populate_table()
 
 
 @app.route('/')
 @app.route('/login', methods=['POST'])
 def login():
+    session.permanent = True
+
     # Retrieve the login data from the request
     login_data = request.get_json()
-
+    session["test"] = "12345"
     # Extract the email and password from the login data
     email = login_data['email']
     password = login_data['password']
 
+    print(session.sid)
     # Perform authentication logic
     cursor = db.get_cursor()
     cursor.execute('SELECT user_id, mail_addr, password FROM User WHERE mail_addr = %s', email)
@@ -40,12 +49,10 @@ def login():
         print(user)
         # Compare the hashed passwords
         if bcrypt.checkpw(password.encode(), user["password"].encode()):
-            print("not here")
-            # Passwords match
-            session['loggedIn'] = True
-            session['user_id'] = user['user_id']
-            session['email'] = user['mail_addr']
             message = 'Logged in successfully!'
+            response = {'message': message, 'id': user['user_id'], 'userType': user['user_type']}
+            return jsonify(response)
+
         else:
             # Passwords don't match
             # Perform further actions or return an error response
@@ -56,7 +63,6 @@ def login():
     # Create a response object
     response = {'message': message}
 
-    print(response)
     # Return the response as JSON
     return jsonify(response)
 
@@ -94,8 +100,8 @@ def signup():
             cursor.execute('START TRANSACTION')
 
             # Insert the user data into the User table
-            cursor.execute('INSERT INTO User (mail_addr, password, phone_no) VALUES (%s, %s, %s)',
-                           (email, hashed_password, phone))
+            cursor.execute('INSERT INTO User (mail_addr, password, phone_no, user_type) VALUES (%s, %s, %s, %s)',
+                           (email, hashed_password, phone, 0))
             user_id = cursor.lastrowid
             # Insert the person data into the Person table
             birth_date = f'{year}-{month}-{day}'  # Format birth date correctly
@@ -196,48 +202,34 @@ def apply_career_expert():
     # Assuming the form data contains the fields: name, surname, email, phone, password, day, month, year, gender
     selected_tag = form_data['selectedTag']
     motivation = form_data['motivation']
-    certificates = form_data['selectedCertificates'][0]
+    certificates = form_data['selectedCertificates']
     print(selected_tag, motivation, certificates)
-    print(session.get('user_id'))
-    print(session.get('loggedIn'))
+    print(form_data["id"])
 
-    # Perform additional operations, such as storing the data in a database
     cursor = db.get_cursor()
+    try:
+        # Start a transaction
+        cursor.execute('START TRANSACTION')
 
+        cursor.execute('SELECT * FROM Tag WHERE tag_name = %s', (selected_tag,))
+        tag = db.fetch_one(cursor)
 
-    cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (email,))
-    account = cursor.fetchone()
-    if account:
-        message = 'This mail is already registered!'
-    else:
-        try:
-            # Start a transaction
-            cursor.execute('START TRANSACTION')
+        cursor.execute('INSERT INTO Sends_request (applicant_id, motivation_letter, tag_id) VALUES (%s, %s, %s)',
+                       (form_data["id"], motivation, tag["tag_id"]))
 
-            # Insert the user data into the User table
-            cursor.execute('INSERT INTO User (mail_addr, password, phone_no) VALUES (%s, %s, %s)',
-                           (email, hashed_password, phone))
-            user_id = cursor.lastrowid
-            # Insert the person data into the Person table
-            birth_date = f'{year}-{month}-{day}'  # Format birth date correctly
-            print(birth_date)
+        for certificate in certificates:
             cursor.execute(
-                'INSERT INTO Person (user_id, first_name, last_name, birth_date, gender) VALUES (%s, %s, %s, %s, %s)',
-                (user_id, name, surname, birth_date, gender))
+                'INSERT INTO Certificate (applicant_id, cert_url) VALUES (%s, %s)',
+                (form_data["id"], certificate))
 
-            # Insert the person data into the Regular User table
-            cursor.execute(
-                'INSERT INTO Regular_User (user_id) VALUES (%s)',
-                (user_id,))
+        # Commit the transaction
+        cursor.execute('COMMIT')
 
-            # Commit the transaction
-            cursor.execute('COMMIT')
-
-            message = 'User successfully created!'
-        except:
-            # Rollback the transaction if an error occurs
-            cursor.execute('ROLLBACK')
-            message = 'Error occurred during signup. Please try again.'
+        message = 'Successfully applied!'
+    except:
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+        message = 'Error occurred during application. Please try again.'
 
     # Create a response object
     response = {'message': message}
@@ -292,8 +284,7 @@ def blog_editor():
     data = request.json  # Get the form data from the request body
     print(data)
 
-    return None
-
+    return jsonify(data)
 
 
 if __name__ == "__main__":
