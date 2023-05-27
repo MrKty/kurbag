@@ -17,6 +17,16 @@ import BlogViewer from "./layouts/BlogViewer";
 import RecruiterViewer from "./layouts/RecruiterViewer";
 import Profile from "./layouts/Profile";
 import HomePage from "./layouts/HomePage";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
+
+const firebaseConfig = {
+    // Your Firebase configuration object
+    storageBucket: 'gs://cs353db.appspot.com/'
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 
 function App() {

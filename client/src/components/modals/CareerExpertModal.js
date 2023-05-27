@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
+import sendRequest from "../../utils/request";
 
 const CareerExpertModal = ({ showModal, handleClose }) => {
     const [selectedTag, setSelectedTag] = useState('');
@@ -10,20 +13,42 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
         setSelectedTag(tag);
     };
 
-    const handleCertificateSelect = (event) => {
-        setSelectedCertificates([...selectedCertificates, event.target.files[0]]);
+    const handleCertificateSelect = async (event) => {
+        const files = event.target.files;
+        const urls = [];
+        console.log("Here")
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            console.log(file)
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(file.name);
+            await fileRef.put(file);
+            const url = await fileRef.getDownloadURL();
+            urls.push(url);
+            console.log(url)
+        }
+
+        setSelectedCertificates([...selectedCertificates, ...urls]);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         // Add code to submit the form
-        handleClose()
+        const applicationData = {
+            selectedTag,
+            motivation,
+            selectedCertificates
+        };
+
+        sendRequest('career-expert-application', 'POST', applicationData, (data) => {
+            console.log(data)
+        });
     };
 
     return (
         <Modal show={showModal} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Become a Career Expert</Modal.Title>
+                <Modal.Title>Become sa Career Expert</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>

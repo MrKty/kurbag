@@ -6,6 +6,7 @@ import CareerExpertNavBar from "../components/CareerExpertNavBar";
 import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
+import sendRequest from "../utils/request";
 
 const BlogCard = ({coverPhoto, title, summary, name, likeNumber, commentNumber}) => {
     const firstSentence = summary.substring(0, 100);
@@ -39,6 +40,7 @@ const Blogs = () => {
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
     const tags = ['Career', 'Job Search', 'Workplace', 'Technology', 'Engineering', 'Job Skills', 'Education', 'Marketing'];
     const subTags = ['Remote Work', 'Internships', 'Retirement', 'Freelancer', 'Networking']
+    const [blogs, setBlogs] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
 
     const handleTagClick = (tag) => {
@@ -69,7 +71,20 @@ const Blogs = () => {
         } else {
             setShouldRenderNavBar(false);
         }
+        // TODO Tag listesini getir
     }, [userType]);
+
+    useEffect(() => {
+
+        const sendData = {
+            selectedTag
+        }
+
+        sendRequest('blogs', 'POST', sendData, (data) => {
+            // Here comes blog data from backend
+            setBlogs(data);
+        });
+    }, [selectedTag]);
 
     return (
         <Container fluid>
@@ -88,7 +103,7 @@ const Blogs = () => {
                                         margin: '0.5rem',
                                         cursor: 'pointer',
                                     }}
-                                    bg={tag === "Career" ? "secondary" : "primary"}
+                                    bg={tag === selectedTag ? "secondary" : "primary"}
                                     onClick={() => handleTagClick(tag)}
                                 >
                                     {tag}
@@ -114,39 +129,19 @@ const Blogs = () => {
                         </div>
 
                         <Row>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280"
-                                    title="Remote Work: Pros and Cons"
-                                    summary="Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home."
-                                    name="Sarah Smith"
-                                    likeNumber={25}
-                                    commentNumber={10}
-                                    subtag="Remote Work"
-                                />
-                            </Col>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU"
-                                    title="The Benefits of Internships"
-                                    summary="Internships are a valuable experience for students and recent graduates looking to gain practical skills and knowledge. This blog discusses the benefits of internships, and offers tips for making the most of your internship experience."
-                                    name="John Doe"
-                                    likeNumber={15}
-                                    commentNumber={5}
-                                    subtag="Internships"
-                                />
-                            </Col>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU"
-                                    title="Retirement Planning: What You Need to Know"
-                                    summary="Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement."
-                                    name="Jane Smith"
-                                    likeNumber={20}
-                                    commentNumber={7}
-                                    subtag="Retirement"
-                                />
-                            </Col>
+                            {blogs.map((blog) => (
+                                <Col key={blog.id}>
+                                    <BlogCard
+                                        coverPhoto={blog.coverPhoto}
+                                        title={blog.title}
+                                        summary={blog.summary}
+                                        name={blog.name}
+                                        likeNumber={blog.likeNumber}
+                                        commentNumber={blog.commentNumber}
+                                        subtag={blog.subtag}
+                                    />
+                                </Col>
+                            ))}
                         </Row>
                     </div>
                 </Col>

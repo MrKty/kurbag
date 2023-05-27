@@ -258,6 +258,34 @@ def create_tables():
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
                 FOREIGN KEY (inst_id) REFERENCES User (user_id)
             );
+            
+            CREATE TABLE IF NOT EXISTS Certificate (
+                expert_id int,
+                cert_id int,
+                cert_url varchar(128),
+                PRIMARY KEY (expert_id, cert_id),
+                FOREIGN KEY (expert_id) REFERENCES User (user_id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS Sends_Request (
+        	    applicant_id int,
+                expert_id int,
+                date datetime,
+                motivation_letter text,
+                tag_id int,
+                certificate varchar(128),
+                PRIMARY KEY (applicant_id, expert_id),
+                FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
+                FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
+            );
+            
+            CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
+        	    b_id int,
+                tag_name char(20),
+                PRIMARY KEY (b_id, tag_name),
+                FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
+                FOREIGN KEY (tag_name) REFERENCES Tag(tag_name)
+            );
     """)
 
     # Split the create_table string into individual CREATE TABLE statements
