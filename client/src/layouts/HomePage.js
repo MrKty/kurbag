@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Container, Row, Col, Button, Card, Badge, Image, ToggleButton, Form, DropdownButton, Dropdown} from 'react-bootstrap';
+import {Container, Row, Col, Button, Card, Badge, Image, ToggleButton, Form, DropdownButton, Dropdown, Modal} from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
@@ -155,6 +155,9 @@ const HomePage = () => {
 
 
     const [showModal, setShowModal] = useState(false);
+    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+    const [showCreateEventModal, setShowCreateEventModal] = useState(false);
+
     const [userType, setUserType] = useState(0);
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
 
@@ -166,7 +169,18 @@ const HomePage = () => {
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
     const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
+    const [postTitle, setPostTitle] = useState('');
+    const [postContent, setPostContent] = useState('');
 
+    const [eventTitle, setEventTitle] = useState('');
+    const [eventContent, setEventContent] = useState('');
+    const [eventOrganizer, setEventOrganizer] = useState('');
+    const [eventPlatform, setEventPlatform] = useState('');
+    const [eventStartDate, setEventStartDate] = useState('');
+    const [eventEndDate, setEventEndDate] = useState('');
+    const [eventLimit, setEventLimit] = useState('');
+    const [eventLink, setEventLink] = useState('');
+    const [eventSpeakers, setEventSpeakers] = useState('');
 
     const toggleFilterDropdown = () => {
         setFilterDropdownOpen(!filterDropdownOpen);
@@ -175,6 +189,16 @@ const HomePage = () => {
     const toggleSortDropdown = () => {
         setSortDropdownOpen(!sortDropdownOpen);
     };
+
+    const toggleCreatePostModal = () => {
+        setShowCreatePostModal(!showCreatePostModal);
+    };
+
+    const toggleCreateEventModal = () => {
+        setShowCreateEventModal(!showCreateEventModal);
+    };
+
+
 
     const handleFilterSelection = (option) => {
         let filterValue = 0;
@@ -205,6 +229,72 @@ const HomePage = () => {
         setCareerExpertOnly(!careerExpertOnly);
     };
 
+
+
+    const handlePostTitleChange = (e) => {
+        setPostTitle(e.target.value);
+    };
+
+    const handlePostContentChange = (e) => {
+        setPostContent(e.target.value);
+    };
+
+    const handleEventTitleChange = (e) => {
+        setEventTitle(e.target.value);
+    };
+
+    const handleEventContentChange = (e) => {
+        setEventContent(e.target.value);
+    };
+
+    const handleEventOrganizerChange = (e) => {
+        setEventOrganizer(e.target.value);
+    };
+
+    const handleEventPlatformChange = (e) => {
+        setEventPlatform(e.target.value);
+    };
+
+    const handleEventStartDateChange = (e) => {
+        setEventStartDate(e.target.value);
+    };
+
+    const handleEventEndDateChange = (e) => {
+        setEventEndDate(e.target.value);
+    };
+
+    const handleEventLimitChange = (e) => {
+        setEventLimit(e.target.value);
+    };
+
+    const handleEventLinkChange = (e) => {
+        setEventLink(e.target.value);
+    };
+
+    const handleEventSpeakersChange = (e) => {
+        setEventSpeakers(e.target.value);
+    };
+
+    const handlePostCreation = () => {
+        // Validate and handle post creation here
+        // Call handleCreatePost with the title and content
+        //handleCreatePost(title, content);
+
+        // Clear input fields and close the modal
+        setPostTitle('');
+        setPostContent('');
+        handleClose();
+    }
+    const handleEventCreation = () => {
+        // Validate and handle post creation here
+        // Call handleCreatePost with the title and content
+        //handleCreatePost(title, content);
+
+        // Clear input fields and close the modal
+        setEventTitle('');
+        setEventContent('');
+        handleClose();
+    }
 
     const handleClick = (type) => {
         if (userType === type) {
@@ -277,15 +367,152 @@ const HomePage = () => {
                 </Col>
                 <Col className="d-flex col-3 justify-content-evenly">
                     <Row>
-                        <Button variant="primary" className="justify-content-center me-2">Create Post</Button>
+                        <Button variant="primary" className="justify-content-center me-2" onClick={toggleCreatePostModal}>
+                            Create Post
+                        </Button>
                     </Row>
                     <Row>
-                        <Button variant="primary" className="justify-content-center me-2">Create Event</Button>
+                        <Button variant="primary" className="justify-content-center me-2" onClick={toggleCreateEventModal}>
+                            Create Event
+                        </Button>
                     </Row>
                 </Col>
+                <Modal show={showCreatePostModal} onHide={toggleCreatePostModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create Post</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="postTitle">
+                                <Form.Label>Title</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={postTitle}
+                                    onChange={handlePostTitleChange}
+                                    placeholder="Enter post title"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="postContent">
+                                <Form.Label>Content</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={5}
+                                    value={postContent}
+                                    onChange={handlePostContentChange}
+                                    placeholder="Enter post content"
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={handlePostCreation}>
+                            Create
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={showCreateEventModal} onHide={toggleCreateEventModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create Event</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form style={{overflowY:"scroll"}}>
+                            <Form.Group controlId="eventTitle">
+                                <Form.Label>Title</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={eventTitle}
+                                    onChange={handleEventTitleChange}
+                                    placeholder="Enter event title"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventContent">
+                                <Form.Label>Content</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={5}
+                                    value={eventContent}
+                                    onChange={handleEventContentChange}
+                                    placeholder="Enter event content"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventOrganizer">
+                                <Form.Label>Organizer</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={eventOrganizer}
+                                    onChange={handleEventOrganizerChange}
+                                    placeholder="Enter event organizer"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventPlatform">
+                                <Form.Label>Platform</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={eventPlatform}
+                                    onChange={handleEventPlatformChange}
+                                    placeholder="Enter event platform"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventStartDate">
+                                <Form.Label>Start Date</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={eventStartDate}
+                                    onChange={handleEventStartDateChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventEndDate">
+                                <Form.Label>End Date</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={eventEndDate}
+                                    onChange={handleEventEndDateChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventLimit">
+                                <Form.Label>Limit (Quota)</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={eventLimit}
+                                    onChange={handleEventLimitChange}
+                                    placeholder="Enter event limit"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventLink">
+                                <Form.Label>Link</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={eventLink}
+                                    onChange={handleEventLinkChange}
+                                    placeholder="Enter event link"
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="eventSpeakers">
+                                <Form.Label>Speakers</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={eventSpeakers}
+                                    onChange={handleEventSpeakersChange}
+                                    placeholder="Enter event speakers"
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={handleEventCreation}>
+                            Create
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Col>
-
-
             <Col className="d-inline-block justify-content-center">
                 {samplePosts.map((post) => (
                     <Row className="justify-content-center">
@@ -295,7 +522,7 @@ const HomePage = () => {
                 ))}
             </Col>
         </Container>
-    );
+    )
 };
 
 export default HomePage
