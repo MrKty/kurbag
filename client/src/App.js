@@ -17,6 +17,10 @@ import BlogViewer from "./layouts/BlogViewer";
 import RecruiterViewer from "./layouts/RecruiterViewer";
 import Profile from "./layouts/Profile";
 import HomePage from "./layouts/HomePage";
+import PreviousBlogs from "./layouts/PreviousBlogs";
+import CvPool from "./layouts/CvPool";
+import CreateEventPage from "./layouts/CreateEventPage";
+import ViewEventsPage from "./layouts/ViewEventsPage";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 
@@ -34,11 +38,13 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<Login/>}/>
-                <Route path="/home" element={<Blogs/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/blogs" element={<Blogs/>}/>
                 <Route path="/jobs" element={<Jobs/>}/>
+                <Route path="/create-event" element={<CreateEventPage/>}/>
+                <Route path="/view-events" element={<ViewEventsPage/>}/>
+                <Route path="/cv-pool" element={<CvPool/>}/>
                 <Route path="/notifications" element={<Notifications/>}/>
                 <Route path="/messages" element={<Messages/>}/>
                 <Route path="/approve-applications" element={<CareerExpertApplications/>}/>
@@ -47,7 +53,8 @@ function App() {
                 <Route path="/org-home" element={<OrganizationHomePage/>}/>
                 <Route path="/home" element={<HomePage/>}/>
                 <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
-                <Route path="/blog-viewer" element={<BlogViewer/>}/>
+                <Route path="/blog-viewer/:id" element={<BlogViewer/>}/>
+                <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="*" element={<NotFound/>}/>

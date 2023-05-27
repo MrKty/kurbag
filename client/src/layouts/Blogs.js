@@ -7,32 +7,9 @@ import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import sendRequest from "../utils/request";
+import BlogCard from "../components/BlogCard"
+import {Link} from "react-router-dom";
 
-const BlogCard = ({coverPhoto, title, summary, name, likeNumber, commentNumber}) => {
-    const firstSentence = summary.substring(0, 100);
-    const truncatedSummary = `${firstSentence}`;
-
-    return (
-        <Card className={"col-12"} style={{minHeight: "500px"}}>
-            <Image src={coverPhoto} alt="Cover" fluid style={{height: "200px"}}/>
-            <Card.Body>
-                <Card.Title>{title}</Card.Title>
-                <Card.Text>{truncatedSummary} <span className={"text-muted"}>... see more</span></Card.Text>
-                <a href="#" className="card-name no-underline">{name}</a>
-            </Card.Body>
-            <Card.Footer>
-                <Row>
-                    <Col className="d-flex card-likes justify-content-center align-content-center">
-                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faHeart}/> {likeNumber}
-                    </Col>
-                    <Col className="d-flex card-comments justify-content-center">
-                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faComment}/> {commentNumber}
-                    </Col>
-                </Row>
-            </Card.Footer>
-        </Card>
-    );
-};
 
 const Blogs = () => {
     const [showModal, setShowModal] = useState(false);
@@ -46,6 +23,39 @@ const Blogs = () => {
     const handleTagClick = (tag) => {
         setSelectedTag(tag);
     };
+
+    const sampleBlogs = [
+        {
+            id: 1,
+            coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
+            title: "Remote Work: Pros and Cons",
+            summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
+            name: "Sarah Smith",
+            likeNumber: 25,
+            commentNumber: 10,
+            subtag: "Remote Work"
+        },
+        {
+            id: 2,
+            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
+            title: "The Benefits of Internships",
+            summary: "Internships are a valuable experience for students and recent graduates looking to gain practical skills and knowledge. This blog discusses the benefits of internships, and offers tips for making the most of your internship experience.",
+            name: "John Doe",
+            likeNumber: 15,
+            commentNumber: 5,
+            subtag: "Internships"
+        },
+        {
+            id: 3,
+            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
+            title: "Retirement Planning: What You Need to Know",
+            summary: "Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement.",
+            name: "Jane Smith",
+            likeNumber: 20,
+            commentNumber: 7,
+            subtag: "Retirement"
+        }
+    ]
 
 
     const handleClick = (type) => {
@@ -88,13 +98,13 @@ const Blogs = () => {
 
     return (
         <Container fluid>
-            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="blogs"/> :
+            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="previous-blogs"/> :
                 <NavBar handleClick={handleClick} activeLink="blogs"/>}
             <Row className="justify-content-center">
                 <Col xs={10} md={10} lg={10}>
                     <div>
                         <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>From Your Followings</h2>
-                        <div className={"mb-2 d-flex flex-wrap"}>
+                        <div className={"mb-2"} style={{display: "flex", flexWrap: "wrap"}}>
                             {tags.map((tag) => (
                                 <Badge
                                     key={tag}
@@ -127,7 +137,6 @@ const Blogs = () => {
                                 </Badge>
                             ))}
                         </div>
-
                         <Row>
                             {blogs.map((blog) => (
                                 <Col key={blog.id}>
@@ -140,6 +149,21 @@ const Blogs = () => {
                                         commentNumber={blog.commentNumber}
                                         subtag={blog.subtag}
                                     />
+                                </Col>
+                            ))}
+                            {sampleBlogs.map((blog) => (
+                                <Col key={blog.id}>
+                                    <Link to={`/blog-viewer/${blog.id}`}>
+                                        <BlogCard
+                                            coverPhoto={blog.coverPhoto}
+                                            title={blog.title}
+                                            summary={blog.summary}
+                                            name={blog.name}
+                                            likeNumber={blog.likeNumber}
+                                            commentNumber={blog.commentNumber}
+                                            subtag={blog.subtag}
+                                        />
+                                    </Link>
                                 </Col>
                             ))}
                         </Row>

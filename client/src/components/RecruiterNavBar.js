@@ -7,16 +7,16 @@ import {
     faBell,
     faBuilding,
     faSearch,
-    faUsers, faBook, faFileAlt, faCheckCircle, faExchangeAlt, faPlusCircle
+    faUsers, faBook, faFileAlt, faCheckCircle, faExchangeAlt, faPlusCircle, faAdd
 } from '@fortawesome/free-solid-svg-icons';
 import React, {useState} from "react";
 
 
 const RecruiterNavBar = (props) => {
-    const [selectedLink, setSelectedLink] = useState("/career-expert/write-blog");
+    const [activeLink, setActiveLink] = useState(props.activeLink);
 
     const handleLinkClick = (link) => {
-        setSelectedLink(link);
+        setActiveLink(link);
     };
 
     const handleReturnClick = () => {
@@ -26,47 +26,50 @@ const RecruiterNavBar = (props) => {
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
-                <Navbar.Brand href="/">
-                    <Image src={logo} alt="Logo" className={"logo-image rounded-3"}/>
+                <Navbar.Brand href="/home">
+                    <Image src={logo} alt="Logo" className={"logo-image rounded-3"} />
                 </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Form className={"col-5 me-auto"}>
+                    <Form className={"col-4 me-auto"}>
                         <InputGroup className="mb-3">
-                            <Form.Control type="search" placeholder="Search Anything" aria-label="Search"/>
+                            <Form.Control type="search" placeholder="Search Anything" aria-label="Search" />
                             <Button variant="outline-secondary">
-                                <FontAwesomeIcon icon={faSearch}/>
+                                <FontAwesomeIcon icon={faSearch} />
                             </Button>
                         </InputGroup>
                     </Form>
                     <Nav className="ms-auto">
-                        <Nav.Link href="blogs"
-                                  className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/blogs" ? " border-bottom border-dark" : "")}
-                                  onClick={() => handleLinkClick("/career-expert/blogs")}>
+                        <Nav.Link
+                            href="/cv-pool"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('cv-pool')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faUsers} size="2x"/>
                                 <div className="mt-1">CV Pool</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="write-blog"
-                                  className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/write-blog" ? " border-bottom border-dark" : "")}
-                                  onClick={() => handleLinkClick("/career-expert/write-blog")}>
+                        <Nav.Link
+                            href="/cv-pool"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('cv-pool')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBriefcase} size="2x"/>
                                 <div className="mt-1">Posted Jobs</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="/approve-applications"
-                                  className={"d-flex align-items-center me-2" + (selectedLink === "/career-expert/approve-applications" ? " border-bottom border-dark" : "")}
-                                  onClick={() => handleLinkClick("/career-expert/approve-applications")}>
+                        <Nav.Link
+                            href="/recruiter-view"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'recruiter-view' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('recruiter-view')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faPlusCircle} size="2x"/>
-                                <div className="mt-1">Post New Job</div>
+                                <div className="mt-1">Approve Pending Applications</div>
                             </div>
                         </Nav.Link>
                         <Nav.Link href="#" className="d-flex align-items-center me-2" onClick={handleReturnClick}>
                             <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faExchangeAlt} size="2x"/>
+                                <FontAwesomeIcon icon={faExchangeAlt} size="2x" />
                                 <div className="mt-1">Return to Normal View</div>
                             </div>
                         </Nav.Link>

@@ -19,7 +19,7 @@ const CareerExpertNavBar = (props) => {
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
-                <Navbar.Brand href="/">
+                <Navbar.Brand href="/home">
                     <Image src={logo} alt="Logo" className={"logo-image rounded-3"} />
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -34,7 +34,7 @@ const CareerExpertNavBar = (props) => {
                     </Form>
                     <Nav className="ms-auto">
                         <Nav.Link
-                            href="blogs"
+                            href="/home"
                             className={`d-flex align-items-center me-2 ${activeLink === 'home' ? 'active-link' : ''}`}
                             onClick={() => handleLinkClick('home')}>
                             <div className="d-flex flex-column">
@@ -43,16 +43,16 @@ const CareerExpertNavBar = (props) => {
                             </div>
                         </Nav.Link>
                         <Nav.Link
-                            href="blogs"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'blogs' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('blogs')}>
+                            href="/previous-blogs"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'previous-blogs' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('previous-blogs')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBook} size="2x" />
                                 <div className="mt-1">Previous Blogs</div>
                             </div>
                         </Nav.Link>
                         <Nav.Link
-                            href="write-blog"
+                            href="/write-blog"
                             className={`d-flex align-items-center me-2 ${activeLink === 'write-blog' ? 'active-link' : ''}`}
                             onClick={() => handleLinkClick('write-blog')}>
                             <div className="d-flex flex-column">

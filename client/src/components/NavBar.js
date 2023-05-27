@@ -25,12 +25,13 @@ const NavBar = (props) => {
 
     const handleDropdownClick = (type) => {
         props.handleClick(type);
+        //window.location.href = "/previous-blogs";
     };
 
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
-                <Navbar.Brand href="/"><Image src={logo} alt="Logo" className={"logo-image rounded-3"}/></Navbar.Brand>
+                <Navbar.Brand href="/home"><Image src={logo} alt="Logo" className={"logo-image rounded-3"}/></Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Form className={"col-5 me-auto"}>
