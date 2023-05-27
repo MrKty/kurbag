@@ -4,7 +4,7 @@ import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
-import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
+import {faHeart, faComment, faImage} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 
@@ -181,6 +181,7 @@ const HomePage = () => {
     const [eventLimit, setEventLimit] = useState('');
     const [eventLink, setEventLink] = useState('');
     const [eventSpeakers, setEventSpeakers] = useState('');
+    const [eventCoverPhoto, setEventCoverPhoto] = useState(null);
 
     const toggleFilterDropdown = () => {
         setFilterDropdownOpen(!filterDropdownOpen);
@@ -199,6 +200,9 @@ const HomePage = () => {
     };
 
 
+    const handleEventCoverPhotoChange = (event) => {
+        setEventCoverPhoto(event.target.files[0]);
+    };
 
     const handleFilterSelection = (option) => {
         let filterValue = 0;
@@ -503,6 +507,27 @@ const HomePage = () => {
                             </Form.Group>
                         </Form>
                     </Modal.Body>
+                    <Row className={'my-4'}>
+                        <Col className={'text-center'}>
+                            <label htmlFor="image-upload">
+                                {eventCoverPhoto ? (
+                                    <Image
+                                        src={URL.createObjectURL(eventCoverPhoto)}
+                                        alt="Selected"
+                                        className={'w-100'}
+                                    />
+                                ) : (
+                                    <div
+                                        className={'d-flex align-items-center justify-content-center bg-secondary rounded w-100 h-100'}>
+                                        <FontAwesomeIcon icon={faImage} size={'3x'}/>
+                                    </div>
+                                )}
+
+                                <input type="file" id="image-upload" onChange={handleEventCoverPhotoChange}
+                                       className={"visually-hidden"}/>
+                            </label>
+                        </Col>
+                    </Row>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                             Close
