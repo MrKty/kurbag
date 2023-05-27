@@ -2,20 +2,14 @@ import os
 from datetime import datetime
 
 import bcrypt as bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import rds_db as db
 from flask_cors import CORS, cross_origin
-from flask_session import Session
 
 app = Flask(__name__)
 
-app.secret_key = "27eduCBA09"
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config.from_object(__name__)
-app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
-Session(app)
 CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
 
@@ -27,16 +21,13 @@ db.populate_table()
 @app.route('/')
 @app.route('/login', methods=['POST'])
 def login():
-    session.permanent = True
 
     # Retrieve the login data from the request
     login_data = request.get_json()
-    session["test"] = "12345"
     # Extract the email and password from the login data
     email = login_data['email']
     password = login_data['password']
 
-    print(session.sid)
     # Perform authentication logic
     cursor = db.get_cursor()
     cursor.execute('SELECT user_id, mail_addr, password FROM User WHERE mail_addr = %s', email)

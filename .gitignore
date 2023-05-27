@@ -2,3 +2,5 @@
 *.xml
 *.meta
 .idea/kurbag.iml
+node_modules
+*.pyc

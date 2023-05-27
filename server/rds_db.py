@@ -129,8 +129,7 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Job_Opening (
-                j_id int,
-                s_id int,
+                j_id int AUTO_INCREMENT,
                 j_desc varchar(250),
                 j_title varchar(50),
                 j_type varchar(20),
@@ -138,8 +137,7 @@ def create_tables():
                 due_date_apply datetime,
                 j_timestamp TIMESTAMP,
                 recruiter_id int,
-                PRIMARY KEY (s_id, j_id),
-                FOREIGN KEY (s_id) REFERENCES Skill (s_id),
+                PRIMARY KEY (j_id),
                 FOREIGN KEY (recruiter_id) REFERENCES User (user_id)
             );
 
