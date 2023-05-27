@@ -20,7 +20,7 @@ conn = pymysql.connect(
 def create_tables():
     # Table Creation
     cursor = conn.cursor()
-    create_tables = textwrap.dedent("""
+    create_tables_entity = textwrap.dedent("""
             CREATE TABLE IF NOT EXISTS User
             (
                 user_id int AUTO_INCREMENT,
@@ -33,7 +33,7 @@ def create_tables():
                 user_type int,
                 PRIMARY KEY (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Admin
             (
                 admin_id int AUTO_INCREMENT,
@@ -43,7 +43,7 @@ def create_tables():
                 a_last_name varchar(20),
                 PRIMARY KEY (admin_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Event (
                 e_id int,
                 e_name varchar(20),
@@ -60,7 +60,7 @@ def create_tables():
                 PRIMARY KEY (e_id),
                 FOREIGN KEY (organizer_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Post (
                 user_id int,
                 p_id int,
@@ -72,7 +72,7 @@ def create_tables():
                 PRIMARY KEY (p_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Person
             (
                 user_id int,
@@ -91,43 +91,43 @@ def create_tables():
                 FOREIGN KEY (liked_post) REFERENCES Post(p_id),
                 FOREIGN KEY (works_for) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Regular_User
             (
                 user_id int,
                 PRIMARY KEY (user_id),
-                FOREIGN KEY (user_id) REFERENCES User(user_id) 
+                FOREIGN KEY (user_id) REFERENCES User(user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Recruiter
             (
                 user_id int,
                 org_id int,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
-                FOREIGN KEY (org_id) REFERENCES User (user_id) 
+                FOREIGN KEY (org_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Career_Expert (
                 user_id int,
                 certificate varchar(128),
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Tag (
                 tag_id int AUTO_INCREMENT,
                 tag_name varchar(20),
                 PRIMARY KEY (tag_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Skill (
                 s_id int AUTO_INCREMENT,
                 s_lvl int,
                 s_name varchar(20),
                 PRIMARY KEY (s_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Job_Opening (
                 j_id int,
                 s_id int,
@@ -142,7 +142,7 @@ def create_tables():
                 FOREIGN KEY (s_id) REFERENCES Skill (s_id),
                 FOREIGN KEY (recruiter_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Blog_Post (
                 b_id int,
                 owner_id int,
@@ -156,7 +156,7 @@ def create_tables():
                 PRIMARY KEY (b_id),
                 FOREIGN KEY (owner_id) REFERENCES Career_Expert (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Comment (
                 c_id int,
                 owner_id int,
@@ -169,7 +169,7 @@ def create_tables():
                 FOREIGN KEY (root_blog_id) REFERENCES Blog_Post (b_id),
                 FOREIGN KEY (root_post_id) REFERENCES Post (p_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Message (
                 m_id int AUTO_INCREMENT,
                 sender_id int NOT NULL,
@@ -181,7 +181,7 @@ def create_tables():
                 FOREIGN KEY (sender_id) REFERENCES Person (user_id),
                 FOREIGN KEY (receiver_id) REFERENCES Person (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Organization (
                 user_id int,
                 org_name varchar(20),
@@ -192,7 +192,7 @@ def create_tables():
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Company (
                 user_id int,
                 c_industry varchar(20),
@@ -200,7 +200,7 @@ def create_tables():
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES Organization (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Institution (
                 user_id int,
                 i_ranking INT,
@@ -208,7 +208,7 @@ def create_tables():
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES Organization (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS CV_Component (
                 user_id int,
                 exp_id int,
@@ -221,7 +221,7 @@ def create_tables():
                 INDEX (exp_id),
                 FOREIGN KEY (user_id) REFERENCES Person (user_id)
             );
-                
+
             CREATE TABLE IF NOT EXISTS Work_Experience (
                 work_exp_id int,
                 exp_id int,
@@ -236,7 +236,7 @@ def create_tables():
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
                 FOREIGN KEY (org_id) REFERENCES Organization (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Education (
                 edu_id int,
                 exp_id int,
@@ -250,7 +250,7 @@ def create_tables():
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
                 FOREIGN KEY (inst_id) REFERENCES Institution (user_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS Certificate (
                 applicant_id int,
                 cert_id int AUTO_INCREMENT,
@@ -258,32 +258,164 @@ def create_tables():
                 PRIMARY KEY (applicant_id, cert_id),
                 FOREIGN KEY (applicant_id) REFERENCES Person (user_id)
             );
-            
-            CREATE TABLE IF NOT EXISTS Sends_Request (
-        	    applicant_id int PRIMARY KEY,
-                expert_id int,
-                isApproved boolean DEFAULT FALSE,
-                date datetime DEFAULT CURRENT_TIMESTAMP,
-                motivation_letter text,
-                tag_id int,
-                FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
-                FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
-            );
-            
-            CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
-        	    b_id int,
-                tag_name char(20),
-                PRIMARY KEY (b_id, tag_name),
-                FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
-                FOREIGN KEY (tag_name) REFERENCES Tag(tag_name)
-            );
+
+        """)
+
+    create_tables_relation = textwrap.dedent("""
+
+        CREATE TABLE IF NOT EXISTS Requires(
+        	s_id    int,
+            j_id    int,
+            PRIMARY KEY (s_id, j_id),
+            FOREIGN KEY (s_id) REFERENCES Skill(s_id),
+            FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS Applies_Job(
+            user_id         int,
+            j_id            int,
+            resume 	        varchar(128),
+            cover_letter 	varchar(128),
+            address 	    varchar(100),
+            photo 		    varchar(128),
+            skills 		    TEXT,
+            p_start_date 	DATE,
+            p_end_date 	    DATE,
+            PRIMARY KEY (user_id, j_id),
+            FOREIGN KEY (user_id) REFERENCES Person(user_id),
+            FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)
+        );
+        
+        CREATE TABLE IF NOT EXISTS Follows_Tag(
+        	user_id           INT,
+            tag_name          char(20),
+            PRIMARY KEY (user_id, tag_name),
+            FOREIGN KEY (user_id) REFERENCES Person(user_id),
+            FOREIGN KEY (tag_name) REFERENCES Tag(tag_name) 
+        );
+        
+        CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
+        	b_id        int,
+            tag_name    char(20),
+            PRIMARY KEY (b_id, tag_name),
+            FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
+            FOREIGN KEY (tag_name) REFERENCES Tag(tag_name)
+        );
+        
+        CREATE TABLE IF NOT EXISTS Likes_Blog(
+        	b_id              INT,
+            user_id           INT,
+            PRIMARY KEY (user_id, b_id),
+            FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
+            FOREIGN KEY (user_id) REFERENCES User(user_id) 
+        );
+        
+        CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
+        	c_id              	INT,
+            user_id	         	INT,
+            PRIMARY KEY (user_id, c_id),
+            FOREIGN KEY (c_id) REFERENCES Comment(c_id),
+            FOREIGN KEY (user_id) REFERENCES User(user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Has_Skill(
+        	s_id              	INT,
+            user_id	         	INT,
+            PRIMARY KEY (user_id, s_id),
+            FOREIGN KEY (s_id) REFERENCES Skill(s_id),
+            FOREIGN KEY (user_id) REFERENCES Person (user_id) 
+        );
+        
+        CREATE TABLE Has_Skill(
+        	tag_name            char(20),
+            user_id	         	INT,
+            PRIMARY KEY (user_id, tag_name),
+            FOREIGN KEY (tag_name) REFERENCES Tag(tag_name),
+            FOREIGN KEY (user_id) REFERENCES Career_Expert(user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Follows_Org(
+        	org_id         	INT,
+            person_id	    INT,
+            PRIMARY KEY (org_id, person_id),
+            FOREIGN KEY (org_id) REFERENCES Organization(user_id),
+            FOREIGN KEY (person_id) REFERENCES Person(user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Follows_Expert(
+        	expert_id         	INT,
+            user_id	         	INT,
+            PRIMARY KEY (expert_id, user_id),
+            FOREIGN KEY (expert_id) REFERENCES Career_Expert(user_id),
+            FOREIGN KEY (user_id) REFERENCES Regular_User(user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Has_Tag_Feed(
+        	p_id         	INT,
+            tag_name	    char(20),
+            PRIMARY KEY (p_id, tag_name),
+            FOREIGN KEY (p_id) REFERENCES Post (p_id),
+            FOREIGN KEY (tag_name) REFERENCES Tag (tag_name) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Used_Skill(
+        	exp_id         	    INT,
+            s_id	         	INT,
+            PRIMARY KEY (exp_id, s_id),
+            FOREIGN KEY (exp_id) REFERENCES Work_Experience (exp_id),
+            FOREIGN KEY (s_id) REFERENCES Skill (s_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Sends_Request(
+        	applicant_id       	INT,
+            expert_id         	INT,
+            isApproved 		    BOOLEAN DEFAULT FALSE,
+            date        		datetime DEFAULT CURRENT_TIMESTAMP,
+            motivation_letter 	text,
+            tag_id 			    INT,
+            PRIMARY KEY (applicant_id),
+            FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
+            FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
+        );
+        
+        CREATE TABLE IF NOT EXISTS Connected_With(
+        	person1_id        	INT,
+            person2_id         	INT,
+            PRIMARY KEY (person1_id, person2_id),
+            FOREIGN KEY (person1_id) REFERENCES Person (user_id),
+            FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Has_Messaged(
+        	person1_id        	INT,
+            person2_id         	INT,
+            PRIMARY KEY (person1_id, person2_id),
+            FOREIGN KEY (person1_id) REFERENCES Person (user_id),
+            FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
+        );
+
+        CREATE TABLE IF NOT EXISTS Likes_Post(
+        	user_id        		INT,
+            post_id         	INT,
+            PRIMARY KEY (user_id, post_id),
+            FOREIGN KEY (user_id) REFERENCES User (user_id),
+            FOREIGN KEY (post_id) REFERENCES Post (p_id) 
+        );
+        
     """)
 
     # Split the create_table string into individual CREATE TABLE statements
-    create_statements = create_tables.split(';')
+    create_statements_1 = create_tables_entity.split(';')
+    create_statements_2 = create_tables_relation.split(';')
 
     # Execute each CREATE TABLE statement
-    for statement in create_statements:
+    for statement in create_statements_1:
+        # Skip empty statements
+        if statement.strip():
+            print(statement)
+            cursor.execute(statement)
+
+    for statement in create_statements_2:
         # Skip empty statements
         if statement.strip():
             print(statement)
