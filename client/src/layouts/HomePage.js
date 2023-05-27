@@ -418,8 +418,8 @@ const HomePage = () => {
                     <Modal.Header closeButton>
                         <Modal.Title>Create Event</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
-                        <Form style={{overflowY:"scroll"}}>
+                    <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                        <Form>
                             <Form.Group controlId="eventTitle">
                                 <Form.Label>Title</Form.Label>
                                 <Form.Control
