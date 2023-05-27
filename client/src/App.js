@@ -43,7 +43,7 @@ function App() {
                 <Route path="/org-home" element={<OrganizationHomePage/>}/>
                 <Route path="/home" element={<HomePage/>}/>
                 <Route path="/org-employees" element={<OrganizationEmployeePage/>}/>
-                <Route path="/blog-viewer" element={<BlogViewer/>}/>
+                <Route path="/blog-viewer/:id" element={<BlogViewer/>}/>
                 <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="/profile" element={<Profile/>}/>

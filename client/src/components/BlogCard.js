@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faHeart} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
-const BlogCard = ({coverPhoto, title, summary, name, likeNumber, commentNumber}) => {
+const BlogCard = ({id, coverPhoto, title, summary, name, likeNumber, commentNumber}) => {
     const firstSentence = summary.substring(0, 100);
     const truncatedSummary = `${firstSentence}`;
 

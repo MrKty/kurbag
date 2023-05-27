@@ -7,6 +7,7 @@ import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import BlogCard from "../components/BlogCard"
+import {Link} from "react-router-dom";
 
 
 const Blogs = () => {
@@ -20,6 +21,39 @@ const Blogs = () => {
     const handleTagClick = (tag) => {
         setSelectedTag(tag);
     };
+
+    const sampleBlogs = [
+        {
+            id: 1,
+            coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
+            title: "Remote Work: Pros and Cons",
+            summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
+            name: "Sarah Smith",
+            likeNumber: 25,
+            commentNumber: 10,
+            subtag: "Remote Work"
+        },
+        {
+            id: 2,
+            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
+            title: "The Benefits of Internships",
+            summary: "Internships are a valuable experience for students and recent graduates looking to gain practical skills and knowledge. This blog discusses the benefits of internships, and offers tips for making the most of your internship experience.",
+            name: "John Doe",
+            likeNumber: 15,
+            commentNumber: 5,
+            subtag: "Internships"
+        },
+        {
+            id: 3,
+            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
+            title: "Retirement Planning: What You Need to Know",
+            summary: "Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement.",
+            name: "Jane Smith",
+            likeNumber: 20,
+            commentNumber: 7,
+            subtag: "Retirement"
+        }
+    ]
 
 
     const handleClick = (type) => {
@@ -89,41 +123,22 @@ const Blogs = () => {
                                 </Badge>
                             ))}
                         </div>
-
                         <Row>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280"
-                                    title="Remote Work: Pros and Cons"
-                                    summary="Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home."
-                                    name="Sarah Smith"
-                                    likeNumber={25}
-                                    commentNumber={10}
-                                    subtag="Remote Work"
-                                />
-                            </Col>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU"
-                                    title="The Benefits of Internships"
-                                    summary="Internships are a valuable experience for students and recent graduates looking to gain practical skills and knowledge. This blog discusses the benefits of internships, and offers tips for making the most of your internship experience."
-                                    name="John Doe"
-                                    likeNumber={15}
-                                    commentNumber={5}
-                                    subtag="Internships"
-                                />
-                            </Col>
-                            <Col>
-                                <BlogCard
-                                    coverPhoto="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU"
-                                    title="Retirement Planning: What You Need to Know"
-                                    summary="Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement."
-                                    name="Jane Smith"
-                                    likeNumber={20}
-                                    commentNumber={7}
-                                    subtag="Retirement"
-                                />
-                            </Col>
+                            {sampleBlogs.map((blog) => (
+                                <Col key={blog.id}>
+                                    <Link to={`/blog-viewer/${blog.id}`}>
+                                        <BlogCard
+                                            coverPhoto={blog.coverPhoto}
+                                            title={blog.title}
+                                            summary={blog.summary}
+                                            name={blog.name}
+                                            likeNumber={blog.likeNumber}
+                                            commentNumber={blog.commentNumber}
+                                            subtag={blog.subtag}
+                                        />
+                                    </Link>
+                                </Col>
+                            ))}
                         </Row>
                     </div>
                 </Col>
