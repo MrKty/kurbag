@@ -33,7 +33,7 @@ const OrganizationNavBar = (props) => {
                         </InputGroup>
                     </Form>
                     <Nav>
-                        <Nav.Link href="/" className="d-flex align-items-center me-2">
+                        <Nav.Link href="/org-home" className="d-flex align-items-center me-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faHome} size="2x"/>
                                 <div className="mt-1">Home Page</div>
@@ -47,7 +47,7 @@ const OrganizationNavBar = (props) => {
                             </div>
                         </Nav.Link>
 
-                        <Nav.Link href="#" className="d-flex align-items-center me-2">
+                        <Nav.Link href="/notifications" className="d-flex align-items-center me-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBell} size="2x"/>
                                 <div className="mt-1">Notifications</div>

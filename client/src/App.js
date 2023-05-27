@@ -19,6 +19,8 @@ import Profile from "./layouts/Profile";
 import HomePage from "./layouts/HomePage";
 import PreviousBlogs from "./layouts/PreviousBlogs";
 import CvPool from "./layouts/CvPool";
+import CreateEventPage from "./layouts/CreateEventPage";
+import ViewEventsPage from "./layouts/ViewEventsPage";
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/blogs" element={<Blogs/>}/>
                 <Route path="/jobs" element={<Jobs/>}/>
+                <Route path="/create-event" element={<CreateEventPage/>}/>
+                <Route path="/view-events" element={<ViewEventsPage/>}/>
                 <Route path="/cv-pool" element={<CvPool/>}/>
                 <Route path="/notifications" element={<Notifications/>}/>
                 <Route path="/messages" element={<Messages/>}/>

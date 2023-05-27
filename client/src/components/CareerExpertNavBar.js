@@ -6,7 +6,7 @@ import logo from '../icons/app_logo.svg';
 
 
 const CareerExpertNavBar = (props) => {
-    const [activeLink, setActiveLink] = useState('previous-blogs');
+    const [activeLink, setActiveLink] = useState(props.activeLink);
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
@@ -19,7 +19,7 @@ const CareerExpertNavBar = (props) => {
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
-                <Navbar.Brand href="/">
+                <Navbar.Brand href="/home">
                     <Image src={logo} alt="Logo" className={"logo-image rounded-3"} />
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />

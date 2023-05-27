@@ -75,13 +75,14 @@ const sampleCv = [
 
 const CvPool = () => {
 
-    const handleClick = () => {
 
+
+    const handleClick = () => {
     };
 
     return (
         <Container className="" style={{overflowY:"auto", maxHeight:"700px"}}>
-            <RecruiterNavBar handleClick={handleClick} activeLink="approve-applications" />
+            <RecruiterNavBar handleClick={handleClick} activeLink="cv-pool"/>
             <FilterBar filters={["Date", "Main Tag"]} />
             <div className="center-wrapper">
                 {sampleCv.map((cv) => (

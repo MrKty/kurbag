@@ -236,30 +236,21 @@ const HomePage = () => {
         <Container fluid>
             {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="home"/> :
                 <NavBar handleClick={handleClick} activeLink="home"/>}
-            <Col className="d-flex bd-highlight mt-3 mb-2">
-                <Col className="d-flex col-8">
+            <Col className="d-flex bd-highlight mt-3 mb-2 align-items-end">
+                <Col className="d-flex col-9">
                     <Row className="justify-content-center">
                         <Dropdown className="me-2" show={filterDropdownOpen} onToggle={toggleFilterDropdown}>
                             <DropdownToggle variant="primary" id="dropdown-sorting">
                                 Sorting Options
                             </DropdownToggle>
                             <DropdownMenu>
-                                <DropdownItem
-                                    onClick={() => handleFilterSelection('Recent')}
-                                    active={filtering === 1}
-                                >
+                                <DropdownItem onClick={() => handleFilterSelection('Recent')} active={filtering === 1}>
                                     Recent
                                 </DropdownItem>
-                                <DropdownItem
-                                    onClick={() => handleFilterSelection('Most Liked')}
-                                    active={filtering === 2}
-                                >
+                                <DropdownItem onClick={() => handleFilterSelection('Most Liked')} active={filtering === 2}>
                                     Most Liked
                                 </DropdownItem>
-                                <DropdownItem
-                                    onClick={() => handleFilterSelection('Most Commented')}
-                                    active={filtering === 3}
-                                >
+                                <DropdownItem onClick={() => handleFilterSelection('Most Commented')} active={filtering === 3}>
                                     Most Commented
                                 </DropdownItem>
                             </DropdownMenu>
@@ -271,29 +262,30 @@ const HomePage = () => {
                                 Filter Options
                             </DropdownToggle>
                             <DropdownMenu>
-                                <DropdownItem
-                                    onClick={() => handleSortingSelection('Recent')}
-                                    active={sorting === 1}
-                                >
+                                <DropdownItem onClick={() => handleSortingSelection('Recent')} active={sorting === 1}>
                                     Normal User Posts
                                 </DropdownItem>
-                                <DropdownItem
-                                    onClick={() => handleSortingSelection('Most Liked')}
-                                    active={sorting === 2}
-                                >
+                                <DropdownItem onClick={() => handleSortingSelection('Most Liked')} active={sorting === 2}>
                                     Company Posts
                                 </DropdownItem>
-                                <DropdownItem
-                                    onClick={() => handleSortingSelection('Most Commented')}
-                                    active={sorting === 3}
-                                >
+                                <DropdownItem onClick={() => handleSortingSelection('Most Commented')} active={sorting === 3}>
                                     Institution Post
                                 </DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </Row>
                 </Col>
+                <Col className="d-flex col-3 justify-content-evenly">
+                    <Row>
+                        <Button variant="primary" className="justify-content-center me-2">Create Post</Button>
+                    </Row>
+                    <Row>
+                        <Button variant="primary" className="justify-content-center me-2">Create Event</Button>
+                    </Row>
+                </Col>
             </Col>
+
+
             <Col className="d-inline-block justify-content-center">
                 {samplePosts.map((post) => (
                     <Row className="justify-content-center">

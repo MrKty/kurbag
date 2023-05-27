@@ -13,7 +13,7 @@ import React, {useState} from "react";
 
 
 const RecruiterNavBar = (props) => {
-    const [activeLink, setActiveLink] = useState('cv-pool');
+    const [activeLink, setActiveLink] = useState(props.activeLink);
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
@@ -26,7 +26,7 @@ const RecruiterNavBar = (props) => {
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
-                <Navbar.Brand href="/">
+                <Navbar.Brand href="/home">
                     <Image src={logo} alt="Logo" className={"logo-image rounded-3"} />
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -41,38 +41,29 @@ const RecruiterNavBar = (props) => {
                     </Form>
                     <Nav className="ms-auto">
                         <Nav.Link
-                            href="/home"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'home' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('home')}>
+                            href="/cv-pool"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('cv-pool')}>
                             <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faAdd} size="2x" />
-                                <div className="mt-1">New Expertise Request</div>
+                                <FontAwesomeIcon icon={faUsers} size="2x"/>
+                                <div className="mt-1">CV Pool</div>
                             </div>
                         </Nav.Link>
                         <Nav.Link
-                            href="/previous-blogs"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'previous-blogs' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('previous-blogs')}>
+                            href="/cv-pool"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('cv-pool')}>
                             <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faBook} size="2x" />
-                                <div className="mt-1">Previous Blogs</div>
+                                <FontAwesomeIcon icon={faBriefcase} size="2x"/>
+                                <div className="mt-1">Posted Jobs</div>
                             </div>
                         </Nav.Link>
                         <Nav.Link
-                            href="/write-blog"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'write-blog' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('write-blog')}>
+                            href="/recruiter-view"
+                            className={`d-flex align-items-center me-2 ${activeLink === 'recruiter-view' ? 'active-link' : ''}`}
+                            onClick={() => handleLinkClick('recruiter-view')}>
                             <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faFileAlt} size="2x" />
-                                <div className="mt-1">Write New Blog</div>
-                            </div>
-                        </Nav.Link>
-                        <Nav.Link
-                            href="/approve-applications"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'approve-applications' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('approve-applications')}>
-                            <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faCheckCircle} size="2x" />
+                                <FontAwesomeIcon icon={faPlusCircle} size="2x"/>
                                 <div className="mt-1">Approve Pending Applications</div>
                             </div>
                         </Nav.Link>
