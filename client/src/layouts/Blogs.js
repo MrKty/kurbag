@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Container, Row, Col, Button, Card, Badge, Image} from 'react-bootstrap';
+import {Container, Row, Col, Button, Card, Badge, Image, Modal, Form} from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
@@ -93,6 +93,21 @@ const Blogs = () => {
         });
     }, [selectedTag]);
 
+    const [showFollowTagModal, setShowFollowTagModal] = useState(false);
+
+    const handleFollowTagModal = () => {
+        // Add your logic to handle the "Follow Tag" button click here
+        setShowFollowTagModal(true);
+    };
+    const handleFollowTagClose = () => {
+        setShowFollowTagModal(false);
+    };
+
+    const handleFollowTag = (tag) => {
+        // Add your logic to handle the follow tag option here
+        console.log(`Following tag: ${tag}`);
+    };
+
     return (
         <Container fluid>
             {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="previous-blogs"/> :
@@ -100,7 +115,42 @@ const Blogs = () => {
             <Row className="justify-content-center">
                 <Col xs={10} md={10} lg={10}>
                     <div>
-                        <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>From Your Followings</h2>
+                        <Row className="align-items-center">
+                            <Col xs="auto">
+                                <h2 className="mt-2" style={{ fontSize: '2.5rem' }}>
+                                    From Your Followings
+                                </h2>
+                            </Col>
+                            <Col xs="auto">
+                                <Button variant="primary" onClick={handleFollowTagModal}>
+                                    Follow Tag
+                                </Button>
+                            </Col>
+                            <Modal show={showFollowTagModal} onHide={handleFollowTagClose}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Follow Tags</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+                                        {tags.map((tag) => (
+                                            <Form.Check
+                                                key={tag}
+                                                type="checkbox"
+                                                id={tag}
+                                                label={tag}
+                                                onChange={() => handleFollowTag(tag)}
+                                            />
+                                        ))}
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleFollowTagClose}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </Row>
+
                         <div className={"mb-2"} style={{display: "flex", flexWrap: "wrap"}}>
                             {tags.map((tag) => (
                                 <Badge
