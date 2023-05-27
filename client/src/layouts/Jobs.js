@@ -16,10 +16,14 @@ import NavBar from "../components/NavBar";
 import FilterBar from "../components/FilterBar";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
 
-const JobListing = ({position, company, location, image, description}) => (
-    <Row className="border-bottom p-2" style={{backgroundColor: company === "Sony" ? "white" : "#ecebeb"}}>
+const JobListing = ({ position, company, location, image, description, isSelected, onClick }) => (
+    <Row
+        className={`border-bottom p-2 ${isSelected ? 'selected' : ''}`}
+        style={{ backgroundColor: isSelected ? 'white' : '#ecebeb' }}
+        onClick={onClick}
+    >
         <Col md={3}>
-            <Image src={image} fluid rounded/>
+            <Image src={image} fluid rounded />
         </Col>
         <Col md={9}>
             <h5>{position}</h5>
@@ -58,7 +62,7 @@ const JobDescription = (props) => {
             <Row>
                 <Col className={"col-9"}>
                     <Row className={"p-1"}>
-                        <Col>
+                        <Col style={{overflowY:"auto"}}>
                             <h2>{position}</h2>
                             <div className={"mb-2"}>{company} - {companyLocation}</div>
                             <Row>
@@ -72,7 +76,7 @@ const JobDescription = (props) => {
                         </Col>
                     </Row>
                 </Col>
-                <Col className="text-end">
+                <Col className="text-end me-2">
                     <div className={"fw-bold text-decoration-underline"}>Posting Date</div>
                     <div>{postingDate}</div>
                 </Col>
@@ -747,6 +751,24 @@ const Jobs = () => {
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
+    const [maxHeight, setMaxHeight] = useState(window.innerHeight);
+    const [selectedJob, setSelectedJob] = useState(null);
+
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+            setMaxHeight(window.innerHeight);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const handleClick = (type) => {
         if (userType === type) {
@@ -774,13 +796,13 @@ const Jobs = () => {
     }, [userType]);
 
     return (
-        <Container fluid>
+        <Container fluid className="p-1">
             <NavBar handleClick={handleClick} activeLink="jobs"/>
             <FilterBar
                 filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
-            <Row>
-                <Col className="col-3 mt-3 me-2">
-                    <Card className={"border p-2"}>
+            <Row className="flex-grow-1">
+                <Col className="col-3 mt-3 me-2" style={{overflowY:"scroll", maxHeight: maxHeight}}>
+                    <Card className={"border p-2"} style={{overflowY:"auto", maxHeight: maxHeight}}>
                         <Row>
                             <Col className={"col-9"}>
                                 <h4>Saved Jobs</h4>
@@ -843,18 +865,20 @@ const Jobs = () => {
                         </Row>
                     </Card>
                 </Col>
-                <Col className="col-3 mt-3" style={{backgroundColor: "#ecebeb"}}>
-                    {data.map(job => (
+                <Col className="col-3 mt-3 mx-3" style={{overflowY: 'auto', maxHeight: maxHeight}}>
+                    {data.map((job) => (
                         <JobListing
                             key={job.position}
                             position={job.position}
                             company={job.company}
                             location={job.location}
                             image={job.image}
+                            isSelected={selectedJob === job}
+                            onClick={() => handleJobClick(job)}
                         />
                     ))}
                 </Col>
-                <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb"}}>
+                <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb", overflowY:"auto", maxHeight: maxHeight}}>
                     <JobDescription
                         position="Data Analyst"
                         company="Sony"
