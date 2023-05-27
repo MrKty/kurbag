@@ -53,6 +53,28 @@ const Blogs = () => {
         }
     ]
 
+    const [mockData, setMockData] = useState([
+        { tag: 'Career', isChecked: true },
+        { tag: 'Job Search', isChecked: false },
+        { tag: 'Workplace', isChecked: true },
+        { tag: 'Technology', isChecked: false },
+        { tag: 'Engineering', isChecked: true },
+        { tag: 'Job Skills', isChecked: false },
+        { tag: 'Education', isChecked: true },
+        { tag: 'Marketing', isChecked: false },
+    ]);
+
+    const handleFollowTag = (tag) => {
+        const updatedData = mockData.map((item) => {
+            if (item.tag === tag) {
+                return { ...item, isChecked: !item.isChecked };
+            }
+            return item;
+        });
+
+        setMockData(updatedData);
+    };
+
 
     const handleClick = (type) => {
         if (userType === type) {
@@ -103,10 +125,6 @@ const Blogs = () => {
         setShowFollowTagModal(false);
     };
 
-    const handleFollowTag = (tag) => {
-        // Add your logic to handle the follow tag option here
-        console.log(`Following tag: ${tag}`);
-    };
 
     return (
         <Container fluid>
@@ -132,12 +150,13 @@ const Blogs = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form>
-                                        {tags.map((tag) => (
+                                        {mockData.map(({ tag, isChecked }) => (
                                             <Form.Check
                                                 key={tag}
                                                 type="checkbox"
                                                 id={tag}
                                                 label={tag}
+                                                defaultChecked={isChecked}
                                                 onChange={() => handleFollowTag(tag)}
                                             />
                                         ))}
