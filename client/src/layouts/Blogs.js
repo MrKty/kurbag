@@ -16,7 +16,6 @@ const Blogs = () => {
     const [userType, setUserType] = useState(0);
     const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
     const tags = ['Career', 'Job Search', 'Workplace', 'Technology', 'Engineering', 'Job Skills', 'Education', 'Marketing'];
-    const subTags = ['Remote Work', 'Internships', 'Retirement', 'Freelancer', 'Networking']
     const [blogs, setBlogs] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
 
@@ -33,7 +32,6 @@ const Blogs = () => {
             name: "Sarah Smith",
             likeNumber: 25,
             commentNumber: 10,
-            subtag: "Remote Work"
         },
         {
             id: 2,
@@ -43,7 +41,6 @@ const Blogs = () => {
             name: "John Doe",
             likeNumber: 15,
             commentNumber: 5,
-            subtag: "Internships"
         },
         {
             id: 3,
@@ -53,7 +50,6 @@ const Blogs = () => {
             name: "Jane Smith",
             likeNumber: 20,
             commentNumber: 7,
-            subtag: "Retirement"
         }
     ]
 
@@ -65,7 +61,8 @@ const Blogs = () => {
             console.log('Rerendering page');
             setUserType(0);
         } else {
-            // Open the popup
+            // Navigate to prev-blogs then Open the popup
+            //window.location.href = "/previous-blogs";
             setShowModal(true);
             setUserType(type);
         }
@@ -120,23 +117,6 @@ const Blogs = () => {
                                 </Badge>
                             ))}
                         </div>
-                        <h3 className={"mt-2"} style={{fontSize: '1.5rem'}}>Career</h3>
-                        <div className={"mb-2"} style={{display: "flex", flexWrap: "wrap"}}>
-                            {subTags.map((tag) => (
-                                <Badge
-                                    key={tag}
-                                    pill
-                                    style={{
-                                        margin: '0.5rem',
-                                        cursor: 'pointer',
-                                    }}
-                                    bg={"primary"}
-                                    onClick={() => handleTagClick(tag)}
-                                >
-                                    {tag}
-                                </Badge>
-                            ))}
-                        </div>
                         <Row>
                             {blogs.map((blog) => (
                                 <Col key={blog.id}>
@@ -147,13 +127,12 @@ const Blogs = () => {
                                         name={blog.name}
                                         likeNumber={blog.likeNumber}
                                         commentNumber={blog.commentNumber}
-                                        subtag={blog.subtag}
                                     />
                                 </Col>
                             ))}
                             {sampleBlogs.map((blog) => (
                                 <Col key={blog.id}>
-                                    <Link to={`/blog-viewer/${blog.id}`}>
+                                    <Link style={{ textDecoration: 'none', color: 'black' }} to={`/blog-viewer/${blog.id}`}>
                                         <BlogCard
                                             coverPhoto={blog.coverPhoto}
                                             title={blog.title}
@@ -161,7 +140,6 @@ const Blogs = () => {
                                             name={blog.name}
                                             likeNumber={blog.likeNumber}
                                             commentNumber={blog.commentNumber}
-                                            subtag={blog.subtag}
                                         />
                                     </Link>
                                 </Col>
