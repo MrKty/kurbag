@@ -30,6 +30,7 @@ def create_tables():
                 about_info varchar(150),
                 profile_pic varchar(128),
                 bg_pic varchar(128),
+                user_type int,
                 PRIMARY KEY (user_id)
             );
             
@@ -46,18 +47,18 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS Event (
                 e_id int,
                 e_name varchar(20),
-                organizer int,
+                organizer_id int,
                 cover_photo varchar(128),
                 platform varchar(20),
-                e_start_date DATE,
-                e_end_date DATE,
+                e_start_date datetime,
+                e_end_date datetime,
                 e_limit INT,
                 e_link varchar(30),
                 e_content TEXT,
                 e_timestamp TIMESTAMP,
                 e_speakers TEXT,
                 PRIMARY KEY (e_id),
-                FOREIGN KEY (organizer) REFERENCES User (user_id)
+                FOREIGN KEY (organizer_id) REFERENCES User (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Post (
@@ -68,8 +69,7 @@ def create_tables():
                 p_timestamp TIMESTAMP,
                 p_like_count INT,
                 p_com_count INT,
-                PRIMARY KEY (user_id, p_id),
-                INDEX (p_id),
+                PRIMARY KEY (p_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
             
@@ -82,14 +82,12 @@ def create_tables():
                 gender varchar(20),
                 connections INT,
                 e_id integer,
-                contacted_id int,
                 liked_post int,
                 works_for int,
                 since DATE,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
                 FOREIGN KEY (e_id) REFERENCES Event(e_id),
-                FOREIGN KEY (contacted_id) REFERENCES User (user_id),
                 FOREIGN KEY (liked_post) REFERENCES Post(p_id),
                 FOREIGN KEY (works_for) REFERENCES User (user_id)
             );
@@ -118,19 +116,16 @@ def create_tables():
             );
             
             CREATE TABLE IF NOT EXISTS Tag (
+                tag_id int AUTO_INCREMENT,
                 tag_name varchar(20),
-                category varchar(20),
-                popularity_index INT,
-                PRIMARY KEY (tag_name)
+                PRIMARY KEY (tag_id)
             );
             
             CREATE TABLE IF NOT EXISTS Skill (
                 s_id int AUTO_INCREMENT,
-                s_lvl varchar(20),
+                s_lvl int,
                 s_name varchar(20),
-                user_id int,
-                PRIMARY KEY (s_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id)
+                PRIMARY KEY (s_id)
             );
             
             CREATE TABLE IF NOT EXISTS Job_Opening (
@@ -140,7 +135,7 @@ def create_tables():
                 j_title varchar(50),
                 j_type varchar(20),
                 j_mode varchar(20),
-                due_date_apply DATE,
+                due_date_apply datetime,
                 j_timestamp TIMESTAMP,
                 recruiter_id int,
                 PRIMARY KEY (s_id, j_id),
@@ -149,8 +144,8 @@ def create_tables():
             );
             
             CREATE TABLE IF NOT EXISTS Blog_Post (
-                user_id int,
                 b_id int,
+                owner_id int,
                 b_title varchar(20),
                 b_content TEXT,
                 b_summary TEXT,
@@ -158,23 +153,21 @@ def create_tables():
                 b_timestamp TIME,
                 b_like_count INT,
                 b_com_count INT,
-                PRIMARY KEY (user_id, b_id),
-                INDEX (b_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id)
+                PRIMARY KEY (b_id),
+                FOREIGN KEY (owner_id) REFERENCES Career_Expert (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Comment (
-                user_id int,
                 c_id int,
-                b_id int,
+                owner_id int,
+                root_blog_id int,
+                root_post_id int,
                 c_content varchar(512),
                 c_timestamp TIME,
-                subc_id int,
-                PRIMARY KEY (user_id, c_id, b_id),
-                INDEX (c_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id),
-                FOREIGN KEY (b_id) REFERENCES Blog_Post (b_id),
-                FOREIGN KEY (subc_id) REFERENCES Comment (c_id)
+                PRIMARY KEY  (c_id),
+                FOREIGN KEY (owner_id) REFERENCES User (user_id),
+                FOREIGN KEY (root_blog_id) REFERENCES Blog_Post (b_id),
+                FOREIGN KEY (root_post_id) REFERENCES Post (p_id)
             );
             
             CREATE TABLE IF NOT EXISTS Message (
@@ -184,9 +177,9 @@ def create_tables():
                 m_content TEXT,
                 m_timestamp TIMESTAMP,
                 m_status BOOLEAN,
-                PRIMARY KEY (m_id, sender_id, receiver_id),
-                FOREIGN KEY (sender_id) REFERENCES User (user_id),
-                FOREIGN KEY (receiver_id) REFERENCES User (user_id)
+                PRIMARY KEY (m_id),
+                FOREIGN KEY (sender_id) REFERENCES Person (user_id),
+                FOREIGN KEY (receiver_id) REFERENCES Person (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Organization (
@@ -195,7 +188,6 @@ def create_tables():
                 size INT,
                 location varchar(100),
                 website varchar(64),
-                org_type varchar(10),
                 num_followers INT,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
@@ -206,7 +198,7 @@ def create_tables():
                 c_industry varchar(20),
                 c_type varchar(20),
                 PRIMARY KEY (user_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id)
+                FOREIGN KEY (user_id) REFERENCES Organization (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Institution (
@@ -214,7 +206,7 @@ def create_tables():
                 i_ranking INT,
                 i_type varchar(20),
                 PRIMARY KEY (user_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id)
+                FOREIGN KEY (user_id) REFERENCES Organization (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS CV_Component (
@@ -227,7 +219,7 @@ def create_tables():
                 start_date DATE,
                 PRIMARY KEY (user_id, exp_id),
                 INDEX (exp_id),
-                FOREIGN KEY (user_id) REFERENCES User (user_id)
+                FOREIGN KEY (user_id) REFERENCES Person (user_id)
             );
                 
             CREATE TABLE IF NOT EXISTS Work_Experience (
@@ -242,7 +234,7 @@ def create_tables():
                 org_id int,
                 PRIMARY KEY (exp_id, work_exp_id),
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (org_id) REFERENCES User (user_id)
+                FOREIGN KEY (org_id) REFERENCES Organization (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Education (
@@ -256,25 +248,24 @@ def create_tables():
                 inst_id int,
                 PRIMARY KEY (edu_id, exp_id),
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (inst_id) REFERENCES User (user_id)
+                FOREIGN KEY (inst_id) REFERENCES Institution (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Certificate (
                 applicant_id int,
-                cert_id int,
+                cert_id int AUTO_INCREMENT,
                 cert_url varchar(128),
                 PRIMARY KEY (applicant_id, cert_id),
-                FOREIGN KEY (applicant_id) REFERENCES User (user_id)
+                FOREIGN KEY (applicant_id) REFERENCES Person (user_id)
             );
             
             CREATE TABLE IF NOT EXISTS Sends_Request (
-        	    applicant_id int,
+        	    applicant_id int PRIMARY KEY,
                 expert_id int,
-                isApproved boolean,
-                date datetime,
+                isApproved boolean DEFAULT FALSE,
+                date datetime DEFAULT CURRENT_TIMESTAMP,
                 motivation_letter text,
                 tag_id int,
-                PRIMARY KEY (applicant_id, expert_id),
                 FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
                 FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
             );
@@ -298,6 +289,32 @@ def create_tables():
             print(statement)
             cursor.execute(statement)
 
+    conn.commit()
+
+
+def populate_table():
+    cursor = conn.cursor()
+
+
+    insert_tables = textwrap.dedent("""
+        INSERT INTO Tag (tag_name) VALUES ('career');
+        INSERT INTO Tag (tag_name) VALUES ('job-search');
+        INSERT INTO Tag (tag_name) VALUES ('workplace');
+        INSERT INTO Tag (tag_name) VALUES ('technology');
+        INSERT INTO Tag (tag_name) VALUES ('engineering');
+        INSERT INTO Tag (tag_name) VALUES ('job-skills');
+        INSERT INTO Tag (tag_name) VALUES ('education');
+        INSERT INTO Tag (tag_name) VALUES ('marketing');
+    """)
+    # Split the create_table string into individual CREATE TABLE statements
+    insert_statements = insert_tables.split(';')
+
+    # Execute each Insert statement
+    for statement in insert_statements:
+        # Skip empty statements
+        if statement.strip():
+            print(statement)
+            cursor.execute(statement)
     conn.commit()
 
 
