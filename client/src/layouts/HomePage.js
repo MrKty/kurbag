@@ -287,7 +287,7 @@ const HomePage = () => {
         // Clear input fields and close the modal
         setPostTitle('');
         setPostContent('');
-        handleClose();
+        handlePostClose();
     }
     const handleEventCreation = () => {
         // Validate and handle post creation here
@@ -297,7 +297,7 @@ const HomePage = () => {
         // Clear input fields and close the modal
         setEventTitle('');
         setEventContent('');
-        handleClose();
+        handleEventClose();
     }
 
     const handleClick = (type) => {
@@ -313,8 +313,12 @@ const HomePage = () => {
         }
     };
 
-    const handleClose = () => {
-        setShowModal(false);
+    const handlePostClose = () => {
+        setShowCreatePostModal(false);
+    };
+
+    const handleEventClose = () => {
+        setShowCreateEventModal(false);
     };
 
     useEffect(() => {
@@ -324,6 +328,17 @@ const HomePage = () => {
             setShouldRenderNavBar(false);
         }
     }, [userType]);
+
+
+    const [eventModalHeight, setEventModalHeight] = useState('25vh');
+
+    useEffect(() => {
+        if (eventCoverPhoto) {
+            setEventModalHeight('45vh')
+        } else {
+            setEventModalHeight('25vh')
+        }
+    }, [eventCoverPhoto]);
 
 
     return (
@@ -410,7 +425,7 @@ const HomePage = () => {
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="secondary" onClick={handlePostClose}>
                             Close
                         </Button>
                         <Button variant="primary" onClick={handlePostCreation}>
@@ -422,114 +437,118 @@ const HomePage = () => {
                     <Modal.Header closeButton>
                         <Modal.Title>Create Event</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+
+                    <Modal.Body style={{ overflowY: "auto", maxHeight: "500px" }}>
+                        <Row>
+                            <Col className={'text-center'}>
+                                <label htmlFor="image-upload">
+                                    {eventCoverPhoto ? (
+                                        <Image
+                                            src={URL.createObjectURL(eventCoverPhoto)}
+                                            alt="Selected"
+                                            className={'w-100'}
+                                        />
+                                    ) : (
+                                        <div
+                                            className={'d-flex align-items-center justify-content-center bg-secondary rounded w-100 h-100'}>
+                                            <FontAwesomeIcon icon={faImage} size={'3x'}/>
+                                        </div>
+                                    )}
+
+                                    <input type="file" id="image-upload" onChange={handleEventCoverPhotoChange}
+                                           className={"visually-hidden"}/>
+                                </label>
+                            </Col>
+                        </Row>
                         <Form>
-                            <Form.Group controlId="eventTitle">
-                                <Form.Label>Title</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={eventTitle}
-                                    onChange={handleEventTitleChange}
-                                    placeholder="Enter event title"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventContent">
-                                <Form.Label>Content</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={5}
-                                    value={eventContent}
-                                    onChange={handleEventContentChange}
-                                    placeholder="Enter event content"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventOrganizer">
-                                <Form.Label>Organizer</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={eventOrganizer}
-                                    onChange={handleEventOrganizerChange}
-                                    placeholder="Enter event organizer"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventPlatform">
-                                <Form.Label>Platform</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={eventPlatform}
-                                    onChange={handleEventPlatformChange}
-                                    placeholder="Enter event platform"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventStartDate">
-                                <Form.Label>Start Date</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={eventStartDate}
-                                    onChange={handleEventStartDateChange}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventEndDate">
-                                <Form.Label>End Date</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={eventEndDate}
-                                    onChange={handleEventEndDateChange}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventLimit">
-                                <Form.Label>Limit (Quota)</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={eventLimit}
-                                    onChange={handleEventLimitChange}
-                                    placeholder="Enter event limit"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventLink">
-                                <Form.Label>Link</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={eventLink}
-                                    onChange={handleEventLinkChange}
-                                    placeholder="Enter event link"
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="eventSpeakers">
-                                <Form.Label>Speakers</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={3}
-                                    value={eventSpeakers}
-                                    onChange={handleEventSpeakersChange}
-                                    placeholder="Enter event speakers"
-                                />
-                            </Form.Group>
+                            <Row>
+                                <Form.Group controlId="eventTitle">
+                                    <Form.Label>Title</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={eventTitle}
+                                        onChange={handleEventTitleChange}
+                                        placeholder="Enter event title"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventContent">
+                                    <Form.Label>Content</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={5}
+                                        value={eventContent}
+                                        onChange={handleEventContentChange}
+                                        placeholder="Enter event content"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventOrganizer">
+                                    <Form.Label>Organizer</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={eventOrganizer}
+                                        onChange={handleEventOrganizerChange}
+                                        placeholder="Enter event organizer"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventPlatform">
+                                    <Form.Label>Platform</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={eventPlatform}
+                                        onChange={handleEventPlatformChange}
+                                        placeholder="Enter event platform"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventStartDate">
+                                    <Form.Label>Start Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        value={eventStartDate}
+                                        onChange={handleEventStartDateChange}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventEndDate">
+                                    <Form.Label>End Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        value={eventEndDate}
+                                        onChange={handleEventEndDateChange}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventLimit">
+                                    <Form.Label>Limit (Quota)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={eventLimit}
+                                        onChange={handleEventLimitChange}
+                                        placeholder="Enter event limit"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventLink">
+                                    <Form.Label>Link</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={eventLink}
+                                        onChange={handleEventLinkChange}
+                                        placeholder="Enter event link"
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="eventSpeakers">
+                                    <Form.Label>Speakers</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        value={eventSpeakers}
+                                        onChange={handleEventSpeakersChange}
+                                        placeholder="Enter event speakers"
+                                    />
+                                </Form.Group>
+                            </Row>
+
                         </Form>
                     </Modal.Body>
-                    <Row className={'my-4'}>
-                        <Col className={'text-center'}>
-                            <label htmlFor="image-upload">
-                                {eventCoverPhoto ? (
-                                    <Image
-                                        src={URL.createObjectURL(eventCoverPhoto)}
-                                        alt="Selected"
-                                        className={'w-100'}
-                                    />
-                                ) : (
-                                    <div
-                                        className={'d-flex align-items-center justify-content-center bg-secondary rounded w-100 h-100'}>
-                                        <FontAwesomeIcon icon={faImage} size={'3x'}/>
-                                    </div>
-                                )}
-
-                                <input type="file" id="image-upload" onChange={handleEventCoverPhotoChange}
-                                       className={"visually-hidden"}/>
-                            </label>
-                        </Col>
-                    </Row>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="secondary" onClick={handleEventClose}>
                             Close
                         </Button>
                         <Button variant="primary" onClick={handleEventCreation}>

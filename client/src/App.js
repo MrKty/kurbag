@@ -23,6 +23,7 @@ import CreateEventPage from "./layouts/CreateEventPage";
 import ViewEventsPage from "./layouts/ViewEventsPage";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
+import CreateJob from "./layouts/CreateJob";
 
 const firebaseConfig = {
     // Your Firebase configuration object
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/blogs" element={<Blogs/>}/>
                 <Route path="/jobs" element={<Jobs/>}/>
                 <Route path="/create-event" element={<CreateEventPage/>}/>
+                <Route path="/create-job" element={<CreateJob/>}/>
                 <Route path="/view-events" element={<ViewEventsPage/>}/>
                 <Route path="/cv-pool" element={<CvPool/>}/>
                 <Route path="/notifications" element={<Notifications/>}/>
