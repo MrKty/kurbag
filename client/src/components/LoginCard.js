@@ -22,8 +22,13 @@ function LoginCard() {
                 // Store the ID in the local storage
                 localStorage.setItem('userId', data.id);
                 localStorage.setItem('userType', data.userType);
+
                 // Redirect to the home URL
-                window.location.href = "/home";
+                if (data.userType <= 3) {
+                    window.location.href = "/home";
+                } else {
+                    window.location.href = "/org-home";
+                }
             } else {
                 // Display error message
                 //TODO popup olarak gösterilecek

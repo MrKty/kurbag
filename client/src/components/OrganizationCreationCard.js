@@ -29,7 +29,6 @@ const OrganizationCreationCard = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Create an object with the hashed password
         const signupData = {
             ...formData
         };
@@ -37,17 +36,19 @@ const OrganizationCreationCard = () => {
         sendRequest('create-organization', 'POST', signupData, (data) => {
             // Handle the response from the backend
             // For example, you can display a success message or handle authentication
-            console.log(data);
+            alert(data.message)
+            // Redirect to the login URL
+            window.location.href = "/login";
         });
     };
 
     const showContent = formData.organizationType === 'Company' ? (
         <div>
-            <Form.Group className="mb-3" controlId="industry">
+            <Form.Group className="mb-3" controlId="companyIndustry">
                 <Form.Label >Company Industry</Form.Label>
                 <Form.Control
                     as="select"
-                    name="industry"
+                    name="companyIndustry"
                     value={formData.companyIndustry}
                     onChange={handleChange}
                     required
@@ -239,12 +240,12 @@ const OrganizationCreationCard = () => {
                             required
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="phone">
+                    <Form.Group className="mb-3" controlId="organizationPhoneNo">
                         <Form.Label className={"visually-hidden"}>Organization Phone Number</Form.Label>
                         <Form.Control
                             type="tel"
-                            name="phone"
-                            value={formData.phone}
+                            name="organizationPhoneNo"
+                            value={formData.organizationPhoneNo}
                             onChange={handleChange}
                             placeholder={"Enter Organization Phone Number"}
                             required

@@ -182,7 +182,7 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS Organization (
                 user_id int,
                 org_name varchar(20),
-                size INT,
+                size varchar(20),
                 location varchar(100),
                 website varchar(64),
                 num_followers INT,
