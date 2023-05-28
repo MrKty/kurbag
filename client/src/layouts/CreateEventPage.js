@@ -36,7 +36,7 @@ const CreateEventPage = () => {
 
     return (
         <Container fluid>
-            <NavBar></NavBar>
+            <NavBar/>
             <Card style={{ height: '600px', overflowY: 'scroll' }}>
                 <Col>
                     <Card.Header className="fw-bold">Create Event</Card.Header>

@@ -19,10 +19,6 @@ const RecruiterNavBar = (props) => {
         setActiveLink(link);
     };
 
-    const handleReturnClick = () => {
-        props.handleClick(0); // Set the user type to 0 (normal user)
-    };
-
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
@@ -67,7 +63,7 @@ const RecruiterNavBar = (props) => {
                                 <div className="mt-1">Approve Pending Applications</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="#" className="d-flex align-items-center me-2" onClick={handleReturnClick}>
+                        <Nav.Link href="home" className="d-flex align-items-center me-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faExchangeAlt} size="2x" />
                                 <div className="mt-1">Return to Normal View</div>

@@ -156,8 +156,6 @@ const OrganizationHomePage = () => {
 
 
     const [showModal, setShowModal] = useState(false);
-    const [userType, setUserType] = useState(0);
-    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
 
     const [careerExpertOnly, setCareerExpertOnly] = useState(false);
 
@@ -206,31 +204,9 @@ const OrganizationHomePage = () => {
         setCareerExpertOnly(!careerExpertOnly);
     };
 
-
-    const handleClick = (type) => {
-        if (userType === type) {
-            // Rerender the page
-            // Add your code to rerender the page here
-            console.log('Rerendering page');
-            setUserType(0);
-        } else {
-            // Open the popup
-            setShowModal(true);
-            setUserType(type);
-        }
-    };
-
     const handleClose = () => {
         setShowModal(false);
     };
-
-    useEffect(() => {
-        if (userType === 1) {
-            setShouldRenderNavBar(true);
-        } else {
-            setShouldRenderNavBar(false);
-        }
-    }, [userType]);
 
 
     return (

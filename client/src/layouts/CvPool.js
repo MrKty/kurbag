@@ -75,14 +75,9 @@ const sampleCv = [
 
 const CvPool = () => {
 
-
-
-    const handleClick = () => {
-    };
-
     return (
         <Container className="" style={{overflowY:"auto", maxHeight:"700px"}}>
-            <RecruiterNavBar handleClick={handleClick} activeLink="cv-pool"/>
+            <RecruiterNavBar activeLink="cv-pool"/>
             <FilterBar filters={["Date", "Main Tag"]} />
             <div className="center-wrapper">
                 {sampleCv.map((cv) => (

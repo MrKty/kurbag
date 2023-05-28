@@ -1,4 +1,4 @@
-import {Navbar, Container, Nav, NavDropdown, Form, InputGroup, Button, Image} from 'react-bootstrap';
+import {Navbar, Container, Nav, NavDropdown, Form, InputGroup, Button, Image, Alert} from 'react-bootstrap';
 import logo from '../icons/app_logo.svg';
 import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -27,6 +27,8 @@ const NavBar = (props) => {
         props.handleClick(type);
         //window.location.href = "/previous-blogs";
     };
+
+    const isRecruiter = localStorage.getItem("userType") == 3
 
     return (
         <Navbar bg="light" expand="lg">
@@ -86,18 +88,12 @@ const NavBar = (props) => {
                                     title={"Switch View"}
                                     id="basic-nav-dropdown"
                                 >
-                                    <NavDropdown.Item onClick={() => handleDropdownClick(1)}>
+                                    <NavDropdown.Item onClick={() => window.location.href = "/previous-blogs"}>
                                         Career Expert
                                     </NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => handleDropdownClick(2)}>
+                                    {isRecruiter && <NavDropdown.Item onClick={() => window.location.href = "/cv-pool"}>
                                         Recruiter
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => handleDropdownClick(3)}>
-                                        Company
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => handleDropdownClick(4)}>
-                                        Institution
-                                    </NavDropdown.Item>
+                                    </NavDropdown.Item>}
                                 </NavDropdown>
                             </div>
                         </Nav.Link>
@@ -118,7 +114,6 @@ const NavBar = (props) => {
                                     menuAlign="right"
                                 >
                                     <NavDropdown.Item href="#">Profile 1</NavDropdown.Item>
-                                    <NavDropdown.Item href="#">Profile 2</NavDropdown.Item>
                                     <NavDropdown.Divider/>
                                     <NavDropdown.Item href="#">Logout</NavDropdown.Item>
                                 </NavDropdown>

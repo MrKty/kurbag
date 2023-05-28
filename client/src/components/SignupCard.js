@@ -26,7 +26,6 @@ const SignupCard = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Create an object with the hashed password
         const signupData = {
             ...formData
         };
@@ -34,7 +33,10 @@ const SignupCard = () => {
         sendRequest('signup', 'POST', signupData, (data) => {
             // Handle the response from the backend
             // For example, you can display a success message or handle authentication
-            console.log(data);
+
+            alert(data.message)
+            // Redirect to the login URL
+            window.location.href = "/login";
         });
     };
 

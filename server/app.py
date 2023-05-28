@@ -120,67 +120,82 @@ def signup():
 
 
 @app.route('/create-organization', methods=['POST'])
-def createOrganization():
+def create_organization():
     form_data = request.json  # Get the form data from the request body
     # Process the form data and perform any necessary operations (e.g., database storage, validation, etc.)
 
-    # Assuming the form data contains the fields: name, surname, email, phone, password, day, month, year, gender
     org_name = form_data['organizationName']
     org_type = form_data['organizationType']
     org_size = form_data['organizationSize']
     org_address = form_data['organizationAddress']
     org_website = form_data['organizationWebsite']
+    org_phone = form_data['organizationPhoneNo']
     comp_industry = form_data['companyIndustry']
     comp_type = form_data['companyType']
     ins_type = form_data['institutionType']
     org_email = form_data['email']
     org_password = form_data['password']
 
-    print(org_name, org_type, org_size, org_address, org_website, org_industry)
+    if org_type == 'Company':
+        user_type = 4
+    else:
+        user_type = 5
 
     # Hash the password
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(org_password.encode('utf-8'), bcrypt.gensalt())
 
     # Perform additional operations, such as storing the data in a database
     cursor = db.get_cursor()
-    cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (email,))
+    cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (org_email,))
     account = cursor.fetchone()
     if account:
-        message = 'This mail is already registered!'
+        message = 'This email is already registered!'
     else:
         try:
             # Start a transaction
             cursor.execute('START TRANSACTION')
 
             # Insert the user data into the User table
-            cursor.execute('INSERT INTO User (mail_addr, password, phone_no) VALUES (%s, %s, %s)',
-                           (email, hashed_password, phone))
+            cursor.execute(
+                'INSERT INTO User (mail_addr, password, phone_no, user_type) VALUES (%s, %s, %s, %s)',
+                (org_email, hashed_password, org_phone, user_type))
             user_id = cursor.lastrowid
 
-            # Insert the person data into the Person table
-            birth_date = f'{year}-{month}-{day}'  # Format birth date correctly
-            print(birth_date)
+            # Insert the organization data into the Organization table
             cursor.execute(
-                'INSERT INTO Person (user_id, first_name, last_name, birth_date, gender) VALUES (%s, %s, %s, %s, %s)',
-                (user_id, name, surname, birth_date, gender))
+                'INSERT INTO Organization (user_id, org_name, size, location, website) VALUES (%s, %s, %s, %s, %s)',
+                (user_id, org_name, org_size, org_address, org_website))
 
-            # Insert the person data into the Regular User table
-            cursor.execute(
-                'INSERT INTO Regular_User (user_id) VALUES (%s)',
-                (user_id,))
+            if org_type == 'Company':
+                # Insert the company data into the Company table
+                cursor.execute(
+                    'INSERT INTO Company (user_id, c_industry, c_type) VALUES (%s, %s, %s)',
+                    (user_id, comp_industry, comp_type))
+                message = 'Company organization successfully created!'
+            elif org_type == 'Institution':
+                # Insert the institution data into the Institution table
+                cursor.execute(
+                    'INSERT INTO Institution (user_id, i_type) VALUES (%s, %s)',
+                    (user_id, ins_type))
+                message = 'Institution organization successfully created!'
+            else:
+                # Invalid org_type
+                cursor.execute('ROLLBACK')
+                message = 'Invalid organization type. Please try again.'
 
             # Commit the transaction
             cursor.execute('COMMIT')
 
-            message = 'User successfully created!'
-        except:
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+
             # Rollback the transaction if an error occurs
             cursor.execute('ROLLBACK')
-            message = 'Error occurred during signup. Please try again.'
+            message = 'Error occurred during organization creation. Please try again.'
 
+    print(message)
     # Create a response object
     response = {'message': message}
-    print(message)
     return jsonify(response)
 
 
