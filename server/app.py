@@ -2,20 +2,14 @@ import os
 from datetime import datetime
 
 import bcrypt as bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import rds_db as db
 from flask_cors import CORS, cross_origin
-from flask_session import Session
 
 app = Flask(__name__)
 
-app.secret_key = "27eduCBA09"
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config.from_object(__name__)
-app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
-Session(app)
 CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
 
@@ -27,24 +21,19 @@ db.populate_table()
 @app.route('/')
 @app.route('/login', methods=['POST'])
 def login():
-    session.permanent = True
-
     # Retrieve the login data from the request
     login_data = request.get_json()
-    session["test"] = "12345"
     # Extract the email and password from the login data
     email = login_data['email']
     password = login_data['password']
 
-    print(session.sid)
     # Perform authentication logic
     cursor = db.get_cursor()
-    cursor.execute('SELECT user_id, mail_addr, password FROM User WHERE mail_addr = %s', email)
+    cursor.execute('SELECT user_id, mail_addr, password, user_type FROM User WHERE mail_addr = %s', email)
 
     user = db.fetch_one(cursor)
 
     if user:
-        print("adsadasdad")
         print(password)
         print(user)
         # Compare the hashed passwords
@@ -167,6 +156,7 @@ def createOrganization():
             cursor.execute('INSERT INTO User (mail_addr, password, phone_no) VALUES (%s, %s, %s)',
                            (email, hashed_password, phone))
             user_id = cursor.lastrowid
+
             # Insert the person data into the Person table
             birth_date = f'{year}-{month}-{day}'  # Format birth date correctly
             print(birth_date)
@@ -237,6 +227,96 @@ def apply_career_expert():
     return jsonify(response)
 
 
+# Endpoint for creating a new post
+@app.route('/home-blog', methods=['POST'])
+def create_post():
+    # Get post data from the request
+    data = request.json
+    post_title = data.get('postTitle')
+    post_content = data.get('postContent')
+    cursor = db.get_cursor()
+    p_id = None
+    print(post_title, post_content)
+
+    try:
+        # Save the post to the database
+        cursor.execute('INSERT INTO Post (user_id, p_title, p_content) VALUES (%s, %s, %s)',
+                       (data.get('id'), post_title, post_content))
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if p_id:
+        # Return a success response
+        return jsonify({'message': 'Post created successfully', 'postId': p_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to create post'}), 500
+
+
+# Endpoint for creating a new event
+@app.route('/home-event', methods=['POST'])
+def create_event():
+    # Get post data from the request
+    data = request.json
+    print(data)
+    if not data.get("coverPhotoUrl"):
+        data["coverPhotoUrl"] = "NULL"
+    cursor = db.get_cursor()
+    e_id = None
+
+    try:
+        # Save the event to the database
+        cursor.execute(
+            'INSERT INTO Event (e_name, organizer_id, cover_photo, platform, e_start_date, e_end_date, e_limit, e_link, e_content, e_speakers) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+            (data['eventTitle'], data['eventOrganizer'], data['coverPhotoUrl'], data['eventPlatform'],
+             data['eventStartDate'], data['eventEndDate'], data['eventLimit'], data['eventLink'], data['eventContent'],
+             ', '.join(data['eventSpeakers'])))
+        e_id = cursor.lastrowid
+
+        # Commit the transaction
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+
+    if e_id:
+        # Return a success response
+        return jsonify({'message': 'Event created successfully', 'eventId': e_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to create event'}), 500
+
+
+# Endpoint for creating a new event
+@app.route('/homes-event', methods=['POST'])
+def creates_event():
+    # Get post data from the request
+    data = request.json
+    cursor = db.get_cursor()
+
+    try:
+        # Save the event to the database
+        pass
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if e_id:
+        # Return a success response
+        return jsonify({'message': 'Event created successfully', 'postId': p_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to create event'}), 500
+
+
 @app.route('/blogs', methods=['POST'])
 def blog_page():
     data = request.json  # Get the form data from the request body
@@ -285,6 +365,65 @@ def blog_editor():
     print(data)
 
     return jsonify(data)
+
+
+# Endpoint for creating a new post
+@app.route('/api/contacts', methods=['POST'])
+def find_contacts():
+    # Get post data from the request
+    data = request.json
+    u_id = data.get("id")
+
+    print(u_id)
+
+    cursor = db.get_cursor()
+
+    try:
+        # Start a transaction
+        cursor.execute('START TRANSACTION')
+
+        # Fetch owner details
+        cursor.execute("SELECT mail_addr FROM User WHERE user_id = %s", (u_id,))
+        owner_name = cursor.fetchone()[0]
+
+        # Fetch contacts
+        sql = """
+        SELECT CASE
+            WHEN cw.person1_id = %s THEN p2.user_id
+            ELSE p1.user_id
+        END AS connected_person_id,
+        CASE
+            WHEN cw.person1_id = %s THEN p2.mail_addr
+            ELSE p1.mail_addr
+        END AS connected_person_name
+        FROM Connected_With AS cw
+        INNER JOIN User AS p1 ON cw.person1_id = p1.user_id
+        INNER JOIN User AS p2 ON cw.person2_id = p2.user_id
+        WHERE cw.person1_id = %s OR cw.person2_id = %s;
+        """
+
+        cursor.execute(sql, (u_id, u_id, u_id, u_id))
+        rows = cursor.fetchall()
+
+        contacts = [{"id": row[0], "name": row[1]} for row in rows]
+        contacts.append({"id": u_id, "name": owner_name})
+        # Commit the transaction
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    contacts = [{"id": 1, "name": 'Omer Oktay Gültekin'}, {"id": 2, "name": 'Mert Ünlü'}]
+    if contacts:
+        # Return a success response
+        return jsonify({'message': 'Contacts found successfully', 'contacts': contacts}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to find contact'}), 500
 
 
 if __name__ == "__main__":
