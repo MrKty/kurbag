@@ -76,7 +76,7 @@ const sampleCv = [
 const CvPool = () => {
 
     return (
-        <Container className="" style={{overflowY:"auto", maxHeight:"700px"}}>
+        <Container fluid className="" style={{overflowY:"auto", maxHeight:"700px"}}>
             <RecruiterNavBar activeLink="cv-pool"/>
             <FilterBar filters={["Date", "Main Tag"]} />
             <div className="center-wrapper">
