@@ -1,18 +1,17 @@
-import React, {useState, useEffect} from "react";
-import {Container, Row, Col, Button, Card, Badge, Image, ToggleButton, Form, DropdownButton, Dropdown, Modal} from 'react-bootstrap';
+import React, {useEffect, useState} from "react";
+import {Badge, Button, Col, Container, Dropdown, Form, Image, Modal, Row} from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";
-import CareerExpertModal from "../components/modals/CareerExpertModal";
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
-import {faHeart, faComment, faImage} from '@fortawesome/free-solid-svg-icons';
+import {faImage} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 
 import DropdownToggle from "react-bootstrap/DropdownToggle";
 import DropdownMenu from "react-bootstrap/DropdownMenu";
 import DropdownItem from "react-bootstrap/DropdownItem";
-
-
+import sendRequest from "../utils/request";
+import firebase from "firebase/compat/app";
+import "firebase/compat/storage";
 
 
 const HomePage = () => {
@@ -180,8 +179,9 @@ const HomePage = () => {
     const [eventEndDate, setEventEndDate] = useState('');
     const [eventLimit, setEventLimit] = useState('');
     const [eventLink, setEventLink] = useState('');
-    const [eventSpeakers, setEventSpeakers] = useState('');
+    const [eventSpeakers, setEventSpeakers] = useState([]);
     const [eventCoverPhoto, setEventCoverPhoto] = useState(null);
+    const [contacts, setContacts] = useState([]);
 
     const toggleFilterDropdown = () => {
         setFilterDropdownOpen(!filterDropdownOpen);
@@ -234,7 +234,6 @@ const HomePage = () => {
     };
 
 
-
     const handlePostTitleChange = (e) => {
         setPostTitle(e.target.value);
     };
@@ -276,7 +275,13 @@ const HomePage = () => {
     };
 
     const handleEventSpeakersChange = (e) => {
-        setEventSpeakers(e.target.value);
+        const selectedSpeaker = e.target.value;
+        console.log(selectedSpeaker)
+        setEventSpeakers((prevSpeakers) => [...prevSpeakers, selectedSpeaker]);
+    };
+
+    const removeSpeaker = (id) => {
+        setEventSpeakers(eventSpeakers.filter(speaker => speaker.id !== id));
     };
 
     const handlePostCreation = () => {
@@ -284,19 +289,56 @@ const HomePage = () => {
         // Call handleCreatePost with the title and content
         //handleCreatePost(title, content);
 
+        const reqData = {
+            postTitle,
+            postContent
+        }
+
         // Clear input fields and close the modal
         setPostTitle('');
         setPostContent('');
+        sendRequest('home-blog', 'POST', reqData, (data) => {
+            alert(data.message);
+        });
         handlePostClose();
     }
-    const handleEventCreation = () => {
-        // Validate and handle post creation here
-        // Call handleCreatePost with the title and content
-        //handleCreatePost(title, content);
+    const handleEventCreation = async () => {
+        const reqData = {
+            eventTitle,
+            eventContent,
+            eventOrganizer,
+            eventPlatform,
+            eventStartDate,
+            eventEndDate,
+            eventLimit,
+            eventLink,
+            eventSpeakers
+        }
 
+        if (eventCoverPhoto) {
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(eventCoverPhoto.name);
+            await fileRef.put(eventCoverPhoto);
+            reqData["coverPhotoUrl"] = await fileRef.getDownloadURL()
+        }
+
+        /*
         // Clear input fields and close the modal
+        setEventCoverPhoto(null);
         setEventTitle('');
         setEventContent('');
+        setEventOrganizer('');
+        setEventPlatform('');
+        setEventStartDate('');
+        setEventEndDate('');
+        setEventLimit('');
+        setEventLink('');
+        setEventSpeakers([]);
+         */
+        sendRequest('home-event', 'POST', reqData, (data) => {
+            alert(data.message);
+        });
+
         handleEventClose();
     }
 
@@ -329,6 +371,21 @@ const HomePage = () => {
         }
     }, [userType]);
 
+    // Fetch contacts from the backend
+    useEffect(() => {
+        if (showCreateEventModal) {
+            sendRequest('/api/contacts', 'POST', {}, (data) => {
+                if (data.contacts) {
+                    console.log(data.contacts)
+                    setContacts(data.contacts)
+                } else {
+                    alert('Error fetching contacts')
+                }
+            });
+        }
+
+    }, [showCreateEventModal]);
+
 
     const [eventModalHeight, setEventModalHeight] = useState('25vh');
 
@@ -356,10 +413,12 @@ const HomePage = () => {
                                 <DropdownItem onClick={() => handleFilterSelection('Recent')} active={filtering === 1}>
                                     Recent
                                 </DropdownItem>
-                                <DropdownItem onClick={() => handleFilterSelection('Most Liked')} active={filtering === 2}>
+                                <DropdownItem onClick={() => handleFilterSelection('Most Liked')}
+                                              active={filtering === 2}>
                                     Most Liked
                                 </DropdownItem>
-                                <DropdownItem onClick={() => handleFilterSelection('Most Commented')} active={filtering === 3}>
+                                <DropdownItem onClick={() => handleFilterSelection('Most Commented')}
+                                              active={filtering === 3}>
                                     Most Commented
                                 </DropdownItem>
                             </DropdownMenu>
@@ -374,10 +433,12 @@ const HomePage = () => {
                                 <DropdownItem onClick={() => handleSortingSelection('Recent')} active={sorting === 1}>
                                     Normal User Posts
                                 </DropdownItem>
-                                <DropdownItem onClick={() => handleSortingSelection('Most Liked')} active={sorting === 2}>
+                                <DropdownItem onClick={() => handleSortingSelection('Most Liked')}
+                                              active={sorting === 2}>
                                     Company Posts
                                 </DropdownItem>
-                                <DropdownItem onClick={() => handleSortingSelection('Most Commented')} active={sorting === 3}>
+                                <DropdownItem onClick={() => handleSortingSelection('Most Commented')}
+                                              active={sorting === 3}>
                                     Institution Post
                                 </DropdownItem>
                             </DropdownMenu>
@@ -386,12 +447,14 @@ const HomePage = () => {
                 </Col>
                 <Col className="d-flex col-3 justify-content-evenly">
                     <Row>
-                        <Button variant="primary" className="justify-content-center me-2" onClick={toggleCreatePostModal}>
+                        <Button variant="primary" className="justify-content-center me-2"
+                                onClick={toggleCreatePostModal}>
                             Create Post
                         </Button>
                     </Row>
                     <Row>
-                        <Button variant="primary" className="justify-content-center me-2" onClick={toggleCreateEventModal}>
+                        <Button variant="primary" className="justify-content-center me-2"
+                                onClick={toggleCreateEventModal}>
                             Create Event
                         </Button>
                     </Row>
@@ -438,7 +501,7 @@ const HomePage = () => {
                         <Modal.Title>Create Event</Modal.Title>
                     </Modal.Header>
 
-                    <Modal.Body style={{ overflowY: "auto", maxHeight: "500px" }}>
+                    <Modal.Body style={{overflowY: "auto", maxHeight: "500px"}}>
                         <Row>
                             <Col className={'text-center'}>
                                 <label htmlFor="image-upload">
@@ -483,12 +546,18 @@ const HomePage = () => {
                                 </Form.Group>
                                 <Form.Group controlId="eventOrganizer">
                                     <Form.Label>Organizer</Form.Label>
-                                    <Form.Control
-                                        type="text"
+                                    <Form.Select
                                         value={eventOrganizer}
                                         onChange={handleEventOrganizerChange}
-                                        placeholder="Enter event organizer"
-                                    />
+                                        placeholder="Select event organizer"
+                                    >
+                                        <option value="">Select organizer</option>
+                                        {contacts.map(contact => (
+                                            <option key={contact.id} value={contact.id}>
+                                                {contact.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
                                 </Form.Group>
                                 <Form.Group controlId="eventPlatform">
                                     <Form.Label>Platform</Form.Label>
@@ -535,13 +604,31 @@ const HomePage = () => {
                                 </Form.Group>
                                 <Form.Group controlId="eventSpeakers">
                                     <Form.Label>Speakers</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={3}
+                                    <div>
+                                        {eventSpeakers.map(speaker => (
+                                            <Badge key={speaker} variant="primary" className="mr-2">
+                                                {speaker}
+                                                <span
+                                                    className="ml-1 cursor-pointer"
+                                                    onClick={() => removeSpeaker(speaker)}
+                                                >
+                                                    &#x2715;
+                                                </span>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <Form.Select
                                         value={eventSpeakers}
                                         onChange={handleEventSpeakersChange}
-                                        placeholder="Enter event speakers"
-                                    />
+                                        placeholder="Select event speakers"
+                                    >
+                                        <option value="">Select speakers</option>
+                                        {contacts.map(contact => (
+                                            <option key={contact.id} value={contact.name}>
+                                                {contact.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
                                 </Form.Group>
                             </Row>
 
@@ -561,7 +648,8 @@ const HomePage = () => {
                 {samplePosts.map((post) => (
                     <Row className="justify-content-center">
                         <PostCard content={post.content} name={post.name} title={post.title}
-                        likeNumber={post.likeNumber} commentNumber={post.commentNumber} timestamp={post.timestamp}></PostCard>
+                                  likeNumber={post.likeNumber} commentNumber={post.commentNumber}
+                                  timestamp={post.timestamp}></PostCard>
                     </Row>
                 ))}
             </Col>

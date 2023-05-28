@@ -45,7 +45,7 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Event (
-                e_id int,
+                e_id int AUTO_INCREMENT,
                 e_name varchar(20),
                 organizer_id int,
                 cover_photo varchar(128),
@@ -55,7 +55,7 @@ def create_tables():
                 e_limit INT,
                 e_link varchar(30),
                 e_content TEXT,
-                e_timestamp TIMESTAMP,
+                e_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 e_speakers TEXT,
                 PRIMARY KEY (e_id),
                 FOREIGN KEY (organizer_id) REFERENCES User (user_id)
@@ -63,12 +63,12 @@ def create_tables():
 
             CREATE TABLE IF NOT EXISTS Post (
                 user_id int,
-                p_id int,
+                p_id int AUTO_INCREMENT,
                 p_title varchar(20),
                 p_content TEXT,
-                p_timestamp TIMESTAMP,
-                p_like_count INT,
-                p_com_count INT,
+                p_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                p_like_count INT DEFAULT 0,
+                p_com_count INT DEFAULT 0,
                 PRIMARY KEY (p_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
@@ -84,7 +84,7 @@ def create_tables():
                 e_id integer,
                 liked_post int,
                 works_for int,
-                since DATE,
+                works_since DATE,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
                 FOREIGN KEY (e_id) REFERENCES Event(e_id),
@@ -116,9 +116,8 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Tag (
-                tag_id int AUTO_INCREMENT,
                 tag_name varchar(20),
-                PRIMARY KEY (tag_id)
+                PRIMARY KEY (tag_name)
             );
 
             CREATE TABLE IF NOT EXISTS Skill (
@@ -135,20 +134,20 @@ def create_tables():
                 j_type varchar(20),
                 j_mode varchar(20),
                 due_date_apply datetime,
-                j_timestamp TIMESTAMP,
+                j_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 recruiter_id int,
                 PRIMARY KEY (j_id),
                 FOREIGN KEY (recruiter_id) REFERENCES User (user_id)
             );
 
             CREATE TABLE IF NOT EXISTS Blog_Post (
-                b_id int,
+                b_id int AUTO_INCREMENT,
                 owner_id int,
                 b_title varchar(20),
                 b_content TEXT,
                 b_summary TEXT,
                 b_cover varchar(128),
-                b_timestamp TIME,
+                b_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 b_like_count INT,
                 b_com_count INT,
                 PRIMARY KEY (b_id),
@@ -156,12 +155,12 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Comment (
-                c_id int,
+                c_id int AUTO_INCREMENT,
                 owner_id int,
                 root_blog_id int,
                 root_post_id int,
                 c_content varchar(512),
-                c_timestamp TIME,
+                c_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY  (c_id),
                 FOREIGN KEY (owner_id) REFERENCES User (user_id),
                 FOREIGN KEY (root_blog_id) REFERENCES Blog_Post (b_id),
@@ -173,7 +172,7 @@ def create_tables():
                 sender_id int NOT NULL,
                 receiver_id int NOT NULL,
                 m_content TEXT,
-                m_timestamp TIMESTAMP,
+                m_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 m_status BOOLEAN,
                 PRIMARY KEY (m_id),
                 FOREIGN KEY (sender_id) REFERENCES Person (user_id),
@@ -250,10 +249,10 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Certificate (
-                applicant_id int,
                 cert_id int AUTO_INCREMENT,
+                applicant_id int,
                 cert_url varchar(128),
-                PRIMARY KEY (applicant_id, cert_id),
+                PRIMARY KEY (cert_id),
                 FOREIGN KEY (applicant_id) REFERENCES Person (user_id)
             );
 
@@ -317,14 +316,14 @@ def create_tables():
         );
 
         CREATE TABLE IF NOT EXISTS Has_Skill(
-        	s_id              	INT,
-            user_id	         	INT,
+        	s_id    INT,
+            user_id INT,
             PRIMARY KEY (user_id, s_id),
             FOREIGN KEY (s_id) REFERENCES Skill(s_id),
             FOREIGN KEY (user_id) REFERENCES Person (user_id) 
         );
         
-        CREATE TABLE Has_Skill(
+        CREATE TABLE IF NOT EXISTS Has_Proficiency(
         	tag_name            char(20),
             user_id	         	INT,
             PRIMARY KEY (user_id, tag_name),
@@ -399,7 +398,6 @@ def create_tables():
             FOREIGN KEY (user_id) REFERENCES User (user_id),
             FOREIGN KEY (post_id) REFERENCES Post (p_id) 
         );
-        
     """)
 
     # Split the create_table string into individual CREATE TABLE statements
@@ -425,6 +423,10 @@ def create_tables():
 def populate_table():
     cursor = conn.cursor()
 
+    cursor.execute('SELECT * FROM Tag')
+    tag = fetch_one(cursor)
+    if tag:
+        return
 
     insert_tables = textwrap.dedent("""
         INSERT INTO Tag (tag_name) VALUES ('career');
