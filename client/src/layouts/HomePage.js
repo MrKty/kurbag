@@ -11,11 +11,45 @@ import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import DropdownToggle from "react-bootstrap/DropdownToggle";
 import DropdownMenu from "react-bootstrap/DropdownMenu";
 import DropdownItem from "react-bootstrap/DropdownItem";
+import EventCard from "../components/EventCard";
 
 
 
 
 const HomePage = () => {
+
+    const mockEventData = [
+        {
+            id: 1,
+            eventName: "Tech Conference 2023",
+            organizer: "Tech Events Inc.",
+            coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
+            platform: "Virtual",
+            startDate: "2023-07-15",
+            endDate: "2023-07-17",
+            limit: 500,
+            websiteLink: "https://example.com/event1",
+            content: "Join us for the biggest tech conference of the year!",
+            speakers: "John Doe, Jane Smith",
+            creationDate: "2023-06-01",
+        },
+        {
+            id: 2,
+            eventName: "Marketing Summit",
+            organizer: "Marketing Association",
+            coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
+            platform: "Online",
+            startDate: "2023-08-10",
+            endDate: "2023-08-12",
+            limit: 300,
+            websiteLink: "https://example.com/event2",
+            content: "Learn the latest marketing strategies and trends.",
+            speakers: "Emily Johnson, Mark Thompson",
+            creationDate: "2023-07-01",
+        },
+        // Add more mock events here...
+    ];
+
 
     const samplePosts = [
         {
@@ -502,7 +536,7 @@ const HomePage = () => {
                                 <Form.Group controlId="eventStartDate">
                                     <Form.Label>Start Date</Form.Label>
                                     <Form.Control
-                                        type="date"
+                                        type="datetime-local"
                                         value={eventStartDate}
                                         onChange={handleEventStartDateChange}
                                     />
@@ -510,7 +544,7 @@ const HomePage = () => {
                                 <Form.Group controlId="eventEndDate">
                                     <Form.Label>End Date</Form.Label>
                                     <Form.Control
-                                        type="date"
+                                        type="datetime-local"
                                         value={eventEndDate}
                                         onChange={handleEventEndDateChange}
                                     />
@@ -557,14 +591,31 @@ const HomePage = () => {
                     </Modal.Footer>
                 </Modal>
             </Col>
-            <Col className="d-inline-block justify-content-center">
-                {samplePosts.map((post) => (
-                    <Row className="justify-content-center">
-                        <PostCard content={post.content} name={post.name} title={post.title}
-                        likeNumber={post.likeNumber} commentNumber={post.commentNumber} timestamp={post.timestamp}></PostCard>
-                    </Row>
-                ))}
-            </Col>
+
+            <Row>
+                <Col className="d-inline-block justify-content-center">
+                    {samplePosts.map((post) => (
+                        <Row className="justify-content-center">
+                            <PostCard content={post.content} name={post.name} title={post.title}
+                                      likeNumber={post.likeNumber} commentNumber={post.commentNumber} timestamp={post.timestamp}></PostCard>
+                        </Row>
+                    ))}
+                </Col>
+            </Row>
+            <Row>
+                <Col className="d-inline-block justify-content-center">
+                    {mockEventData.map((event) => (
+                        <Row className="justify-content-center">
+                            <EventCard
+                                key={event.id}
+                                event={event}
+                                onRegisterEvent={null}
+                            />
+                        </Row>
+                    ))}
+                </Col>
+            </Row>
+
         </Container>
     )
 };
