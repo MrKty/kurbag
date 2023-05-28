@@ -12,10 +12,6 @@ const CareerExpertNavBar = (props) => {
         setActiveLink(link);
     };
 
-    const handleReturnClick = () => {
-        props.handleClick(0); // Set the user type to 0 (normal user)
-    };
-
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
@@ -33,15 +29,6 @@ const CareerExpertNavBar = (props) => {
                         </InputGroup>
                     </Form>
                     <Nav className="ms-auto">
-                        <Nav.Link
-                            href="/home"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'home' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('home')}>
-                            <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faAdd} size="2x" />
-                                <div className="mt-1">New Expertise Request</div>
-                            </div>
-                        </Nav.Link>
                         <Nav.Link
                             href="/previous-blogs"
                             className={`d-flex align-items-center me-2 ${activeLink === 'previous-blogs' ? 'active-link' : ''}`}
@@ -69,7 +56,7 @@ const CareerExpertNavBar = (props) => {
                                 <div className="mt-1">Approve Pending Applications</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="#" className="d-flex align-items-center me-2" onClick={handleReturnClick}>
+                        <Nav.Link href="home" className="d-flex align-items-center me-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faExchangeAlt} size="2x" />
                                 <div className="mt-1">Return to Normal View</div>

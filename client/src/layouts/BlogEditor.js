@@ -23,9 +23,6 @@ function BlogEditor() {
         setCoverPhoto(event.target.files[0]);
     };
 
-    const handleClick = () => {
-    };
-
     /*
     const handleAddPhoto = () => {
         // implement logic for adding a photo to the content
@@ -64,7 +61,7 @@ function BlogEditor() {
 
     return (
         <>
-            <CareerExpertNavBar handleClick={handleClick} activeLink="write-blog"/>
+            <CareerExpertNavBar activeLink="write-blog"/>
             <Card className={"w-75 mx-auto m-2"}>
                 <Row>
                     <Col>

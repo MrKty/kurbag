@@ -220,32 +220,11 @@ const Messages = () => {
     const [newMessage, setNewMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
-    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
-
-    const handleClick = (type) => {
-        if (userType === type) {
-            // Rerender the page
-            // Add your code to rerender the page here
-            console.log('Rerendering page');
-            setUserType(0);
-        } else {
-            // Open the popup
-            setShowModal(true);
-            setUserType(type);
-        }
-    };
 
     const handleClose = () => {
         setShowModal(false);
     };
 
-    useEffect(() => {
-        if (userType === 1) {
-            setShouldRenderNavBar(true);
-        } else {
-            setShouldRenderNavBar(false);
-        }
-    }, [userType]);
 
     //TODO NOT TRUE FALSE -- NEED AN INDEX
     const handleConversationClick = () => {
@@ -295,9 +274,8 @@ const Messages = () => {
     };
 
     return (
-        <Container>
-            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="messages"/> :
-                <NavBar handleClick={handleClick} activeLink="messages"/>}
+        <Container fluid>
+            <NavBar activeLink="messages"/>
             <Row className={"ms-0 justify-content-center p-2"}>
                 <Col className="col-3 mt-3 me-2" style={{backgroundColor: "#b6cdbd"}}>
                     <h2>Recent Conversations</h2>

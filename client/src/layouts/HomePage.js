@@ -195,11 +195,6 @@ const HomePage = () => {
     const [showCreatePostModal, setShowCreatePostModal] = useState(false);
     const [showCreateEventModal, setShowCreateEventModal] = useState(false);
 
-    const [userType, setUserType] = useState(0);
-    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
-
-    const [careerExpertOnly, setCareerExpertOnly] = useState(false);
-
     const [filtering, setFiltering] = useState(0);
     const [sorting, setSorting] = useState(0);
 
@@ -265,12 +260,6 @@ const HomePage = () => {
         }
         setSorting(sortingValue);
     };
-
-
-    const handleCareerExpertToggle = () => {
-        setCareerExpertOnly(!careerExpertOnly);
-    };
-
 
     const handlePostTitleChange = (e) => {
         setPostTitle(e.target.value);
@@ -380,19 +369,6 @@ const HomePage = () => {
         handleEventClose();
     }
 
-    const handleClick = (type) => {
-        if (userType === type) {
-            // Rerender the page
-            // Add your code to rerender the page here
-            console.log('Rerendering page');
-            setUserType(0);
-        } else {
-            // Open the popup
-            setShowModal(true);
-            setUserType(type);
-        }
-    };
-
     const handlePostClose = () => {
         setShowCreatePostModal(false);
     };
@@ -400,14 +376,6 @@ const HomePage = () => {
     const handleEventClose = () => {
         setShowCreateEventModal(false);
     };
-
-    useEffect(() => {
-        if (userType === 1) {
-            setShouldRenderNavBar(true);
-        } else {
-            setShouldRenderNavBar(false);
-        }
-    }, [userType]);
 
     // Fetch contacts from the backend
     useEffect(() => {
@@ -438,8 +406,7 @@ const HomePage = () => {
 
     return (
         <Container fluid>
-            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="home"/> :
-                <NavBar handleClick={handleClick} activeLink="home"/>}
+            <NavBar activeLink="home"/>
             <Col className="d-flex bd-highlight mt-3 mb-2 align-items-end">
                 <Col className="d-flex col-9">
                     <Row className="justify-content-center">

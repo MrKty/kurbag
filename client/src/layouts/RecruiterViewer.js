@@ -147,13 +147,9 @@ const appData = [
 ];
 
 const RecruiterViewer = () => {
-
-    const handleClick = () => {
-    };
-
     return (
         <Container fluid>
-            <RecruiterNavBar handleClick={handleClick} activeLink={"recruiter-view"}/>
+            <RecruiterNavBar activeLink={"recruiter-view"}/>
             <Row>
                 <Col className="col-3 border">
                     {data.map(job => (

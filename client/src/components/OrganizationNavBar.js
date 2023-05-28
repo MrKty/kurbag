@@ -14,10 +14,6 @@ import React from "react";
 
 const OrganizationNavBar = (props) => {
 
-    const handleDropdownClick = (type) => {
-        props.handleClick(type);
-    };
-
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>

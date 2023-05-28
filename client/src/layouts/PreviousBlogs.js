@@ -141,23 +141,9 @@ const PreviousBlogs = () => {
         setSorting(sortingValue);
     };
 
-    const handleClick = (type) => {
-        if (userType === type) {
-            // Rerender the page
-            // Add your code to rerender the page here
-            console.log('Rerendering page');
-            setUserType(0);
-        } else {
-            // Open the popup
-            setShowModal(true);
-            setUserType(type);
-        }
-    };
-
-
     return (
         <Container fluid>
-            <CareerExpertNavBar handleClick={handleClick} activeLink="previous-blogs" />
+            <CareerExpertNavBar activeLink="previous-blogs" />
             <Row>
                 <Col className="justify-content-center col-12 text-center">
                     <h1 className="fw-bold">Your Previous Blogs</h1>

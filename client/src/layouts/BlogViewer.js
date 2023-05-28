@@ -101,7 +101,7 @@ function BlogCard(props) {
 function BlogViewer() {
     return (
         <Container fluid>
-            <NavBar handleClick={null}/>
+            <NavBar/>
             <div>
                 <BlogCard blog={blog}/>
             </div>

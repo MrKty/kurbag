@@ -86,7 +86,7 @@ const OrganizationEmployeePage = () => {
 
     return (
         <Container fluid>
-            <OrganizationNavBar handleClick={null}/>
+            <OrganizationNavBar/>
             <FilterBar filters={["Position", "Year Of Experience"]}/>
             <Card className={"mx-4 mt-3 mb-3"}>
             {employees.map((employee) => (

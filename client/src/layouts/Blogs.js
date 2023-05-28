@@ -13,8 +13,6 @@ import {Link} from "react-router-dom";
 
 const Blogs = () => {
     const [showModal, setShowModal] = useState(false);
-    const [userType, setUserType] = useState(0);
-    const [shouldRenderNavBar, setShouldRenderNavBar] = useState(false);
     const tags = ['Career', 'Job Search', 'Workplace', 'Technology', 'Engineering', 'Job Skills', 'Education', 'Marketing'];
     const [blogs, setBlogs] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
@@ -75,33 +73,9 @@ const Blogs = () => {
         setMockData(updatedData);
     };
 
-
-    const handleClick = (type) => {
-        if (userType === type) {
-            // Rerender the page
-            // Add your code to rerender the page here
-            console.log('Rerendering page');
-            setUserType(0);
-        } else {
-            // Navigate to prev-blogs then Open the popup
-            //window.location.href = "/previous-blogs";
-            setShowModal(true);
-            setUserType(type);
-        }
-    };
-
     const handleClose = () => {
         setShowModal(false);
     };
-
-    useEffect(() => {
-        if (userType === 1) {
-            setShouldRenderNavBar(true);
-        } else {
-            setShouldRenderNavBar(false);
-        }
-        // TODO Tag listesini getir
-    }, [userType]);
 
     useEffect(() => {
 
@@ -128,8 +102,7 @@ const Blogs = () => {
 
     return (
         <Container fluid>
-            {userType === 1 ? <CareerExpertNavBar handleClick={handleClick} activeLink="previous-blogs"/> :
-                <NavBar handleClick={handleClick} activeLink="blogs"/>}
+            <NavBar activeLink="blogs"/>
             <Row className="justify-content-center">
                 <Col xs={10} md={10} lg={10}>
                     <div>
