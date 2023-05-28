@@ -22,6 +22,13 @@ const EventCard = ({ event, onRegisterEvent }) => {
         //onRegisterEvent(event);
     };
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString();
+        const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        return `${formattedDate} ${formattedTime}`;
+    }
+
     return (
         <Card className="col-6 mt-2 mb-2" style={{ minHeight: "100px", maxHeight: "400px", position: "relative" }}>
             <div style={{ maxHeight: "200px", overflow: "hidden", width: "100%", height: "200px" }}>
@@ -33,8 +40,8 @@ const EventCard = ({ event, onRegisterEvent }) => {
                 <Card.Subtitle className="mb-2 text-muted">{organizer}</Card.Subtitle>
                 <Card.Text>{content}</Card.Text>
                 <Card.Text>Speakers: {speakers}</Card.Text>
-                <Card.Text>Start Date: {startDate}</Card.Text>
-                <Card.Text>End Date: {endDate}</Card.Text>
+                <Card.Text>Start Date: {formatDate(startDate)}</Card.Text>
+                <Card.Text>End Date: {formatDate(endDate)}</Card.Text>
                 <Card.Text>Platform: {platform}</Card.Text>
                 <Card.Text>Website: {websiteLink}</Card.Text>
                 <Card.Text>Creation Date: {creationDate}</Card.Text>
@@ -46,6 +53,7 @@ const EventCard = ({ event, onRegisterEvent }) => {
                 </div>
             </Card.Body>
         </Card>
+
 
     );
 };
