@@ -257,6 +257,8 @@ def create_post():
         # Save the post to the database
         cursor.execute('INSERT INTO Post (user_id, p_title, p_content) VALUES (%s, %s, %s)',
                        (data.get('id'), post_title, post_content))
+        p_id = cursor.lastrowid
+
         cursor.execute('COMMIT')
 
     except Exception as e:

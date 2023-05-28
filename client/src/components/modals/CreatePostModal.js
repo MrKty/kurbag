@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import sendRequest from "../../utils/request";
 
-const CreatePostModal = ({ showModal, handlePostClose}) => {
+const CreatePostModal = ({ showModal, toggleCreatePostModal}) => {
     const [postTitle, setPostTitle] = useState('');
     const [postContent, setPostContent] = useState('');
 
@@ -13,16 +14,27 @@ const CreatePostModal = ({ showModal, handlePostClose}) => {
         setPostContent(event.target.value);
     };
 
-    const handlePostSaveClick = () => {
-        const postData = {
-            title: postTitle,
-            content: postContent,
-        };
-        //handlePostSave(postData);
+    const handlePostCreation = () => {
+        const reqData = {
+            postTitle,
+            postContent
+        }
+
+        // Clear input fields and close the modal
+        setPostTitle('');
+        setPostContent('');
+        sendRequest('home-blog', 'POST', reqData, (data) => {
+            alert(data.message);
+        });
+        handlePostClose();
+    }
+
+    const handlePostClose = () => {
+        toggleCreatePostModal();
     };
 
     return (
-        <Modal show={showModal} onHide={handlePostClose}>
+        <Modal show={showModal} onHide={toggleCreatePostModal}>
             <Modal.Header closeButton>
                 <Modal.Title>Create Post</Modal.Title>
             </Modal.Header>
@@ -30,11 +42,23 @@ const CreatePostModal = ({ showModal, handlePostClose}) => {
                 <Form>
                     <Form.Group controlId="postTitle">
                         <Form.Label>Title</Form.Label>
-                        <Form.Control type="text" value={postTitle} onChange={handlePostTitleChange} />
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={postTitle}
+                            onChange={handlePostTitleChange}
+                            placeholder="Enter post title"
+                        />
                     </Form.Group>
                     <Form.Group controlId="postContent">
                         <Form.Label>Content</Form.Label>
-                        <Form.Control as="textarea" rows={3} value={postContent} onChange={handlePostContentChange} />
+                        <Form.Control
+                            as="textarea"
+                            rows={5}
+                            value={postContent}
+                            onChange={handlePostContentChange}
+                            placeholder="Enter post content"
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -42,8 +66,8 @@ const CreatePostModal = ({ showModal, handlePostClose}) => {
                 <Button variant="secondary" onClick={handlePostClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handlePostSaveClick}>
-                    Save
+                <Button variant="primary" onClick={handlePostCreation}>
+                    Create
                 </Button>
             </Modal.Footer>
         </Modal>

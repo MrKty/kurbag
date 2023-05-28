@@ -2,10 +2,11 @@ import React, {useState, useEffect} from 'react';
 import {Modal, Form, Button, Row, Col, Image, Badge} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faImage} from '@fortawesome/free-solid-svg-icons';
-import {sendRequest} from './helpers';
-import CreatePostModal from "./CreatePostModal"; // Import the sendRequest function here
+import sendRequest from "../../utils/request";
+import firebase from "firebase/compat/app";
+import "firebase/compat/storage";
 
-const CreateEventModal = ({showModal, toggleCreateEventModal, contacts}) => {
+const CreateEventModal = ({showModal, toggleCreateEventModal}) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventContent, setEventContent] = useState('');
     const [eventOrganizer, setEventOrganizer] = useState('');
@@ -16,6 +17,7 @@ const CreateEventModal = ({showModal, toggleCreateEventModal, contacts}) => {
     const [eventLink, setEventLink] = useState('');
     const [eventSpeakers, setEventSpeakers] = useState([]);
     const [eventCoverPhoto, setEventCoverPhoto] = useState(null);
+    const [contacts, setContacts] = useState([]);
 
     const handleEventCoverPhotoChange = (event) => {
         setEventCoverPhoto(event.target.files[0]);
@@ -82,6 +84,20 @@ const CreateEventModal = ({showModal, toggleCreateEventModal, contacts}) => {
             reqData['coverPhotoUrl'] = await fileRef.getDownloadURL();
         }
 
+        /*
+        // Clear input fields and close the modal
+        setEventCoverPhoto(null);
+        setEventTitle('');
+        setEventContent('');
+        setEventOrganizer('');
+        setEventPlatform('');
+        setEventStartDate('');
+        setEventEndDate('');
+        setEventLimit('');
+        setEventLink('');
+        setEventSpeakers([]);
+         */
+
         sendRequest('home-event', 'POST', reqData, (data) => {
             alert(data.message);
         });
@@ -93,101 +109,167 @@ const CreateEventModal = ({showModal, toggleCreateEventModal, contacts}) => {
         toggleCreateEventModal();
     };
 
-    const eventModalHeight = eventCoverPhoto ? '45vh' : '25vh';
-
+    // Fetch contacts from the backend
     useEffect(() => {
-        if (eventCoverPhoto) {
-            setEventModalHeight('45vh');
-        } else {
-            setEventModalHeight('25vh');
+        if (showModal) {
+            sendRequest('/api/contacts', 'POST', {}, (data) => {
+                if (data.contacts) {
+                    console.log(data.contacts)
+                    setContacts(data.contacts)
+                } else {
+                    alert('Error fetching contacts')
+                }
+            });
         }
-    }, [eventCoverPhoto]);
+
+    }, [showModal]);
+
 
     return (
         <Modal show={showModal} onHide={handleEventClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Create Event</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+
+            <Modal.Body style={{overflowY: "auto", maxHeight: "500px"}}>
+                <Row>
+                    <Col className={'text-center'}>
+                        <label htmlFor="image-upload">
+                            {eventCoverPhoto ? (
+                                <Image
+                                    src={URL.createObjectURL(eventCoverPhoto)}
+                                    alt="Selected"
+                                    className={'w-100'}
+                                />
+                            ) : (
+                                <div
+                                    className={'d-flex align-items-center justify-content-center bg-secondary rounded w-100 h-100'}>
+                                    <FontAwesomeIcon icon={faImage} size={'3x'}/>
+                                </div>
+                            )}
+
+                            <input type="file" id="image-upload" onChange={handleEventCoverPhotoChange}
+                                   className={"visually-hidden"}/>
+                        </label>
+                    </Col>
+                </Row>
                 <Form>
-                    <Form.Group controlId="eventTitle">
-                        <Form.Label>Title</Form.Label>
-                        <Form.Control type="text" value={eventTitle} onChange={handleEventTitleChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="eventContent">
-                        <Form.Label>Content</Form.Label>
-                        <Form.Control as="textarea" rows={3} value={eventContent} onChange={handleEventContentChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="eventOrganizer">
-                        <Form.Label>Organizer</Form.Label>
-                        <Form.Control type="text" value={eventOrganizer} onChange={handleEventOrganizerChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="eventPlatform">
-                        <Form.Label>Platform</Form.Label>
-                        <Form.Control type="text" value={eventPlatform} onChange={handleEventPlatformChange}/>
-                    </Form.Group>
                     <Row>
-                        <Col>
-                            <Form.Group controlId="eventStartDate">
-                                <Form.Label>Start Date</Form.Label>
-                                <Form.Control type="date" value={eventStartDate} onChange={handleEventStartDateChange}/>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group controlId="eventEndDate">
-                                <Form.Label>End Date</Form.Label>
-                                <Form.Control type="date" value={eventEndDate} onChange={handleEventEndDateChange}/>
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Form.Group controlId="eventLimit">
-                        <Form.Label>Limit</Form.Label>
-                        <Form.Control type="number" value={eventLimit} onChange={handleEventLimitChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="eventLink">
-                        <Form.Label>Link</Form.Label>
-                        <Form.Control type="text" value={eventLink} onChange={handleEventLinkChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="eventSpeakers">
-                        <Form.Label>Speakers</Form.Label>
-                        <Form.Control as="select" value="" onChange={handleEventSpeakersChange}>
-                            <option value="" disabled>Select Speaker</option>
-                            {contacts.map((contact) => (
-                                <option key={contact.id} value={contact.id}>
-                                    {contact.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        {eventSpeakers.length > 0 && (
+                        <Form.Group controlId="eventTitle">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={eventTitle}
+                                onChange={handleEventTitleChange}
+                                placeholder="Enter event title"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventContent">
+                            <Form.Label>Content</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={5}
+                                value={eventContent}
+                                onChange={handleEventContentChange}
+                                placeholder="Enter event content"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventOrganizer">
+                            <Form.Label>Organizer</Form.Label>
+                            <Form.Select
+                                value={eventOrganizer}
+                                onChange={handleEventOrganizerChange}
+                                placeholder="Select event organizer"
+                            >
+                                <option value="">Select organizer</option>
+                                {contacts.map(contact => (
+                                    <option key={contact.id} value={contact.id}>
+                                        {contact.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="eventPlatform">
+                            <Form.Label>Platform</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={eventPlatform}
+                                onChange={handleEventPlatformChange}
+                                placeholder="Enter event platform"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventStartDate">
+                            <Form.Label>Start Date</Form.Label>
+                            <Form.Control
+                                type="datetime-local"
+                                value={eventStartDate}
+                                onChange={handleEventStartDateChange}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventEndDate">
+                            <Form.Label>End Date</Form.Label>
+                            <Form.Control
+                                type="datetime-local"
+                                value={eventEndDate}
+                                onChange={handleEventEndDateChange}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventLimit">
+                            <Form.Label>Limit (Quota)</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={eventLimit}
+                                onChange={handleEventLimitChange}
+                                placeholder="Enter event limit"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventLink">
+                            <Form.Label>Link</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={eventLink}
+                                onChange={handleEventLinkChange}
+                                placeholder="Enter event link"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="eventSpeakers">
+                            <Form.Label>Speakers</Form.Label>
                             <div>
-                                {eventSpeakers.map((speaker) => (
-                                    <Badge key={speaker.id} variant="secondary" className="mr-1">
-                                        {speaker.name}
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
+                                {eventSpeakers.map(speaker => (
+                                    <Badge key={speaker} variant="primary" className="mr-2">
+                                        {speaker}
+                                        <span
                                             className="ml-1 cursor-pointer"
-                                            onClick={() => removeSpeaker(speaker.id)}
-                                        />
+                                            onClick={() => removeSpeaker(speaker)}
+                                        >
+                                                    &#x2715;
+                                                </span>
                                     </Badge>
                                 ))}
                             </div>
-                        )}
-                    </Form.Group>
-                    <Form.Group controlId="eventCoverPhoto">
-                        <Form.Label>Cover Photo</Form.Label>
-                        <Form.Control type="file" accept="image/*" onChange={handleEventCoverPhotoChange}/>
-                        {eventCoverPhoto && (
-                            <Image src={URL.createObjectURL(eventCoverPhoto)} alt="Event Cover" fluid className="mt-2"/>
-                        )}
-                    </Form.Group>
+                            <Form.Select
+                                value={eventSpeakers}
+                                onChange={handleEventSpeakersChange}
+                                placeholder="Select event speakers"
+                            >
+                                <option value="">Select speakers</option>
+                                {contacts.map(contact => (
+                                    <option key={contact.id} value={contact.name}>
+                                        {contact.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </Row>
+
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleEventClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleEventSave}>
-                    Save
+                <Button variant="primary" onClick={handleEventCreation}>
+                    Create
                 </Button>
             </Modal.Footer>
         </Modal>
@@ -195,6 +277,3 @@ const CreateEventModal = ({showModal, toggleCreateEventModal, contacts}) => {
 };
 
 export default CreateEventModal;
-
-//<CreatePostModal showModal={showCreatePostModal} handlePostClose={toggleCreatePostModal}/>
-//<CreateEventModal showModal={showCreateEventModal} toggleCreateEventModal={toggleCreateEventModal} contacts={contacts}/>
