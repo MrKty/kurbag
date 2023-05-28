@@ -37,6 +37,7 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
     const handleCertificateSelect = async (event) => {
         const files = event.target.files;
         const urls = [];
+        const names = [];
         console.log("Here")
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -46,9 +47,11 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
             await fileRef.put(file);
             const url = await fileRef.getDownloadURL();
             urls.push(url);
+            names.push(file.name);
             console.log(url)
         }
 
+        setSelectedCertificateNames([...selectedCertificateNames, ...names])
         setSelectedCertificates([...selectedCertificates, ...urls]);
     };
 
