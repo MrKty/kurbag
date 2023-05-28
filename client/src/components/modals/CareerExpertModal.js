@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
@@ -8,10 +8,31 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
     const [selectedTag, setSelectedTag] = useState('');
     const [motivation, setMotivation] = useState('');
     const [selectedCertificates, setSelectedCertificates] = useState([]);
+    const [selectedCertificateNames, setSelectedCertificateNames] = useState([]);
 
     const handleTagSelect = (tag) => {
         setSelectedTag(tag);
     };
+
+    useEffect(() => {
+        // Fetch data from Sends_Request table
+        sendRequest('career-expert-modal', 'POST', {}, (data) => {
+             try {
+                const { motivation_letter, tag_name, certificates } = data;
+
+                setSelectedTag(tag_name);
+                setMotivation(motivation_letter);
+
+                // Convert certificates array to array of certificate URLs
+                const certificateUrls = certificates.map((certificate) => certificate.cert_url);
+                const certificateNames = certificates.map((certificate) => certificate.cert_name);
+                setSelectedCertificates(certificateUrls);
+                setSelectedCertificateNames(certificateNames);
+            } catch (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }, []);
 
     const handleCertificateSelect = async (event) => {
         const files = event.target.files;
@@ -48,7 +69,7 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
     return (
         <Modal show={showModal} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Become sa Career Expert</Modal.Title>
+                <Modal.Title>Become a Career Expert</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>

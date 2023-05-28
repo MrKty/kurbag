@@ -194,7 +194,6 @@ const Blogs = () => {
                 <span className={"mb-2 fw-bold"}>Swipe down for more</span>
                 <FontAwesomeIcon icon={faArrowDown}/>
             </Row>
-            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
         </Container>
     );
 };

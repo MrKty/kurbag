@@ -1,12 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Container, Row, Col, Button, Card, Badge, Image, ToggleButton, Form, DropdownButton, Dropdown} from 'react-bootstrap';
-import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";
-import CareerExpertModal from "../components/modals/CareerExpertModal";
-import CareerExpertNavBar from "../components/CareerExpertNavBar";
-import {faHeart, faComment} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 
 import DropdownToggle from "react-bootstrap/DropdownToggle";
 import DropdownMenu from "react-bootstrap/DropdownMenu";

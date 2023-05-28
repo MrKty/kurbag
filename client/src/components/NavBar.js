@@ -12,23 +12,31 @@ import {
     faSearch,
     faExchangeAlt
 } from '@fortawesome/free-solid-svg-icons';
+import CareerExpertModal from "./modals/CareerExpertModal";
 
 
 
 const NavBar = (props) => {
-
     const [activeLink, setActiveLink] = useState(props.activeLink);
+    const [showModal, setShowModal] = useState(false);
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
     };
 
-    const handleDropdownClick = (type) => {
-        props.handleClick(type);
-        //window.location.href = "/previous-blogs";
+    const handleClose = () => {
+        setShowModal(false);
     };
 
-    const isRecruiter = localStorage.getItem("userType") == 3
+    const handleOptionClick = () => {
+        if (userType === 1 || userType === 3) {
+            window.location.href = '/previous-blogs';
+        } else {
+            setShowModal(true);
+        }
+    };
+
+    const userType = localStorage.getItem("userType")
 
     return (
         <Navbar bg="light" expand="lg">
@@ -88,10 +96,10 @@ const NavBar = (props) => {
                                     title={"Switch View"}
                                     id="basic-nav-dropdown"
                                 >
-                                    <NavDropdown.Item onClick={() => window.location.href = "/previous-blogs"}>
+                                    <NavDropdown.Item onClick={handleOptionClick}>
                                         Career Expert
                                     </NavDropdown.Item>
-                                    {isRecruiter && <NavDropdown.Item onClick={() => window.location.href = "/cv-pool"}>
+                                    {userType >= 2 && <NavDropdown.Item onClick={() => window.location.href = "/cv-pool"}>
                                         Recruiter
                                     </NavDropdown.Item>}
                                 </NavDropdown>
@@ -120,6 +128,7 @@ const NavBar = (props) => {
                             </div>
                         </Nav.Link>
                     </Nav>
+                    <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
                 </Navbar.Collapse>
             </Container>
         </Navbar>

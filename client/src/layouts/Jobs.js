@@ -871,7 +871,6 @@ const Jobs = () => {
                     />
                 </Col>
             </Row>
-            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
         </Container>
     );
 }

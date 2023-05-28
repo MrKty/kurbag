@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Form, Button, Card, Image } from 'react-bootstrap';
 import NavBar from "../components/NavBar";
-import CareerExpertNavBar from "../components/CareerExpertNavBar";
-import CareerExpertModal from "../components/modals/CareerExpertModal";
-
 
 const data = [
     {
@@ -328,7 +325,6 @@ const Messages = () => {
                     )}
                 </Col>
             </Row>
-            <CareerExpertModal showModal={showModal} handleClose={handleClose}/>
         </Container>
     );
 };

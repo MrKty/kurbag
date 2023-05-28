@@ -252,6 +252,7 @@ def create_tables():
                 cert_id int AUTO_INCREMENT,
                 applicant_id int,
                 cert_url varchar(128),
+                cert_name varchar(128),
                 PRIMARY KEY (cert_id),
                 FOREIGN KEY (applicant_id) REFERENCES Person (user_id)
             );
