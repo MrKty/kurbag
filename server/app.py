@@ -242,6 +242,33 @@ def apply_career_expert():
     return jsonify(response)
 
 
+@app.route('/career-expert-modal', methods=['POST'])
+def fill_career_expert_modal():
+
+    # Create a response object
+    response = {
+                'motivation_letter': "motivation-letter from back-end",
+                'tag_name': "tag-name from back-end",
+                'certificates': [
+                    {
+                        'certificate_name': 'Certificate 1 backendCertificate 1 backendCertificate 1 backendCertificate 1 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate1.pdf'
+                    },
+                    {
+                        'certificate_name': 'Certificate 2 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate2.pdf'
+                    },
+                    {
+                        'certificate_name': 'Certificate 3 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate2.pdf'
+                    },
+                    # Add more certificate entries as needed
+                ]
+            }
+
+    return jsonify(response)
+
+
 # Endpoint for creating a new post
 @app.route('/home-blog', methods=['POST'])
 def create_post():
@@ -333,6 +360,67 @@ def creates_event():
         # Return an error response
         return jsonify({'message': 'Failed to create event'}), 500
 
+
+
+@app.route('/conversations', methods=['POST'])
+def fetch_conversations():
+    response = [
+        {
+            "id": 1,
+            "receiver": {
+                "name": "John Doe",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "10:30 AM",
+            "lastMessage": "Hey, how are you from back-end thooo?"
+        },
+        {
+            "id": 2,
+            "receiver": {
+                "name": "Jane Smith",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "12:45 PM",
+            "lastMessage": "Are you free this weekend?"
+        },
+        {
+            "id": 3,
+            "receiver": {
+                "name": "Alex Johnson",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "3:20 PM",
+            "lastMessage": "Can you send me the document?"
+        },
+        {
+            "id": 4,
+            "receiver": {
+                "name": "Emily Brown",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "5:10 PM",
+            "lastMessage": "Lets meet at the café."
+        },
+        {
+            "id": 5,
+            "receiver": {
+                "name": "Michael Wilson",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "7:30 PM",
+            "lastMessage": "Did you watch the latest episode?"
+        },
+        {
+            "id": 6,
+            "receiver": {
+                "name": "Sophia Lee",
+                "profilePhoto": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+            },
+            "time": "9:15 PM",
+            "lastMessage": "See you tomorrow!"
+        }
+    ]
+    return jsonify(response)
 
 @app.route('/blogs', methods=['POST'])
 def blog_page():
