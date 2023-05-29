@@ -113,7 +113,7 @@ const NavBar = (props) => {
                                 <div className="mt-1">Notifications</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="#" className="d-flex align-items-center mt-2">
+                        <Nav.Link href="/profile" className="d-flex align-items-center mt-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faUser} size="2x"/>
                                 <NavDropdown
