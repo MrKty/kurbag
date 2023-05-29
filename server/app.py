@@ -471,6 +471,15 @@ def blog_editor():
 
     return jsonify(data)
 
+@app.route('/profile', methods=['POST'])
+def profile_page():
+    data = request.json
+
+    # Assuming 'user_id' is present in the request data
+    user_id = data.get('user_id')
+
+   
+    print(user_id)
 
 # Endpoint for creating a new post
 @app.route('/api/contacts', methods=['POST'])
