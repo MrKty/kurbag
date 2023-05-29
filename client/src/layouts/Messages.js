@@ -70,21 +70,7 @@ const Messages = () => {
 
 
     /*
-    useEffect(() => {
-        // Fetch messages for the selected conversation
-        const fetchMessages = async () => {
-            if (selectedConversation) {
-                try {
-                    const response = await fetch(`/api/conversations/${selectedConversation.id}/messages`);
-                    const data = await response.json();
-                    setMessages(data);
-                } catch (error) {
-                    console.error('Error fetching messages:', error);
-                }
-            }
-        };
-        fetchMessages();
-    }, [selectedConversation]);
+
 
 
 
@@ -105,36 +91,43 @@ const Messages = () => {
 */
 
     const [conversations, setConversations] = useState([]);
-    const [selectedConversation, setSelectedConversation] = useState(false); //TODO -- NOT BOOLEAN
-    const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
+    const [currentConversation, setCurrentConversation] = useState('');
+    const [selectedConversation, setSelectedConversation] = useState(false);
+    const [messages, setMessages] = useState([]);
 
+    useEffect(() => {
+        // Fetch messages for the selected conversation
+        sendRequest('messages', 'POST', { conversationId: selectedConversation }, (data) => {
+            try {
+                setMessages(data);
+            } catch (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }, [currentConversation]);
 
 
     useEffect(() => {
         // Fetch data from Sends_Request table
         sendRequest('conversations', 'POST', {}, (data) => {
             try {
-
                 setConversations(data);
-
             } catch (error) {
                 console.log('Error fetching data:', error);
             }
         });
     }, []);
 
-
     const handleClose = () => {
         setShowModal(false);
     };
 
-
-    //TODO NOT TRUE FALSE -- NEED AN INDEX
-    const handleConversationClick = () => {
+    const handleConversationClick = (id) => {
         setSelectedConversation(true);
+        setCurrentConversation(id)
     };
 
     const MessageCard = ({ content, time, sender }) => {
@@ -192,7 +185,7 @@ const Messages = () => {
 
                             <Row className="conversations ms-3">
                                 {conversations.map((conversation) => (
-                                    <Row className="message-card mb-2" onClick={handleConversationClick}>
+                                    <Row className="message-card mb-2" onClick={() => handleConversationClick(conversation.id)}>
                                         <Conversation
                                             id={conversation.id}
                                             time={conversation.time}
@@ -211,7 +204,7 @@ const Messages = () => {
                         <div>
                             <Col className="col-12 mt-3 mb-2 w-100" style={{backgroundColor: "#b6cdbd", overflowY:"auto", maxHeight:"500px"}}>
                                 <Row className="messages ms-3">
-                                    {sampleMessages.map((message) => (
+                                    {messages.map((message) => (
                                         <Row className="message-bubble mb-2">
                                             <MessageCard content={message.content} time={message.time} sender={message.sender}></MessageCard>
                                         </Row>

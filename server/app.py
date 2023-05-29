@@ -422,6 +422,76 @@ def fetch_conversations():
     ]
     return jsonify(response)
 
+
+
+
+@app.route('/messages', methods=['POST'])
+def fetch_messages():
+    response = [
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:06',
+            "content": 'Ilk mesaj'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:07',
+            "content": 'Ikinci mesaj'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:15',
+            "content": 'Three'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '16:36',
+            "content": '4 and the last.'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:06',
+            "content": 'Ilk mesaj'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:07',
+            "content": 'Ikinci mesaj'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:15',
+            "content": 'Three'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '16:36',
+            "content": '4 and the last.'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:06',
+            "content": 'Ilk mesaj'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:07',
+            "content": 'Did you watch the latest episode? jahsgdjhasgdhjasgdas asjdhgajshdgjahsgdasjhgd asdjhgasjhdgashjgdahjsdgs ajshdgasjhdgasjhgdjhasgd jahgsdjhgashjdgsajhgdjas jhasdgjhsagd'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '14:15',
+            "content": 'Did you watch the latest episode? jahsgdjhasgdhjasgdas asjdhgajshdgjahsgdasjhgd asdjhgasjhdgashjgdahjsdgs ajshdgasjhdgasjhgdjhasgd jahgsdjhgashjdgsajhgdjas jhasdgjhsagd'
+        },
+        {
+            "sender": 'Mert Unlu',
+            "time":   '16:36',
+            "content": '4 and the last.'
+        },
+    ]
+
+    return jsonify(response)
+
 @app.route('/blogs', methods=['POST'])
 def blog_page():
     data = request.json  # Get the form data from the request body
