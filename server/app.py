@@ -268,6 +268,31 @@ def fill_career_expert_modal():
 
     return jsonify(response)
 
+#Endpoint for displaying jobs.
+@app.route('/jobs', methods=['POST'])
+def get_jobs():
+    # Create a response object
+    response = {
+                'motivation_letter': "motivation-letter from back-end",
+                'tag_name': "tag-name from back-end",
+                'certificates': [
+                    {
+                        'certificate_name': 'Certificate 1 backendCertificate 1 backendCertificate 1 backendCertificate 1 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate1.pdf'
+                    },
+                    {
+                        'certificate_name': 'Certificate 2 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate2.pdf'
+                    },
+                    {
+                        'certificate_name': 'Certificate 3 backend',
+                        'certificate_url': 'https://example.com/certificates/certificate2.pdf'
+                    },
+                    # Add more certificate entries as needed
+                ]
+            }
+
+    return jsonify(response)
 
 # Endpoint for creating a new post
 @app.route('/home-blog', methods=['POST'])
@@ -298,6 +323,70 @@ def create_post():
     else:
         # Return an error response
         return jsonify({'message': 'Failed to create post'}), 500
+
+# Endpoint for creating a new job (by a recruiter)
+@app.route('/create-job', methods=['POST'])
+def create_job():
+    # Get post data from the request
+    data = request.json
+
+    job_title = data.get('title')
+    job_description = data.get('description')
+    job_organization = data.get('organization')
+    job_type = data.get('type')
+    job_location = data.get('location')
+    job_mode = data.get('mode')
+    job_due_date = data.get('dueDate')
+    job_recruiter_id = 5  # mock data for now
+
+    job_timestamp = datetime.now()  # Current timestamp
+
+    try:
+        # Convert job_due_date to a timestamp
+        due_date = datetime.strptime(job_due_date, "%Y-%m-%d")
+        job_due_date_timestamp = due_date.strftime("%Y-%m-%d %H:%M:%S")
+
+        cursor = db.get_cursor()
+        j_id = None
+
+        try:
+            # Save the job opening to the database
+            cursor.execute(
+                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, recruiter_id) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                (
+                    job_title,
+                    job_description,
+                    job_type,
+                    job_organization,
+                    job_location,
+                    job_mode,
+                    job_due_date_timestamp,
+                    job_timestamp,
+                    job_recruiter_id,
+                ),
+            )
+            j_id = cursor.lastrowid
+
+            cursor.execute('COMMIT')
+
+        except Exception as e:
+            # Print the error message
+            print(f"An error occurred: {str(e)}")
+
+        if j_id:
+            # Return a success response
+            return jsonify({'message': 'Job created successfully', 'Job_id': j_id}), 200
+        else:
+            # Return an error response
+            return jsonify({'message': 'Failed to create Job'}), 500
+
+    except ValueError:
+        # Handle the case when job_due_date is not in the expected format
+        print("Invalid due date format")
+        return jsonify({'message': 'Invalid due date format'}), 400
+
+
 
 
 # Endpoint for creating a new event
@@ -532,6 +621,72 @@ def blog_page():
     ]
 
     return jsonify(blogs)
+
+
+@app.route('/cv-pool', methods=['POST'])
+def get_cv_pool():
+
+    # Example blog data
+    response = [
+        {
+            "name": "Mert",
+            "sector": "Technology",
+            "position": "Software Engineer",
+            "experience": "5 years",
+            "currentEmployer": "ABC Company"
+        },
+        {
+            "name": "John",
+            "sector": "Finance",
+            "position": "Financial Analyst",
+            "experience": "3 years",
+            "currentEmployer": "XYZ Bank"
+        },
+        {
+            "name": "Emily",
+            "sector": "Marketing",
+            "position": "Marketing Manager",
+            "experience": "7 years",
+            "currentEmployer": "Marketing Solutions Inc."
+        },
+        {
+            "name": "David",
+            "sector": "Healthcare",
+            "position": "Registered Nurse",
+            "experience": "10 years",
+            "currentEmployer": "City Hospital"
+        },
+        {
+            "name": "Sarah",
+            "sector": "Education",
+            "position": "Teacher",
+            "experience": "4 years",
+            "currentEmployer": "ABC School"
+        },
+        {
+            "name": "Alex",
+            "sector": "Sales",
+            "position": "Sales Manager",
+            "experience": "6 years",
+            "currentEmployer": "XYZ Corporation"
+        },
+        {
+            "name": "Sophia",
+            "sector": "Hospitality",
+            "position": "Hotel Manager",
+            "experience": "8 years",
+            "currentEmployer": "Luxury Resort"
+        },
+        {
+            "name": "Daniel",
+            "sector": "Engineering",
+            "position": "Mechanical Engineer",
+            "experience": "9 years",
+            "currentEmployer": "ABC Engineering"
+        }
+    ]
+
+    return jsonify(response)
 
 
 @app.route('/blogEditor', methods=['POST'])

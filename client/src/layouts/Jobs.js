@@ -17,6 +17,7 @@ import FilterBar from "../components/FilterBar";
 import CareerExpertModal from "../components/modals/CareerExpertModal";
 import JobDescription from "../components/JobDescription";
 import JobListing from "../components/JobListing";
+import sendRequest from "../utils/request";
 
 
 const data = [
@@ -62,10 +63,19 @@ const Jobs = () => {
     const [userType, setUserType] = useState(0);
     const [maxHeight, setMaxHeight] = useState(window.innerHeight);
     const [selectedJob, setSelectedJob] = useState(null);
+    const [jobs, setJobs] = useState([]);
 
     const handleJobClick = (job) => {
         setSelectedJob(job);
     };
+
+
+    useEffect( () => {
+        sendRequest('jobs', 'POST', {}, (data) => {
+            // Here comes blog data from backend
+            setJobs(data);
+        });
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -160,7 +170,6 @@ const Jobs = () => {
                             position={job.position}
                             company={job.company}
                             location={job.location}
-                            image={job.image}
                             isSelected={selectedJob === job}
                             onClick={() => handleJobClick(job)}
                         />
@@ -168,16 +177,16 @@ const Jobs = () => {
                 </Col>
                 <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb", overflowY:"auto", maxHeight: maxHeight}}>
                     <JobDescription
-                        position="Data Analyst"
-                        company="Sony"
-                        companyLocation="Istanbul, Turkey"
-                        jobLocation="Remote"
-                        postingDate="April 19, 2023"
-                        jobType="Full-time"
-                        aboutJob="We are seeking a highly analytical Data Analyst to join our team. You will be responsible for analyzing large data sets and providing insights to help guide business decisions."
-                        aboutHiringManager="The hiring manager for this position is John Smith. He has been with the company for 5 years and is excited to welcome a new member to the team."
-                        aboutCompany="Sony is a leading gaming company that creates innovative and engaging games for players around the world. We are passionate about what we do and are always looking for talented individuals to join our team."
-                        companyLogo="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+                        position={selectedJob ? selectedJob.position : ''}
+                        company={selectedJob ? selectedJob.company : ''}
+                        companyLocation={selectedJob ? selectedJob.companyLocation : ''}
+                        jobLocation={selectedJob ? selectedJob.jobLocation : ''}
+                        postingDate={selectedJob ? selectedJob.postingDate : ''}
+                        jobType={selectedJob ? selectedJob.jobType : ''}
+                        aboutJob={selectedJob ? selectedJob.aboutJob : ''}
+                        aboutHiringManager={selectedJob ? selectedJob.aboutHiringManager : ''}
+                        aboutCompany={selectedJob ? selectedJob.aboutCompany : ''}
+                        companyLogo={selectedJob ? selectedJob.companyLogo : ''}
                     />
                 </Col>
             </Row>

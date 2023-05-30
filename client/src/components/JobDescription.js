@@ -10,6 +10,7 @@ import ApplyJobModal4 from "./modals/ApplyJobModal4";
 import ApplyJobModal5 from "./modals/ApplyJobModal5";
 import ApplyJobModal6 from "./modals/ApplyJobModal6";
 
+
 const JobDescription = (props) => {
     const {
         position,
@@ -39,7 +40,7 @@ const JobDescription = (props) => {
             <Row>
                 <Col className={"col-9"}>
                     <Row className={"p-1"}>
-                        <Col style={{overflowY:"auto"}}>
+                        <Col style={{ overflowY: "auto" }}>
                             <h2>{position}</h2>
                             <div className={"mb-2"}>{company} - {companyLocation}</div>
                             <Row>
@@ -75,23 +76,23 @@ const JobDescription = (props) => {
             <Row className={"py-2"}>
                 <Col className={"col-2"}>
                     <Button variant="primary" onClick={() => handleApplyClick(0)}>
-                        <FontAwesomeIcon icon={faPaperPlane} className={"px-2"}/>
+                        <FontAwesomeIcon icon={faPaperPlane} className={"px-2"} />
                         Apply
                     </Button>
                 </Col>
                 <Col className={"col-2"}>
                     <Button variant="success">
-                        <FontAwesomeIcon icon={faSave} className={"px-2"}/>
+                        <FontAwesomeIcon icon={faSave} className={"px-2"} />
                         Save
                     </Button>
                 </Col>
             </Row>
-            <hr/>
+            <hr />
             <Row>
                 <Col>
                     <Card className={"p-3"}>
                         <h4>About the Hiring Manager</h4>
-                        <hr/>
+                        <hr />
                         <Row className="align-items-center">
                             <Col xs={1} className={"me-2"}>
                                 <img
@@ -104,13 +105,11 @@ const JobDescription = (props) => {
                             </Col>
                             <Col xs={8}>
                                 <Link to={"#"} className={"text-start no-underline fw-bold"}>Jane Smith</Link>
-                                <div className={"text-start fw-bold"}>HR Assistant Specialist | IT
-                                    Recruitment at Sony
-                                </div>
+                                <div className={"text-start fw-bold"}>HR Assistant Specialist | IT Recruitment at Sony</div>
                             </Col>
                             <Col xs={2} className={"text-end"}>
                                 <button className="btn btn-primary">
-                                    <FontAwesomeIcon icon={faEnvelope} className="me-2"/>
+                                    <FontAwesomeIcon icon={faEnvelope} className="me-2" />
                                     Send Message
                                 </button>
                             </Col>
@@ -123,73 +122,73 @@ const JobDescription = (props) => {
                 <Col className={"p-3"}>
                     <h4>About the Job</h4>
                     <p><span className={"fw-bold"}>Reporting and Analytics Services, Data Analyst</span>
-                        <br/>
+                        <br />
                         <span className={"fw-bold"}>Job Description:</span>
-                        <br/>
+                        <br />
                         The Sony spirit is about freedom, no limits, empowerment, innovation, imagination, autonomy,
                         creativity and choice. With business operations all over the globe, we provide high quality
                         lifestyle products offering entertainment through technology.
-                        <br/>
+                        <br />
                         Global Business Services (GBS) provides services to Sony, globally, in a wide range of areas
                         ranging from Online Marketing to Project Management. We work in a dynamic and interactive
                         environment in our headquarter based in Istanbul. We are driven by our customers, supporting
-                        them by with our core values of professionalism, passion, creativity and proactivity.
-                        <br/>
+                        them with our core values of professionalism, passion, creativity and proactivity.
+                        <br />
 
                         We are looking for a Reporting and Analytics Services, Senior Data Analyst to join us at an
                         exciting time of growth within our Management Consulting team. Working cross functionally, you
-                        will be responsible of using statistics and computation in order to interpret data for the
+                        will be responsible for using statistics and computation in order to interpret data for the
                         purpose of decision making.
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         Reporting to the <span
                             className={"fw-bold"}>GBS – Reporting and Analytics Services Manager</span>
 
-                        <br/>
+                        <br />
                         <span className={"fw-bold"}>Day-to-day operations include</span>
                         <ul>
-                            <li> Performs data analysis required to troubleshoot data related issues and works directly
+                            <li>Performs data analysis required to troubleshoot data related issues and works directly
                                 with business in the resolution of data issues.
                             </li>
-                            <li> Collaborates with analytics and business teams to improve data models that feed
+                            <li>Collaborates with analytics and business teams to improve data models that feed
                                 business BI tools, increasing data accessibility and monitor data quality across the
                                 organization.
                             </li>
-                            <li> Design and implement reports into BI tools to improve client experience with data
+                            <li>Design and implement reports into BI tools to improve client experience with data
                             </li>
-                            <li> Participate in process improvement projects: optimize existing tables/ views/ data to
+                            <li>Participate in process improvement projects: optimize existing tables/ views/ data to
                                 reduce processing times and increase data quality
                             </li>
-                            <li> Prepare monthly and quarterly reports, dashboards, illustrating data graphically
+                            <li>Prepare monthly and quarterly reports, dashboards, illustrating data graphically
                             </li>
-                            <li> Keep up-to-date with latest technology trends
+                            <li>Keep up-to-date with latest technology trends
                             </li>
-                            <li> It’s required to have business trip to abroad when necessary. (around %10-15)
+                            <li>It’s required to have business trip to abroad when necessary. (around %10-15)
                             </li>
-                            <li> The location to work is the Istanbul office of Sony Europe Ltd.
+                            <li>The location to work is the Istanbul office of Sony Europe Ltd.
                             </li>
                         </ul>
 
 
                         <span className={"fw-bold"}>Qualifications:</span>
-                        <br/>
+                        <br />
                         Ideal candidate should have:
-                        <br/>
+                        <br />
                         <ul>
-                            <li> Bachelor’s Degree in Computer Science, Economics, Statistics, Engineering or a related
+                            <li>Bachelor’s Degree in Computer Science, Economics, Statistics, Engineering, or a related
                                 technical discipline, and PHD in data science is highly preferred.
                             </li>
-                            <li> 3-4 years of practical experience in analytical processes and statistical analysis
+                            <li>3-4 years of practical experience in analytical processes and statistical analysis
                             </li>
-                            <li> Excellent MS Office, reporting skills and have good understanding of macros in Excel
+                            <li>Excellent MS Office, reporting skills, and have a good understanding of macros in Excel
                             </li>
-                            <li> Profound knowledge of practical experience with Python programming
+                            <li>Profound knowledge of practical experience with Python programming
                             </li>
-                            <li> Solid Experience working with Microsoft technologies e.g. MS SQL server, MS Power BI
+                            <li>Solid Experience working with Microsoft technologies e.g. MS SQL server, MS Power BI
                             </li>
-                            <li> Some experience with schema design and dimensional data modeling
+                            <li>Some experience with schema design and dimensional data modeling
                             </li>
-                            <li> Able to work collaboratively in multicultural and international business environment
+                            <li>Able to work collaboratively in a multicultural and international business environment
                             </li>
                             <li>Fluency in both written and spoken English</li>
                         </ul>
@@ -200,7 +199,7 @@ const JobDescription = (props) => {
                 <Col>
                     <Card className={"p-3"}>
                         <h4>About the Company</h4>
-                        <hr/>
+                        <hr />
                         <Row className="align-items-center">
                             <Col className={"col-1 me-2"}>
                                 <img
@@ -217,12 +216,12 @@ const JobDescription = (props) => {
                             </Col>
                             <Col className={"text-end col-3"}>
                                 <button className="btn btn-primary">
-                                    <FontAwesomeIcon icon={faAdd} className="me-2"/>
+                                    <FontAwesomeIcon icon={faAdd} className="me-2" />
                                     Follow
                                 </button>
                             </Col>
                         </Row>
-                        <hr/>
+                        <hr />
                         <div>Sony’s purpose is simple. We aim to fill the world with emotion, through the power of
                             creativity and technology. We want to be responsible for getting hearts racing, stirring
                             ambition, and putting a smile on the faces of our customers. That challenge,
