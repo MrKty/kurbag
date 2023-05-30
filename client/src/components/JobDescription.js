@@ -13,16 +13,16 @@ import ApplyJobModal6 from "./modals/ApplyJobModal6";
 
 const JobDescription = (props) => {
     const {
-        position,
-        company,
-        companyLocation,
-        jobLocation,
-        postingDate,
-        jobType,
-        aboutJob,
-        aboutHiringManager,
-        aboutCompany,
-        companyLogo
+        jobId,
+        jobTitle,
+        companyName,
+        location,
+        employmentType,
+        jobDescription,
+        companyLogo,
+        companyFollowers,
+        dueDateApply,
+        jobTimestamp
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
@@ -41,14 +41,14 @@ const JobDescription = (props) => {
                 <Col className={"col-9"}>
                     <Row className={"p-1"}>
                         <Col style={{ overflowY: "auto" }}>
-                            <h2>{position}</h2>
-                            <div className={"mb-2"}>{company} - {companyLocation}</div>
+                            <h2>{jobTitle}</h2>
+                            <div className={"mb-2"}>{companyName} - {location}</div>
                             <Row>
                                 <Col>
-                                    <div>Job Type: <Badge bg="secondary">{jobType}</Badge></div>
+                                    <div>Job Type: <Badge bg="secondary">{employmentType}</Badge></div>
                                 </Col>
                                 <Col>
-                                    <div>Job Location: <Badge bg="info">Remote</Badge></div>
+                                    <div>Job Location: <Badge bg="info">{location}</Badge></div>
                                 </Col>
                             </Row>
                         </Col>
@@ -56,7 +56,7 @@ const JobDescription = (props) => {
                 </Col>
                 <Col className="text-end me-2">
                     <div className={"fw-bold text-decoration-underline"}>Posting Date</div>
-                    <div>{postingDate}</div>
+                    <div>{jobTimestamp}</div>
                 </Col>
             </Row>
             <Row>
@@ -121,78 +121,7 @@ const JobDescription = (props) => {
             <Row>
                 <Col className={"p-3"}>
                     <h4>About the Job</h4>
-                    <p><span className={"fw-bold"}>Reporting and Analytics Services, Data Analyst</span>
-                        <br />
-                        <span className={"fw-bold"}>Job Description:</span>
-                        <br />
-                        The Sony spirit is about freedom, no limits, empowerment, innovation, imagination, autonomy,
-                        creativity and choice. With business operations all over the globe, we provide high quality
-                        lifestyle products offering entertainment through technology.
-                        <br />
-                        Global Business Services (GBS) provides services to Sony, globally, in a wide range of areas
-                        ranging from Online Marketing to Project Management. We work in a dynamic and interactive
-                        environment in our headquarter based in Istanbul. We are driven by our customers, supporting
-                        them with our core values of professionalism, passion, creativity and proactivity.
-                        <br />
-
-                        We are looking for a Reporting and Analytics Services, Senior Data Analyst to join us at an
-                        exciting time of growth within our Management Consulting team. Working cross functionally, you
-                        will be responsible for using statistics and computation in order to interpret data for the
-                        purpose of decision making.
-                        <br />
-                        <br />
-                        Reporting to the <span
-                            className={"fw-bold"}>GBS – Reporting and Analytics Services Manager</span>
-
-                        <br />
-                        <span className={"fw-bold"}>Day-to-day operations include</span>
-                        <ul>
-                            <li>Performs data analysis required to troubleshoot data related issues and works directly
-                                with business in the resolution of data issues.
-                            </li>
-                            <li>Collaborates with analytics and business teams to improve data models that feed
-                                business BI tools, increasing data accessibility and monitor data quality across the
-                                organization.
-                            </li>
-                            <li>Design and implement reports into BI tools to improve client experience with data
-                            </li>
-                            <li>Participate in process improvement projects: optimize existing tables/ views/ data to
-                                reduce processing times and increase data quality
-                            </li>
-                            <li>Prepare monthly and quarterly reports, dashboards, illustrating data graphically
-                            </li>
-                            <li>Keep up-to-date with latest technology trends
-                            </li>
-                            <li>It’s required to have business trip to abroad when necessary. (around %10-15)
-                            </li>
-                            <li>The location to work is the Istanbul office of Sony Europe Ltd.
-                            </li>
-                        </ul>
-
-
-                        <span className={"fw-bold"}>Qualifications:</span>
-                        <br />
-                        Ideal candidate should have:
-                        <br />
-                        <ul>
-                            <li>Bachelor’s Degree in Computer Science, Economics, Statistics, Engineering, or a related
-                                technical discipline, and PHD in data science is highly preferred.
-                            </li>
-                            <li>3-4 years of practical experience in analytical processes and statistical analysis
-                            </li>
-                            <li>Excellent MS Office, reporting skills, and have a good understanding of macros in Excel
-                            </li>
-                            <li>Profound knowledge of practical experience with Python programming
-                            </li>
-                            <li>Solid Experience working with Microsoft technologies e.g. MS SQL server, MS Power BI
-                            </li>
-                            <li>Some experience with schema design and dimensional data modeling
-                            </li>
-                            <li>Able to work collaboratively in a multicultural and international business environment
-                            </li>
-                            <li>Fluency in both written and spoken English</li>
-                        </ul>
-                    </p>
+                    {jobDescription}
                 </Col>
             </Row>
             <Row>
