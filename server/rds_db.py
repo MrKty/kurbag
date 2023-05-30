@@ -132,6 +132,8 @@ def create_tables():
                 j_desc varchar(250),
                 j_title varchar(50),
                 j_type varchar(20),
+                j_organization varchar(20),
+                j_location varchar(20),
                 j_mode varchar(20),
                 due_date_apply datetime,
                 j_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
