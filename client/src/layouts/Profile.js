@@ -1,83 +1,18 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Container, Row, Col, Card, Button, Form} from "react-bootstrap";
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
 import NavBar from "../components/NavBar";
 import EditProfileModal from "../components/modals/EditProfileModal";
-
-const ExperienceCard = ({companyLogo, companyName, role, startDate, endDate}) => {
-    return (
-        <Card className="mb-3">
-            <Card.Body>
-                <Row>
-                    <Col xs={3} md={2}>
-                        <img src={companyLogo} alt="Company Logo" className="img-fluid"/>
-                    </Col>
-                    <Col xs={9} md={10}>
-                        <h5>{companyName}</h5>
-                        <p>{role}</p>
-                        <p>
-                            {startDate} - {endDate}
-                        </p>
-                    </Col>
-                </Row>
-            </Card.Body>
-        </Card>
-    );
-};
-
-const EducationCard = ({institutionLogo, institutionName, degree, startDate, endDate}) => {
-    return (
-        <Card className="mb-3">
-            <Card.Body>
-                <Row>
-                    <Col xs={3} md={2}>
-                        <img src={institutionLogo} alt="Company Logo" className="img-fluid"/>
-                    </Col>
-                    <Col xs={9} md={10}>
-                        <h5>{institutionName}</h5>
-                        <p>{degree}</p>
-                        <p>
-                            {startDate} - {endDate}
-                        </p>
-                    </Col>
-                </Row>
-            </Card.Body>
-        </Card>
-    );
-};
-
-const ProfileCard = ({
-                         firstName,
-                         lastName,
-                         birthDate,
-                         gender,
-                         connectionCount,
-                         profilePicture,
-                         handleEditProfile,
-                     }) => {
-
-    return (
-        <Card>
-            <Card.Body>
-                <Row className="align-items-center">
-                    <Col xs={12} sm={3} md={2} className="text-center mb-3 mb-sm-0">
-                        <img src={profilePicture} alt="Profile Picture" roundedCircle fluid/>
-                    </Col>
-                    <Col xs={12} sm={9} md={10}>
-                        <h4>{firstName} {lastName}</h4>
-                        <p><strong>Birth Date:</strong> {birthDate}</p>
-                        <p><strong>Gender:</strong> {gender}</p>
-                        <p><strong>Connections:</strong> {connectionCount}</p>
-                        <Button variant="primary" onClick={handleEditProfile}>Edit Profile</Button>
-                    </Col>
-                </Row>
-            </Card.Body>
-        </Card>
-    );
-};
+import ExperienceCard from "../components/ExperienceCard";
+import EducationCard from "../components/EducationCard";
+import ProfileCard from "../components/ProfileCard";
+import sendRequest from "../utils/request";
 
 
 const Profile = () => {
+    const [workExperiences, setWorkExperiences] = useState([]);
+    const [educationExperiences, setEducationExperiences] = useState([]);
+    const [profileData, setProfileData] = useState(null);
     const [name, setName] = useState("");
     const [headline, setHeadline] = useState("");
     const [location, setLocation] = useState("");
@@ -96,6 +31,26 @@ const Profile = () => {
         setShowModal(false);
     };
 
+    //fetch the profile data from backend.
+    useEffect( () => {
+
+        const userId = localStorage.getItem("userId");
+
+        sendRequest('profile', 'POST', {userId}, (data) => {
+            // Here comes blog data from backend
+            setProfileData(data)
+            setWorkExperiences(data.work_experiences)
+            setEducationExperiences(data.educations)
+        });
+    }, [])
+
+
+    if(!profileData) {
+        return (
+            <h2>LOADING DATA...</h2>
+        )
+    }
+
     return (
         <Container fluid>
             <NavBar activeLink="profile"/>
@@ -108,11 +63,11 @@ const Profile = () => {
                         <Row>
                             <Col>
                                 <ProfileCard
-                                    firstName="İpek"
-                                    lastName="Öztaş"
-                                    birthDate="08.05.2002"
-                                    gender="Female"
-                                    connectionCount="350"
+                                    firstName={profileData.first_name}
+                                    lastName={profileData.last_name}
+                                    birthDate={profileData.birth_date}
+                                    gender={profileData.gender}
+                                    connectionCount={profileData.connections}
                                     profilePicture=""
                                     handleEditProfile={handleEditProfile}
                                 />
@@ -120,33 +75,35 @@ const Profile = () => {
                         </Row>
                     </div>
                     <div>
-                        <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>Work Experience</h2>
-
+                        <h2 className={"mt-2"} style={{ fontSize: '2.5rem' }}>Work Experience</h2>
                         <Row>
-                            <Col>
-                                <ExperienceCard
-                                    companyLogo="https://www.google.com/url?sa=i&url=https%3A%2F%2Fw3.bilkent.edu.tr%2Fwww%2Fbilkent-logo%2F&psig=AOvVaw1F3CD6WwwSkALLpSp-DlAf&ust=1685004880839000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCNjyirzKjf8CFQAAAAAdAAAAABAE"
-                                    companyName="Bilkent University"
-                                    role="CS115 Tutor"
-                                    startDate="15.09.2022"
-                                    endDate="30.01.2023"
-                                />
-                            </Col>
+                            {workExperiences.map((work_experience) => (
+                                <Row key={work_experience.exp_id}>
+                                    <ExperienceCard
+                                        companyLogo=""
+                                        companyName={work_experience.org_name}
+                                        role={work_experience.profession}
+                                        startDate={work_experience.start_date}
+                                        endDate={work_experience.end_date}
+                                    />
+                                </Row>
+                            ))}
                         </Row>
                     </div>
                     <div>
                         <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>Education</h2>
-
                         <Row>
-                            <Col>
-                                <EducationCard
-                                    institutionLogo="https://www.google.com/url?sa=i&url=https%3A%2F%2Fw3.bilkent.edu.tr%2Fwww%2Fbilkent-logo%2F&psig=AOvVaw1F3CD6WwwSkALLpSp-DlAf&ust=1685004880839000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCNjyirzKjf8CFQAAAAAdAAAAABAE"
-                                    institutionName="Bilkent University"
-                                    degree="Bachelor's Degree"
-                                    startDate="2020"
-                                    endDate="2024"
-                                />
-                            </Col>
+                            {educationExperiences.map((education) => (
+                                <Row key={education.exp_id}>
+                                    <EducationCard
+                                        institutionLogo=""
+                                        institutionName={education.inst_name}
+                                        degree={education.degree}
+                                        startDate={education.edu_start_date}
+                                        endDate={education.edu_end_date}
+                                    />
+                                </Row>
+                            ))}
                         </Row>
                     </div>
 

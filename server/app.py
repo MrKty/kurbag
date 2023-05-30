@@ -715,15 +715,102 @@ def blog_editor():
 
     return jsonify(data)
 
+# Endpoint for fetching user information for profile page.
 @app.route('/profile', methods=['POST'])
 def profile_page():
+
     data = request.json
+    print(data)
 
     # Assuming 'user_id' is present in the request data
     user_id = data.get('user_id')
-
-   
     print(user_id)
+
+    response = {
+        "user_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "birth_date": "1990-05-15",
+        "gender": "Male",
+        "connections": 500,
+        "e_id": 1001,
+        "liked_post": 2001,
+        "works_for": "Google",
+        "works_since": "2020-01-01",
+        "work_experiences": [
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Front Developer ",
+                "role": "Managed a team of developers",
+                "org_name": "Google",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            },
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Backend Developer",
+                "role": "Managed a team of developers",
+                "org_name": "Amazon",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            },
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Manager",
+                "role": "Managed a team of developers",
+                "org_name": "Pepsi",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            }
+        ],
+        "educations": [
+            {
+                "edu_id": 1,
+                "exp_id": 1,
+                "gpa": 3.8,
+                "dept": "Computer Science",
+                "inst_name": "Bilkent University",
+                "degree": "Bachelor's Degree",
+                "edu_end_date": "2021-12-31",
+                "edu_start_date": "2017-09-01",
+                "inst_id": 1001
+            },
+            {
+                "edu_id": 2,
+                "exp_id": 1,
+                "gpa": 3.5,
+                "dept": "Business Administration",
+                "inst_name": "Koc University",
+                "degree": "Master's Degree",
+                "edu_end_date": "2015-05-31",
+                "edu_start_date": "2013-09-01",
+                "inst_id": 1002
+            },
+            {
+                "edu_id": 3,
+                "exp_id": 2,
+                "gpa": 4.0,
+                "dept": "Electrical Engineering",
+                "inst_name": "Ozyegin University",
+                "degree": "Bachelor's Degree",
+                "edu_end_date": "2019-12-31",
+                "edu_start_date": "2015-09-01",
+                "inst_id": 1001
+            }
+        ]
+    }
+
+    return jsonify(response)
+
 
 # Endpoint for creating a new post
 @app.route('/api/contacts', methods=['POST'])

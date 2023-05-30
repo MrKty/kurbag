@@ -3,6 +3,8 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import sendRequest from '../../utils/request';
 
 const EditProfileModal = ({ showModal, handleClose }) => {
+
+  const [profileData, setProfileData] = useState(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [position, setPosition] = useState('');
@@ -11,20 +13,15 @@ const EditProfileModal = ({ showModal, handleClose }) => {
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
 
-  useEffect(() => {
-    // Fetch profile data from the backend
-    sendRequest('profile-data', 'POST', {}, (data) => {
-      const { firstName, lastName, position, sector, education, country, city } = data;
+  useEffect( () => {
 
-      setFirstName(firstName);
-      setLastName(lastName);
-      setPosition(position);
-      setSector(sector);
-      setEducation(education);
-      setCountry(country);
-      setCity(city);
+    const userId = localStorage.getItem("userId");
+
+    sendRequest('profile', 'POST', {userId}, (data) => {
+      // Here comes blog data from backend
+      setProfileData(data)
     });
-  }, []);
+  }, [])
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -120,7 +117,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
             <Form.Control type="text" placeholder="City" value={city} onChange={handleCityChange} />
           </Form.Group>
 
-          <div className="d-grid gap-2">
+          <div className="d-grid gap-2 mt-2">
             <Button variant="primary" type="submit">
               Save Changes
             </Button>
