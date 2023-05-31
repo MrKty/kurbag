@@ -199,23 +199,10 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                             <Form.Group>
                                 <Form.Label className="fw-bold">Certificates:</Form.Label>
                                 <Row>
-                                    <Col md={6}>
+                                    <Col md={12}>
                                         {certificateNames.map((name, index) => (
-                                            <div key={index}
-                                                 style={{
-                                                     maxWidth: "100%",
-                                                     whiteSpace: "nowrap",
-                                                     textOverflow: "ellipsis",
-                                                     overflow: "hidden",
-                                                 }}
-                                            >{name}</div>
-                                        ))}
-                                    </Col>
-                                    <Col md={6}>
-                                        {certificateUrls.map((url, index) => (
                                             <div
                                                 key={index}
-                                                className="overflow-hidden"
                                                 style={{
                                                     maxWidth: "100%",
                                                     whiteSpace: "nowrap",
@@ -223,13 +210,14 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                                                     overflow: "hidden",
                                                 }}
                                             >
-                                                <a href={url} target="_blank" rel="noopener noreferrer">
-                                                    {url}
+                                                <a href={certificateUrls[index]} target="_blank" rel="noopener noreferrer">
+                                                    {name}
                                                 </a>
                                             </div>
                                         ))}
                                     </Col>
                                 </Row>
+
                             </Form.Group>
                             <div className="d-grid gap-2">
                                 <Button variant="success" type="submit" className="mb-3 mt-1">

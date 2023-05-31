@@ -267,6 +267,73 @@ def fill_career_expert_modal():
 
     return jsonify(response)
 
+#Endpoint for displaying jobs.@app.route('/jobs', methods=['POST'])
+@app.route('/jobs', methods=['POST'])
+def get_jobs():
+    response = [
+        {
+            "jobId": 1,
+            "jobTitle": "Data Scientist",
+            "companyName": "Sony",
+            "location": "Istanbul, Turkey",
+            "employmentType": "Full-time",
+            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
+            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
+            "companyFollowers": 1097845,
+            "dueDateApply": "2023-06-15 00:00:00",
+            "jobTimestamp": "2023-05-30 10:30:00"
+        },
+        {
+            "jobId": 2,
+            "jobTitle": "SQL Developer",
+            "companyName": "Amazon",
+            "location": "Ankara, Turkey",
+            "employmentType": "Part-time",
+            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
+            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
+            "companyFollowers": 109,
+            "dueDateApply": "2023-06-30 00:00:00",
+            "jobTimestamp": "2023-05-30 09:45:00"
+        },
+        {
+            "jobId": 3,
+            "jobTitle": "Web Developer",
+            "companyName": "Google",
+            "location": "İzmir, Turkey",
+            "employmentType": "Remote",
+            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
+            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
+            "companyFollowers": 2935,
+            "dueDateApply": "2023-07-10 00:00:00",
+            "jobTimestamp": "2023-05-30 09:15:00"
+        }
+    ]
+
+    return jsonify(response)
+
+
+# TODO Endpoint for updating profile
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    # Get post data from the request
+    data = request.json
+    cursor = db.get_cursor()
+    print(data)
+    try:
+        # Update the profile information in the Person table
+        cursor.execute('UPDATE Person SET first_name = %s, last_name = %s, current_position = %s, current_sector = %s, '
+                       'current_country = %s, current_city = %s WHERE user_id = %s',
+                       (data.get('firstName'), data.get('lastName'), data.get('position'), data.get('sector'),
+                        data.get('country'), data.get('city'), data.get('id')))
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'message': 'Failed to update profile'}), 500
+
+    # Return a success response
+    return jsonify({'message': 'Profile updated successfully'}), 200
 
 # Endpoint for creating a new post
 @app.route('/home-create-post', methods=['POST'])
@@ -297,6 +364,70 @@ def create_post():
     else:
         # Return an error response
         return jsonify({'message': 'Failed to create post'}), 500
+
+# Endpoint for creating a new job (by a recruiter)
+@app.route('/create-job', methods=['POST'])
+def create_job():
+    # Get post data from the request
+    data = request.json
+
+    job_title = data.get('title')
+    job_description = data.get('description')
+    job_organization = data.get('organization')
+    job_type = data.get('type')
+    job_location = data.get('location')
+    job_mode = data.get('mode')
+    job_due_date = data.get('dueDate')
+    job_recruiter_id = 5  # mock data for now
+
+    job_timestamp = datetime.now()  # Current timestamp
+
+    try:
+        # Convert job_due_date to a timestamp
+        due_date = datetime.strptime(job_due_date, "%Y-%m-%d")
+        job_due_date_timestamp = due_date.strftime("%Y-%m-%d %H:%M:%S")
+
+        cursor = db.get_cursor()
+        j_id = None
+
+        try:
+            # Save the job opening to the database
+            cursor.execute(
+                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, recruiter_id) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                (
+                    job_title,
+                    job_description,
+                    job_type,
+                    job_organization,
+                    job_location,
+                    job_mode,
+                    job_due_date_timestamp,
+                    job_timestamp,
+                    job_recruiter_id,
+                ),
+            )
+            j_id = cursor.lastrowid
+
+            cursor.execute('COMMIT')
+
+        except Exception as e:
+            # Print the error message
+            print(f"An error occurred: {str(e)}")
+
+        if j_id:
+            # Return a success response
+            return jsonify({'message': 'Job created successfully', 'Job_id': j_id}), 200
+        else:
+            # Return an error response
+            return jsonify({'message': 'Failed to create Job'}), 500
+
+    except ValueError:
+        # Handle the case when job_due_date is not in the expected format
+        print("Invalid due date format")
+        return jsonify({'message': 'Invalid due date format'}), 400
+
+
 
 
 # Mockup data
@@ -622,6 +753,7 @@ def creates_event():
         return jsonify({'message': 'Failed to create event'}), 500
 
 
+
 @app.route('/conversations', methods=['POST'])
 def fetch_conversations():
     response = [
@@ -793,6 +925,72 @@ def blog_page():
     return jsonify(blogs)
 
 
+@app.route('/cv-pool', methods=['POST'])
+def get_cv_pool():
+
+    # Example blog data
+    response = [
+        {
+            "name": "Mert",
+            "sector": "Technology",
+            "position": "Software Engineer",
+            "experience": "5 years",
+            "currentEmployer": "ABC Company"
+        },
+        {
+            "name": "John",
+            "sector": "Finance",
+            "position": "Financial Analyst",
+            "experience": "3 years",
+            "currentEmployer": "XYZ Bank"
+        },
+        {
+            "name": "Emily",
+            "sector": "Marketing",
+            "position": "Marketing Manager",
+            "experience": "7 years",
+            "currentEmployer": "Marketing Solutions Inc."
+        },
+        {
+            "name": "David",
+            "sector": "Healthcare",
+            "position": "Registered Nurse",
+            "experience": "10 years",
+            "currentEmployer": "City Hospital"
+        },
+        {
+            "name": "Sarah",
+            "sector": "Education",
+            "position": "Teacher",
+            "experience": "4 years",
+            "currentEmployer": "ABC School"
+        },
+        {
+            "name": "Alex",
+            "sector": "Sales",
+            "position": "Sales Manager",
+            "experience": "6 years",
+            "currentEmployer": "XYZ Corporation"
+        },
+        {
+            "name": "Sophia",
+            "sector": "Hospitality",
+            "position": "Hotel Manager",
+            "experience": "8 years",
+            "currentEmployer": "Luxury Resort"
+        },
+        {
+            "name": "Daniel",
+            "sector": "Engineering",
+            "position": "Mechanical Engineer",
+            "experience": "9 years",
+            "currentEmployer": "ABC Engineering"
+        }
+    ]
+
+    return jsonify(response)
+
+
 @app.route('/blogEditor', methods=['POST'])
 def blog_editor():
     data = request.json  # Get the form data from the request body
@@ -800,15 +998,105 @@ def blog_editor():
 
     return jsonify(data)
 
-
+# Endpoint for fetching user information for profile page.
 @app.route('/profile', methods=['POST'])
 def profile_page():
+
     data = request.json
+    print(data)
 
     # Assuming 'user_id' is present in the request data
     user_id = data.get('user_id')
-
     print(user_id)
+
+    response = {
+        "user_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "birth_date": "1990-05-15",
+        "current_country": "Turkey",
+        "current_city": "Ankara",
+        "current_position": "Backend DEV",
+        "current_sector": "Soft-ware",
+        "gender": "Male",
+        "connections": 500,
+        "e_id": 1001,
+        "liked_post": 2001,
+        "works_for": "Google",
+        "works_since": "2020-01-01",
+        "work_experiences": [
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Front Developer ",
+                "role": "Managed a team of developers",
+                "org_name": "Google",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            },
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Backend Developer",
+                "role": "Managed a team of developers",
+                "org_name": "Amazon",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            },
+            {
+                "user_id": 2,
+                "exp_id": 1,
+                "work_type": "Full-time",
+                "work_mode": "Remote",
+                "profession": "Manager",
+                "role": "Managed a team of developers",
+                "org_name": "Pepsi",
+                "end_date": "2023-05-31",
+                "start_date": "2022-01-01"
+            }
+        ],
+        "educations": [
+            {
+                "edu_id": 1,
+                "exp_id": 1,
+                "gpa": 3.8,
+                "dept": "Computer Science",
+                "inst_name": "Bilkent University",
+                "degree": "Bachelor's Degree",
+                "edu_end_date": "2021-12-31",
+                "edu_start_date": "2017-09-01",
+                "inst_id": 1001
+            },
+            {
+                "edu_id": 2,
+                "exp_id": 1,
+                "gpa": 3.5,
+                "dept": "Business Administration",
+                "inst_name": "Koc University",
+                "degree": "Master's Degree",
+                "edu_end_date": "2015-05-31",
+                "edu_start_date": "2013-09-01",
+                "inst_id": 1002
+            },
+            {
+                "edu_id": 3,
+                "exp_id": 2,
+                "gpa": 4.0,
+                "dept": "Electrical Engineering",
+                "inst_name": "Ozyegin University",
+                "degree": "Bachelor's Degree",
+                "edu_end_date": "2019-12-31",
+                "edu_start_date": "2015-09-01",
+                "inst_id": 1001
+            }
+        ]
+    }
+
+    return jsonify(response)
 
 
 # Endpoint for creating a new post

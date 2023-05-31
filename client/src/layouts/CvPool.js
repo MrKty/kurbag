@@ -1,8 +1,9 @@
 import {Card, Col, Image, Row, Container} from "react-bootstrap";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import FilterBar from "../components/FilterBar";
 import RecruiterNavBar from "../components/RecruiterNavBar";
 import CvCard from "../components/CvCard";
+import sendRequest from "../utils/request";
 
 // sample cv's are like a summary of a cv
 // they will only have name, sector, position, years of experience, current Employer
@@ -75,12 +76,23 @@ const sampleCv = [
 
 const CvPool = () => {
 
+    const [cvs, setCvs] = useState([]);
+
+
+    useEffect( () => {
+        sendRequest('cv-pool', 'POST', {}, (data) => {
+            // Here comes blog data from backend
+            setCvs(data);
+        });
+    }, []);
+
+
     return (
-        <Container fluid className="" style={{overflowY:"auto", maxHeight:"700px"}}>
+        <Container fluid className="" style={{overflowY:"auto", maxHeight:"750px"}}>
             <RecruiterNavBar activeLink="cv-pool"/>
             <FilterBar filters={["Date", "Main Tag"]} />
             <div className="center-wrapper">
-                {sampleCv.map((cv) => (
+                {cvs.map((cv) => (
                     <Col className="mt-2 mb-2" key={cv.id} md={8}>
                         <CvCard
                             name={cv.name}

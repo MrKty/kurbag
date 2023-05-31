@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
 import NavBar from "../components/NavBar";
+import RecruiterNavBar from "../components/RecruiterNavBar";
+import sendRequest from "../utils/request";
 
 const CreateJobPage = () => {
     const [organization, setOrganization] = useState("");
@@ -10,11 +12,43 @@ const CreateJobPage = () => {
     const [location, setLocation] = useState("");
     const [mode, setMode] = useState("");
     const [dueDate, setDueDate] = useState("");
+    const recruiterId = localStorage.getItem("userId");
+    const [backEndMessage, setBackEndMessage] = useState("initial back-end message.");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Perform form submission logic here
+        // Check if any field is empty
+        if (
+            !organization ||
+            !description ||
+            !title ||
+            !type ||
+            !location ||
+            !mode ||
+            !dueDate ||
+            !recruiterId
+        ) {
+            // Handle the case when a field is empty
+            console.log("All fields are required");
+            return;
+        }
+
+        const requestData = {
+            organization,
+            description,
+            title,
+            type,
+            location,
+            mode,
+            dueDate,
+            recruiterId,
+        };
+
+        sendRequest("create-job", "POST", requestData, (data) => {
+            // Handle the response from the backend
+            setBackEndMessage(data);
+        });
 
         // Clear form fields
         setOrganization("");
@@ -28,10 +62,10 @@ const CreateJobPage = () => {
 
     return (
         <Container fluid>
-            <NavBar />
+            <RecruiterNavBar />
             <Card className="mt-2" style={{ height: "600px", overflowY: "scroll" }}>
                 <Col>
-                    <Card.Header className="fw-bold">Create Job</Card.Header>
+                    <Card.Header className="fw-bold">Create Job: {backEndMessage}</Card.Header>
                     <Card.Body>
                         <Form onSubmit={handleSubmit}>
                             <Row>

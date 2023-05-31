@@ -121,7 +121,7 @@ const NavBar = (props) => {
                                     id="basic-nav-dropdown"
                                     menuAlign="right"
                                 >
-                                    <NavDropdown.Item href="#">Profile 1</NavDropdown.Item>
+                                    <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
                                     <NavDropdown.Divider/>
                                     <NavDropdown.Item href="#">Logout</NavDropdown.Item>
                                 </NavDropdown>
