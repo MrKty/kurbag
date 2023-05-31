@@ -23,7 +23,7 @@ const CreatePostModal = ({ showModal, toggleCreatePostModal}) => {
         // Clear input fields and close the modal
         setPostTitle('');
         setPostContent('');
-        sendRequest('home-blog', 'POST', reqData, (data) => {
+        sendRequest('home-create-post', 'POST', reqData, (data) => {
             alert(data.message);
         });
         handlePostClose();

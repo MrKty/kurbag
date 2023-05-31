@@ -24,6 +24,7 @@ import ViewEventsPage from "./layouts/ViewEventsPage";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import CreateJob from "./layouts/CreateJob";
+import PostList from "./layouts/PostList";
 
 const firebaseConfig = {
     // Your Firebase configuration object

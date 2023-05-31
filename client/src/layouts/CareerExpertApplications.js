@@ -1,15 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Row, Col, Image, Badge, Modal, Button, Container, Card, Form} from 'react-bootstrap';
 import CareerExpertNavBar from "../components/CareerExpertNavBar";
 import FilterBar from "../components/FilterBar";
-
-function ApplicantSubtag({subtag}) {
-    return (
-        <Badge className="mb-2 me-2" bg="secondary">
-            {subtag}
-        </Badge>
-    );
-}
+import sendRequest from "../utils/request";
 
 const uploadedFilesData = [
     {id: 1, name: "Cert_Compensation_Professional_(CCP).pdf"},
@@ -42,9 +35,9 @@ const FileList = () => {
 };
 
 function ApplicationCard({application, handleClick}) {
-    const {name, date, tag, subTags, photo} = application;
-    const [show, setShow] = useState(false);
+    const {name, date, tag, photo} = application;
     const [selectedCertificates, setSelectedCertificates] = useState([]);
+    const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -67,9 +60,6 @@ function ApplicationCard({application, handleClick}) {
                         <Badge bg="primary" className="mb-2">
                             {tag}
                         </Badge>
-                        {subTags.map((subtag) => (
-                            <ApplicantSubtag key={subtag} subtag={subtag}/>
-                        ))}
                     </Col>
                 </Row>
 
@@ -93,11 +83,7 @@ function ApplicationCard({application, handleClick}) {
                         </Col>
                     </Row>
                     <hr/>
-                    <div><span className={"fw-bold"}>Applied Main Expertise Area:</span> {tag}</div>
-                    <div className={"fw-bold"}>Applied Sub Expertise Areas:</div>
-                    {subTags.map((subtag) => (
-                        <ApplicantSubtag key={subtag} subtag={subtag}/>
-                    ))}
+                    <div><span className={"fw-bold"}>Applied Expertise Area:</span> {tag}</div>
                     <hr/>
                     <label htmlFor={"motivation"} className={"fw-bold"}>Motivation:</label>
                     <Row className="">
@@ -149,49 +135,15 @@ function ApplicationCard({application, handleClick}) {
 
 function CareerExpertApplications() {
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [applications, setApplications] = useState([]);
 
-    const applications = [
-        {
-            id: 1,
-            name: "John Doe",
-            date: "2022-02-14",
-            tag: "Career",
-            subTags: ["Remote Work", "Internships"],
-            photo: "https://randomuser.me/api/portraits/men/1.jpg",
-        },
-        {
-            id: 2,
-            name: "Jane Doe",
-            date: "2022-02-12",
-            tag: "Career",
-            subTags: ["Freelancer", "Retirement"],
-            photo: "https://randomuser.me/api/portraits/women/2.jpg",
-        },
-        {
-            id: 3,
-            name: "Bob Smith",
-            date: "2022-02-10",
-            tag: "Career",
-            subTags: ["Internships"],
-            photo: "https://randomuser.me/api/portraits/men/3.jpg",
-        },
-        {
-            id: 4,
-            name: "Alice Johnson",
-            date: "2022-02-09",
-            tag: "Career",
-            subTags: ["Remote Work", "Internships"],
-            photo: "https://randomuser.me/api/portraits/women/4.jpg",
-        },
-        {
-            id: 5,
-            name: "Michael Brown",
-            date: "2022-02-08",
-            tag: "Career",
-            subTags: ["Retirement", "Freelancer"],
-            photo: "https://randomuser.me/api/portraits/men/5.jpg",
-        },
-    ];
+    useEffect(() => {
+        // Fetch applications data from the Flask backend
+        sendRequest('career-expert-applications', 'POST', null, (data) => {
+            console.log("here")
+            setApplications(data.applications);
+        });
+    }, []);
 
     const handleApplicationClick = (application) => {
         setSelectedApplication(application);
@@ -215,26 +167,6 @@ function CareerExpertApplications() {
                     </Col>
                 ))}
             </div>
-
-            {selectedApplication && (
-                <div className="popup" onClick={handleClosePopup}>
-                    <div className="popup-content">
-                        <h2>{selectedApplication.applicantName}</h2>
-                        <p>
-                            Applied on: {selectedApplication.applicationDate} for{" "}
-                            {selectedApplication.appliedTag}
-                        </p>
-                        <p>Sub-tags:</p>
-                        <ul>
-                            {selectedApplication.subTags.map((subTag) => (
-                                <li key={subTag} className="sub-tag">
-                                    {subTag}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )}
         </Container>
     );
 }
