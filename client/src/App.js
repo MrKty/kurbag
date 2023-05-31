@@ -24,6 +24,7 @@ import ViewEventsPage from "./layouts/ViewEventsPage";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import CreateJob from "./layouts/CreateJob";
+import OrganizationProfile from "./layouts/OrganizationProfile";
 
 const firebaseConfig = {
     // Your Firebase configuration object
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+                <Route path="/org-profile" element={<OrganizationProfile/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>
