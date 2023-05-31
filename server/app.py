@@ -313,6 +313,29 @@ def get_jobs():
     return jsonify(response)
 
 
+# TODO Endpoint for updating profile
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    # Get post data from the request
+    data = request.json
+    cursor = db.get_cursor()
+    print(data)
+    try:
+        # Update the profile information in the Person table
+        cursor.execute('UPDATE Person SET first_name = %s, last_name = %s, current_position = %s, current_sector = %s, '
+                       'current_country = %s, current_city = %s WHERE user_id = %s',
+                       (data.get('firstName'), data.get('lastName'), data.get('position'), data.get('sector'),
+                        data.get('country'), data.get('city'), data.get('id')))
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'message': 'Failed to update profile'}), 500
+
+    # Return a success response
+    return jsonify({'message': 'Profile updated successfully'}), 200
+
 # Endpoint for creating a new post
 @app.route('/home-blog', methods=['POST'])
 def create_post():
@@ -731,6 +754,10 @@ def profile_page():
         "first_name": "John",
         "last_name": "Doe",
         "birth_date": "1990-05-15",
+        "current_country": "Turkey",
+        "current_city": "Ankara",
+        "current_position": "Backend DEV",
+        "current_sector": "Soft-ware",
         "gender": "Male",
         "connections": 500,
         "e_id": 1001,
