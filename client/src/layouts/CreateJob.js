@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
+import React, {useState} from "react";
+import {Container, Card, Form, Button, Row, Col} from "react-bootstrap";
 import NavBar from "../components/NavBar";
 import RecruiterNavBar from "../components/RecruiterNavBar";
 import sendRequest from "../utils/request";
@@ -19,7 +19,7 @@ const CreateJob = () => {
     const recruiterId = localStorage.getItem("userId");
     const [backEndMessage, setBackEndMessage] = useState("initial back-end message.");
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         // Check if any field is empty
@@ -59,7 +59,7 @@ const CreateJob = () => {
             setBackEndMessage(data);
         });
 
-        // Clear form fields comment
+        // Clear form fields
         setOrganization("");
         setDescription("");
         setTitle("");
@@ -71,26 +71,26 @@ const CreateJob = () => {
         setSkillInput('');
         setMinAge('');
         setMaxAge('');
-    };
+    }
 
     const handleAddSkill = () => {
         if (skillInput.trim() !== '') {
             setSkills([...skills, skillInput]);
             setSkillInput('');
         }
-    };
+    }
 
     return (
         <Container fluid>
-            <RecruiterNavBar />
-            <Card className="mt-2" style={{ height: "600px", overflowY: "scroll" }}>
+            <RecruiterNavBar/>
+            <Card className="mt-2" style={{height: "600px", overflowY: "scroll"}}>
                 <Col>
                     <Card.Header className="fw-bold">Create Job: {backEndMessage}</Card.Header>
                     <Card.Body>
                         <Form onSubmit={handleSubmit}>
                             <Row>
                                 <Col md={6}>
-                                    <Form.Group controlId="title" className="mt-2">
+                                    <Form.Group controlId="title" className="">
                                         <Form.Label>Title</Form.Label>
                                         <Form.Control
                                             type="text"
@@ -113,58 +113,64 @@ const CreateJob = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Form>
+                                <Col>
                                     <Form.Group controlId="workType">
                                         <Form.Label>Work Type</Form.Label>
-                                        <Form.Control as="select" value={workType} onChange={(e) => setWorkType(e.target.value)}>
+                                        <Form.Control as="select" value={workType}
+                                                      onChange={(e) => setWorkType(e.target.value)}>
                                             <option value="">Select work type</option>
                                             <option value="full-time">Full-time</option>
                                             <option value="part-time">Part-time</option>
                                             <option value="internship">Internship</option>
                                         </Form.Control>
                                     </Form.Group>
+                                </Col>
+                                <Col>
                                     <Form.Group controlId="workMode">
                                         <Form.Label>Work Mode</Form.Label>
-                                        <Form.Control as="select" value={workMode} onChange={(e) => setWorkMode(e.target.value)}>
+                                        <Form.Control as="select" value={workMode}
+                                                      onChange={(e) => setWorkMode(e.target.value)}>
                                             <option value="">Select work mode</option>
                                             <option value="on-site">On-site</option>
                                             <option value="remote">Remote</option>
                                         </Form.Control>
                                     </Form.Group>
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId="minAge">
-                                                <Form.Label>Minimum Age</Form.Label>
-                                                <Form.Control type="number" value={minAge} onChange={(e) => setMinAge(e.target.value)} />
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group controlId="maxAge">
-                                                <Form.Label>Maximum Age</Form.Label>
-                                                <Form.Control type="number" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
-                                    <Form.Group controlId="skills">
-                                        <Form.Label>Skills</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Enter a skill"
-                                            value={skillInput}
-                                            onChange={(e) => setSkillInput(e.target.value)}
-                                        />
-                                        <Button variant="primary" onClick={handleAddSkill} className="mt-2">
-                                            Add Skill
-                                        </Button>
-                                        {skills.length > 0 && (
-                                            <ul className="mt-2">
-                                                {skills.map((skill, index) => (
-                                                    <li key={index}>{skill}</li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </Form.Group>
-                                </Form>
+                                </Col>
+                                <Row>
+                                    <Col>
+                                        <Form.Group controlId="minAge">
+                                            <Form.Label>Minimum Age</Form.Label>
+                                            <Form.Control type="number" value={minAge}
+                                                          onChange={(e) => setMinAge(e.target.value)}/>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group controlId="maxAge">
+                                            <Form.Label>Maximum Age</Form.Label>
+                                            <Form.Control type="number" value={maxAge}
+                                                          onChange={(e) => setMaxAge(e.target.value)}/>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Form.Group controlId="skills">
+                                    <Form.Label>Skills</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter a skill"
+                                        value={skillInput}
+                                        onChange={(e) => setSkillInput(e.target.value)}
+                                    />
+                                    <Button variant="primary" onClick={handleAddSkill} className="mt-2">
+                                        Add Skill
+                                    </Button>
+                                    {skills.length > 0 && (
+                                        <ul className="mt-2">
+                                            {skills.map((skill, index) => (
+                                                <li key={index}>{skill}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </Form.Group>
 
                                 <Col md={6}>
                                     <Form.Group controlId="location" className="mt-2">
