@@ -418,6 +418,9 @@ def create_job():
     job_mode = data.get('mode')
     job_due_date = data.get('dueDate')
     job_recruiter_id = 5  # mock data for now
+    job_min_age = data.get('minAge')
+    job_max_age = data.get('maxAge')
+    job_skills = data.get('skillsString')
 
     job_timestamp = datetime.now()  # Current timestamp
 
@@ -432,8 +435,8 @@ def create_job():
         try:
             # Save the job opening to the database
             cursor.execute(
-                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, recruiter_id) '
-                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, j_min_age , j_max_age , j_skills ,recruiter_id) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s)',
                 (
                     job_title,
                     job_description,
@@ -443,6 +446,9 @@ def create_job():
                     job_mode,
                     job_due_date_timestamp,
                     job_timestamp,
+                    job_min_age,
+                    job_max_age,
+                    job_skills,
                     job_recruiter_id,
                 ),
             )
@@ -1205,6 +1211,143 @@ def bloger_editor():
     return jsonify({"message": "Blog is successfully published"}), 200
 
 
+
+    # Route to fetch data from the Person table
+@app.route("/profile-real", methods=["POST"])
+def fetch_person_data():
+        user_id = request.json["userId"]
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        cursor.execute(
+            "SELECT * FROM Person WHERE user_id = %s",
+            (user_id,)
+        )
+        person_data = cursor.fetchone()
+
+        return jsonify(person_data)
+
+    # Route to fetch data from Work_Experience joined with CV_Component
+
+@app.route('/add-work-experience', methods=['POST'])
+def add_work_experience():
+    # Get work experience data from the request
+    data = request.json
+    work_mode = data.get('workMode')
+    work_type = data.get('workType')
+    role = data.get('role')
+    profession = data.get('profession')
+    job_end_date = data.get('jobEndDate')
+    job_start_date = data.get('jobStartDate')
+
+    cursor = db.get_cursor()
+    exp_id = None
+
+    try:
+        # Save the work experience to the database
+        cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
+                       'VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), True, '', '', job_end_date, job_start_date))
+        exp_id = cursor.lastrowid
+
+        cursor.execute('INSERT INTO Work_Experience (user_id, exp_id, work_mode, work_type, role, profession, '
+                       'job_end_date, job_start_date, org_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), exp_id, work_mode, work_type, role, profession, job_end_date, job_start_date,
+                        data.get('orgName')))
+
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if exp_id:
+        # Return a success response
+        return jsonify({'message': 'Work experience added successfully', 'expId': exp_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to add work experience'}), 500
+
+@app.route('/add-education', methods=['POST'])
+def add_education():
+    # Get education data from the request
+    data = request.json
+    gpa = data.get('gpa')
+    department = data.get('department')
+    degree = data.get('degree')
+    edu_end_date = data.get('eduEndDate')
+    edu_start_date = data.get('eduStartDate')
+
+    cursor = db.get_cursor()
+    exp_id = None
+
+    try:
+        # Save the education to the database
+        cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
+                       'VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), True, '', '', edu_end_date, edu_start_date))
+        exp_id = cursor.lastrowid
+
+        cursor.execute('INSERT INTO Education (user_id, exp_id, gpa, dept, degree, edu_end_date, edu_start_date, '
+                       'inst_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), exp_id, gpa, department, degree, edu_end_date, edu_start_date, data.get('instName')))
+
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if exp_id:
+        # Return a success response
+        return jsonify({'message': 'Education added successfully', 'expId': exp_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to add education'}), 500
+
+
+
+@app.route("/get-work-experience", methods=["POST"])
+def fetch_work_experience_data():
+        user_id = request.json["userId"]
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        print(request.json)
+        cursor.execute(
+            """
+            SELECT *
+            FROM Work_Experience we
+            INNER JOIN CV_Component cv ON we.exp_id = cv.exp_id
+            WHERE cv.user_id = %s
+            """,
+            (user_id,)
+        )
+        work_experience_data = cursor.fetchall()
+        print(work_experience_data)
+        cursor.close()
+        return jsonify(work_experience_data)
+
+    # Route to fetch data from Education joined with CV_Component
+@app.route("/get-education", methods=["POST"])
+def fetch_education_data():
+        user_id = request.json["userId"]
+        print(request.json)
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM Education e
+            INNER JOIN CV_Component cv ON e.exp_id = cv.exp_id
+            WHERE cv.user_id = %s
+            """,
+            (user_id,)
+        )
+        education_data = cursor.fetchall()
+        cursor.close()
+        print(education_data)
+        return jsonify(education_data)
+
+
+
 # Endpoint for fetching user information for profile page.
 @app.route('/profile', methods=['POST'])
 def profile_page():
@@ -1270,9 +1413,9 @@ def profile_page():
                 "edu_id": 1,
                 "exp_id": 1,
                 "gpa": 3.8,
-                "dept": "Computer Science",
+                "dept": "Engineering",
                 "inst_name": "Bilkent University",
-                "degree": "Bachelor's Degree",
+                "degree": "Bachelor's",
                 "edu_end_date": "2021-12-31",
                 "edu_start_date": "2017-09-01",
                 "inst_id": 1001

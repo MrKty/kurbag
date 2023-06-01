@@ -4,13 +4,17 @@ import NavBar from "../components/NavBar";
 import RecruiterNavBar from "../components/RecruiterNavBar";
 import sendRequest from "../utils/request";
 
-const CreateJobPage = () => {
+const CreateJob = () => {
     const [organization, setOrganization] = useState("");
     const [description, setDescription] = useState("");
     const [title, setTitle] = useState("");
-    const [type, setType] = useState("");
     const [location, setLocation] = useState("");
-    const [mode, setMode] = useState("");
+    const [workType, setWorkType] = useState('');
+    const [workMode, setWorkMode] = useState('');
+    const [minAge, setMinAge] = useState('');
+    const [maxAge, setMaxAge] = useState('');
+    const [skills, setSkills] = useState([]);
+    const [skillInput, setSkillInput] = useState('');
     const [dueDate, setDueDate] = useState("");
     const recruiterId = localStorage.getItem("userId");
     const [backEndMessage, setBackEndMessage] = useState("initial back-end message.");
@@ -23,9 +27,9 @@ const CreateJobPage = () => {
             !organization ||
             !description ||
             !title ||
-            !type ||
+            !workType ||
             !location ||
-            !mode ||
+            !workMode ||
             !dueDate ||
             !recruiterId
         ) {
@@ -34,15 +38,20 @@ const CreateJobPage = () => {
             return;
         }
 
+        const skillsString = skills.join(',');
+
         const requestData = {
             organization,
             description,
             title,
-            type,
+            workType,
             location,
-            mode,
+            workMode,
             dueDate,
             recruiterId,
+            minAge,
+            maxAge,
+            skillsString
         };
 
         sendRequest("create-job", "POST", requestData, (data) => {
@@ -54,10 +63,21 @@ const CreateJobPage = () => {
         setOrganization("");
         setDescription("");
         setTitle("");
-        setType("");
+        setWorkType("");
         setLocation("");
-        setMode("");
+        setWorkMode("");
         setDueDate("");
+        setSkills([]);
+        setSkillInput('');
+        setMinAge('');
+        setMaxAge('');
+    };
+
+    const handleAddSkill = () => {
+        if (skillInput.trim() !== '') {
+            setSkills([...skills, skillInput]);
+            setSkillInput('');
+        }
     };
 
     return (
@@ -93,17 +113,58 @@ const CreateJobPage = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={6}>
-                                    <Form.Group controlId="type" className="mt-2">
-                                        <Form.Label>Type</Form.Label>
+                                <Form>
+                                    <Form.Group controlId="workType">
+                                        <Form.Label>Work Type</Form.Label>
+                                        <Form.Control as="select" value={workType} onChange={(e) => setWorkType(e.target.value)}>
+                                            <option value="">Select work type</option>
+                                            <option value="full-time">Full-time</option>
+                                            <option value="part-time">Part-time</option>
+                                            <option value="internship">Internship</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                    <Form.Group controlId="workMode">
+                                        <Form.Label>Work Mode</Form.Label>
+                                        <Form.Control as="select" value={workMode} onChange={(e) => setWorkMode(e.target.value)}>
+                                            <option value="">Select work mode</option>
+                                            <option value="on-site">On-site</option>
+                                            <option value="remote">Remote</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Group controlId="minAge">
+                                                <Form.Label>Minimum Age</Form.Label>
+                                                <Form.Control type="number" value={minAge} onChange={(e) => setMinAge(e.target.value)} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group controlId="maxAge">
+                                                <Form.Label>Maximum Age</Form.Label>
+                                                <Form.Control type="number" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Form.Row>
+                                    <Form.Group controlId="skills">
+                                        <Form.Label>Skills</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Enter type"
-                                            value={type}
-                                            onChange={(e) => setType(e.target.value)}
+                                            placeholder="Enter a skill"
+                                            value={skillInput}
+                                            onChange={(e) => setSkillInput(e.target.value)}
                                         />
+                                        <Button variant="primary" onClick={handleAddSkill} className="mt-2">
+                                            Add Skill
+                                        </Button>
+                                        {skills.length > 0 && (
+                                            <ul className="mt-2">
+                                                {skills.map((skill, index) => (
+                                                    <li key={index}>{skill}</li>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </Form.Group>
-                                </Col>
+                                </Form>
 
                                 <Col md={6}>
                                     <Form.Group controlId="location" className="mt-2">
@@ -118,17 +179,7 @@ const CreateJobPage = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={6}>
-                                    <Form.Group controlId="mode" className="mt-2">
-                                        <Form.Label>Mode</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Enter mode"
-                                            value={mode}
-                                            onChange={(e) => setMode(e.target.value)}
-                                        />
-                                    </Form.Group>
-                                </Col>
+
 
                                 <Col md={6}>
                                     <Form.Group controlId="dueDate" className="mt-2">
@@ -167,4 +218,4 @@ const CreateJobPage = () => {
     );
 };
 
-export default CreateJobPage;
+export default CreateJob

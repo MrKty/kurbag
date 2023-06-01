@@ -7,6 +7,8 @@ import ExperienceCard from "../components/ExperienceCard";
 import EducationCard from "../components/EducationCard";
 import ProfileCard from "../components/ProfileCard";
 import sendRequest from "../utils/request";
+import AddEducationModal from "../components/modals/AddEducationModal";
+import AddWorkExperienceModal from "../components/modals/AddWorkExperienceModal";
 
 
 const Profile = () => {
@@ -18,6 +20,8 @@ const Profile = () => {
     const [location, setLocation] = useState("");
     const [bio, setBio] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [showEducationModal, setShowEducationModal] = useState(false);
+    const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,8 +31,24 @@ const Profile = () => {
     const handleEditProfile = () => {
         setShowModal(true);
     };
+
+    const handleAddEducation = () => {
+        setShowEducationModal(true);
+    };
+
+    const handleAddWorkExperience = () => {
+        setShowWorkExperienceModal(true);
+    };
+
     const handleClose = () => {
         setShowModal(false);
+    };
+
+    const handleEducationModalClose = () => {
+        setShowEducationModal(false);
+    };
+    const handleWorkExperienceModalClose = () => {
+        setShowWorkExperienceModal(false);
     };
 
     //fetch the profile data from backend.
@@ -36,11 +56,30 @@ const Profile = () => {
 
         const userId = localStorage.getItem("userId");
 
-        sendRequest('profile', 'POST', {userId}, (data) => {
+        sendRequest('profile-real', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
             setProfileData(data)
-            setWorkExperiences(data.work_experiences)
-            setEducationExperiences(data.educations)
+        });
+    }, [])
+
+
+    useEffect( () => {
+
+        const userId = localStorage.getItem("userId");
+
+        sendRequest('get-work-experience', 'POST', {userId}, (data) => {
+            // Here comes blog data from backend
+            setWorkExperiences(data)
+        });
+    }, [])
+
+    useEffect( () => {
+
+        const userId = localStorage.getItem("userId");
+
+        sendRequest('get-education', 'POST', {userId}, (data) => {
+            // Here comes blog data from backend
+            setEducationExperiences(data)
         });
     }, [])
 
@@ -67,49 +106,69 @@ const Profile = () => {
                                     lastName={profileData.last_name}
                                     birthDate={profileData.birth_date}
                                     gender={profileData.gender}
+                                    sector={profileData.current_sector}
+                                    position={profileData.current_position}
+                                    city={profileData.current_city}
+                                    country={profileData.current_country}
                                     connectionCount={profileData.connections}
                                     profilePicture=""
                                     handleEditProfile={handleEditProfile}
+                                    handleAddWorkExperience={handleAddWorkExperience}
+                                    handleAddEducation={handleAddEducation}
                                 />
                             </Col>
                         </Row>
                     </div>
-                    <div>
-                        <h2 className={"mt-2"} style={{ fontSize: '2.5rem' }}>Work Experience</h2>
-                        <Row>
-                            {workExperiences.map((work_experience) => (
-                                <Row key={work_experience.exp_id}>
-                                    <ExperienceCard
-                                        companyLogo=""
-                                        companyName={work_experience.org_name}
-                                        role={work_experience.profession}
-                                        startDate={work_experience.start_date}
-                                        endDate={work_experience.end_date}
-                                    />
-                                </Row>
-                            ))}
-                        </Row>
-                    </div>
-                    <div>
-                        <h2 className={"mt-2"} style={{fontSize: '2.5rem'}}>Education</h2>
-                        <Row>
-                            {educationExperiences.map((education) => (
-                                <Row key={education.exp_id}>
-                                    <EducationCard
-                                        institutionLogo=""
-                                        institutionName={education.inst_name}
-                                        degree={education.degree}
-                                        startDate={education.edu_start_date}
-                                        endDate={education.edu_end_date}
-                                    />
-                                </Row>
-                            ))}
-                        </Row>
-                    </div>
+                    {/* Render work experience div only if workExperiences array is not empty */}
+                    {/* Render work experience div only if workExperiences array exists and has length */}
+                    {workExperiences && workExperiences.length > 0 && (
+                        <div>
+                            <h2 className={"mt-2"} style={{ fontSize: "2.5rem" }}>
+                                Work Experience
+                            </h2>
+                            <Row>
+                                {workExperiences.map((work_experience) => (
+                                    <Row key={work_experience.exp_id}>
+                                        <ExperienceCard
+                                            companyLogo=""
+                                            companyName={work_experience.org_name}
+                                            role={work_experience.profession}
+                                            startDate={work_experience.start_date}
+                                            endDate={work_experience.end_date}
+                                        />
+                                    </Row>
+                                ))}
+                            </Row>
+                        </div>
+                    )}
+
+                    {/* Render education div only if educationExperiences array exists and has length */}
+                    {educationExperiences && educationExperiences.length > 0 && (
+                        <div>
+                            <h2 className={"mt-2"} style={{ fontSize: "2.5rem" }}>
+                                Education
+                            </h2>
+                            <Row>
+                                {educationExperiences.map((education) => (
+                                    <Row key={education.exp_id}>
+                                        <EducationCard
+                                            institutionLogo=""
+                                            institutionName={education.inst_name}
+                                            degree={education.degree}
+                                            startDate={education.edu_start_date}
+                                            endDate={education.edu_end_date}
+                                        />
+                                    </Row>
+                                ))}
+                            </Row>
+                        </div>
+                    )}
 
                 </Col>
             </Row>
             <EditProfileModal showModal={showModal} handleClose={handleClose}/>
+            <AddEducationModal showModal={showEducationModal} handleClose={handleEducationModalClose}/>
+            <AddWorkExperienceModal showModal={showWorkExperienceModal} handleClose={handleWorkExperienceModalClose}/>
         </Container>
     );
 };

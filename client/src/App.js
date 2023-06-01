@@ -26,6 +26,7 @@ import 'firebase/compat/storage';
 import CreateJob from "./layouts/CreateJob";
 import OrganizationProfile from "./layouts/OrganizationProfile";
 
+
 const firebaseConfig = {
     // Your Firebase configuration object
     storageBucket: 'gs://cs353db.appspot.com/'

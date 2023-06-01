@@ -15,7 +15,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
   useEffect(() => {
     const userId = localStorage.getItem('userId');
 
-    sendRequest('profile', 'POST', { userId }, (data) => {
+    sendRequest('profile-real', 'POST', { userId }, (data) => {
       setProfileData(data);
       setFirstName(data.first_name);
       setLastName(data.last_name);
@@ -25,6 +25,19 @@ const EditProfileModal = ({ showModal, handleClose }) => {
       setCity(data.current_city);
     });
   }, []);
+
+
+  // Helper function to get month name from the month index
+  function getMonthName(monthIndex) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[monthIndex];
+  }
+
+  function formatDate(date) {
+    const dateObj = new Date(date)
+    return `${dateObj.getDate()} ${getMonthName(dateObj.getMonth())} ${dateObj.getFullYear()} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+
+  }
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -115,7 +128,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
           </Form.Group>
           <Form.Group controlId="formCity">
             <Form.Label>City</Form.Label>
-            <Form.Control type="text" placeholder="City" value={profileData.current_city} onChange={handleCityChange} />
+            <Form.Control type="text" placeholder={profileData.current_city}  value={city} onChange={handleCityChange} />
           </Form.Group>
 
           <div className="d-grid gap-2 mt-2">
