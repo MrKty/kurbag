@@ -1,12 +1,14 @@
-import {Card, Button, Row, Col, Badge, Navbar, Container} from "react-bootstrap";
+import {Card, Button, Row, Col, Badge, Navbar, Container, Modal, Form, Image} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faThumbsUp, faComment} from '@fortawesome/free-solid-svg-icons';
 import {Link, useParams} from "react-router-dom";
 import NavBar from "../components/NavBar";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import sendRequest from "../utils/request";
+import * as PropTypes from "prop-types";
 
 
-const blog = {
+const mockBlog = {
     author: 'Jane Smith',
     title: 'Retirement Planning: What You Need to Know',
     summary: "Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement.",
@@ -28,19 +30,91 @@ const blog = {
     tags: ['Career', 'Retirement']
 };
 
+// Helper function to get month name from the month index
+function getMonthName(monthIndex) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[monthIndex];
+}
+
+function formatDate(date) {
+    const dateObj = new Date(date)
+    return `${dateObj.getDate()} ${getMonthName(dateObj.getMonth())} ${dateObj.getFullYear()} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+
+}
+
+function CommentCard(props) {
+    const {writerPhoto, writerName, content, timeWritten} = props.comment;
+    const date = formatDate(timeWritten)
+
+    return (
+        <Card className="comment-card">
+            <Row className={"d-flex"}>
+                <Col className={"col-2 align-self-center"}>
+                    <Image src={writerPhoto} alt="Writer" className="img-fluid" style={{maxWidth: "50px"}}/>
+                </Col>
+                <Col>
+                    <Row className={"mt-2"}>
+                        <Col className={"col-7"}>
+                            <p className={"fw-bold"}>{writerName}</p>
+                        </Col>
+                        <Col>
+                            <p>{date}</p>
+                        </Col>
+                    </Row>
+                    <p>{content}</p>
+                </Col>
+            </Row>
+        </Card>
+    );
+}
+
 function BlogCard(props) {
 
-    const { id } = useParams(); // Access the blog ID from the URL
-    const {coverPhoto, title, summary, content, date, tags, author, likeCount, commentCount} = props.blog;
+    const {coverPhoto, profilePhoto, title, summary, content, date, tag, author} = props.blog;
+    const formattedDate = formatDate(date)
+    const {id} = useParams(); // Access the blog ID from the URL
 
     const paragraphs = content.split('\n').map((para, index) => {
         return <p key={index}>{para}<br/></p>;
     });
 
+    // State to control the visibility of the modal
+    const [showModal, setShowModal] = useState(false);
+    const [newMessage, setNewMessage] = useState('');
+    const [comments, setComments] = useState([]);
+
+
+    // Function to toggle the modal visibility
+    const toggleModal = () => {
+        setShowModal(!showModal);
+    };
+
+    useEffect(() => {
+        if (showModal) {
+            // Fetch data from Sends_Request table
+            sendRequest('blog-comments', 'POST', {"b_id": id}, (data) => {
+                try {
+                    setComments(data.comments);
+                } catch (error) {
+                    console.log('Error fetching data:', error);
+                }
+            });
+        }
+    }, [showModal]);
+
+    function SendComment() {
+        sendRequest('blog-comments', 'POST', {"b_id": id, "c_content": newMessage}, (data) => {
+            try {
+                console.log(data.comments)
+                setComments(data.comments);
+            } catch (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }
 
     return (
         <Card className="mx-auto my-4 col-9">
-            <Card.Title>THE ID OF THE BLOG: {id}</Card.Title>
             <Card.Img variant="top" src={coverPhoto}/>
             <Card.Body>
                 <div>
@@ -48,7 +122,7 @@ function BlogCard(props) {
                     <Row className="align-items-center">
                         <Col xs={1}>
                             <img
-                                src={coverPhoto}
+                                src={profilePhoto}
                                 alt="Profile"
                                 className="rounded-circle"
                                 width="50"
@@ -64,19 +138,17 @@ function BlogCard(props) {
                     </Row>
                     <hr/>
                     <div>
-                        <h2>Related Tags</h2>
-                        {tags.map((tag, index) => (
-                            <Badge key={tag} className="m-2" bg={index === 1 ? "primary" : "secondary"}>
-                                {tag}
-                            </Badge>
-                        ))}
+                        <h2>Related Tag</h2>
+                        <Badge lassName="m-2" bg="primary">
+                            {tag}
+                        </Badge>
                     </div>
                 </div>
                 <Row>
                     <Col className={"col-9"}><Card.Title><h2 className={"fw-bold"}>{title}</h2></Card.Title>
                     </Col>
                     <Col className={"col-3  d-flex align-items-center"}>
-                        <h6 className={"text-end"}><h5>Creation Date: {date}</h5></h6>
+                        <h6 className={"text-end"}><h5>Creation Date: {formattedDate}</h5></h6>
                     </Col>
                 </Row>
                 <Card.Text>{summary}</Card.Text>
@@ -87,23 +159,74 @@ function BlogCard(props) {
                             <FontAwesomeIcon icon={faThumbsUp} className="me-2"/>
                             Like
                         </Button>
-                        <Button variant="secondary">
+                        <Button variant="secondary" onClick={toggleModal}>
                             <FontAwesomeIcon icon={faComment} className="me-2"/>
                             Comment
                         </Button>
                     </div>
                 </div>
+
+                {/* Modal component */}
+                <Modal show={showModal} onHide={toggleModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Comments</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {comments.map((comment, index) => (
+                            <Row key={index} className="message-bubble mb-2">
+                                <CommentCard comment={comment}></CommentCard>
+                            </Row>
+                        ))}
+                        <div className="new-message mt-2">
+                            <Form>
+                                <Row className={"d-flex align-items-center"}>
+                                    <Col className={"col-9"}>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Type your comment..."
+                                            value={newMessage}
+                                            onChange={(e) => setNewMessage(e.target.value)}
+                                        />
+                                    </Col>
+                                    <Col>
+                                        <Button variant="outline-primary" onClick={SendComment}>
+                                            Send
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={toggleModal}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Card.Body>
         </Card>
     );
 }
 
 function BlogViewer() {
+    const [blog, setBlog] = useState()
+    const [loading, setLoading] = useState(true)
+    const {id} = useParams(); // Access the blog ID from the URL
+
+
+    useEffect(() => {
+        sendRequest('blog-viewer', 'POST', {"b_id": id}, (data) => {
+            setBlog(data.blog)
+            setLoading(false)
+        });
+    }, []);
+
     return (
         <Container fluid>
             <NavBar/>
             <div>
-                <BlogCard blog={blog}/>
+                {loading && <p>Loading</p>}
+                {!loading && <BlogCard blog={blog}/>}
             </div>
         </Container>
     );

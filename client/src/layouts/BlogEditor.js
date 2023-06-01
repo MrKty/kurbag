@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {Button, Card, Col, Container, Form, Image, Row} from "react-bootstrap";
@@ -37,6 +37,12 @@ function BlogEditor() {
     };
 
      */
+
+    useEffect( () => {
+        sendRequest('blogEditorGetTag', 'POST', {}, (data) => {
+            setSelectedTag(data.tag);
+        });
+    }, [])
 
     const handlePublish = async () => {
         if (coverPhoto) {

@@ -215,7 +215,7 @@ def create_tables():
 
             CREATE TABLE IF NOT EXISTS CV_Component (
                 user_id int,
-                exp_id int,
+                exp_id int AUTO_INCREMENT,
                 active BOOLEAN,
                 description TEXT,
                 location varchar(20),
@@ -227,7 +227,7 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Work_Experience (
-                work_exp_id int,
+                user_id int,
                 exp_id int,
                 work_mode varchar(20),
                 work_type varchar(20),
@@ -235,14 +235,14 @@ def create_tables():
                 profession varchar(20),
                 job_end_date DATE,
                 job_start_date DATE,
-                org_id int,
-                PRIMARY KEY (exp_id, work_exp_id),
-                FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (org_id) REFERENCES Organization (user_id)
+                org_name varchar(100),
+                PRIMARY KEY (user_id, exp_id),
+                FOREIGN KEY (user_id) REFERENCES Person (user_id),
+                FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id)
             );
 
             CREATE TABLE IF NOT EXISTS Education (
-                edu_id int,
+                user_id int,
                 exp_id int,
                 gpa INT,
                 dept varchar(20),
@@ -250,8 +250,9 @@ def create_tables():
                 edu_end_date DATE,
                 edu_start_date DATE,
                 inst_id int,
-                PRIMARY KEY (edu_id, exp_id),
+                PRIMARY KEY (user_id, exp_id),
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
+                FOREIGN KEY (user_id) REFERENCES Person (user_id),
                 FOREIGN KEY (inst_id) REFERENCES Institution (user_id)
             );
 

@@ -23,8 +23,8 @@ mysql = MySQL(app)
 
 
 # Initiate database
-# db.create_tables()
-# db.populate_table()
+db.create_tables()
+db.populate_table()
 
 
 @app.route('/')
@@ -975,132 +975,78 @@ def fetch_messages():
     return jsonify(response)
 
 
-@app.route('/blogs', methods=['POST'])
+@app.route('/retrieve-blogs', methods=['POST'])
 def blog_page():
     data = request.json  # Get the form data from the request body
-    print(data['selectedTag'])
+    selected_tag = data.get("selectedTag")
+    b_id = int(data.get("b_id"))
+    print(selected_tag)
 
-    # Example blog data
-    blogs = [
-        {
-            "id": 1,
-            "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-            "title": "Blog Title 1",
-            "summary": "This is the summary of Blog 1.",
-            "name": "Author 1",
-            "likeNumber": 10,
-            "commentNumber": 5,
-            "subtag": "Subtag 1"
-        },
-        {
-            "id": 2,
-            "coverPhoto": "https://example.com/cover2.jpg",
-            "title": "Blog Title 2",
-            "summary": "This is the summary of Blog 2.",
-            "name": "Author 2",
-            "likeNumber": 15,
-            "commentNumber": 8,
-            "subtag": "Subtag 2"
-        },
-        {
-            "id": 3,
-            "coverPhoto": "https://example.com/cover3.jpg",
-            "title": "Blog Title 3",
-            "summary": "This is the summary of Blog 3.",
-            "name": "Author 3",
-            "likeNumber": 20,
-            "commentNumber": 12,
-            "subtag": "Subtag 3"
-        }
-    ]
-
-    return jsonify(blogs)
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT b_id as id, b_title as title, b_summary as summary, b_com_count as commentNumber, '
+        'b_like_count as likeNumber, b_cover as coverPhoto, CONCAT(P.first_name, " ", P.last_name) AS name '
+        'FROM Blog_Post B INNER JOIN Person AS P ON B.owner_id = P.user_id '
+        'WHERE B_tag = %s AND b_id > %s LIMIT 4',
+        (selected_tag, b_id)
+    )
+    blogs = list(cursor.fetchall())
+    print(blogs)
+    print("here")
+    return jsonify({'blogs': blogs}), 200
 
 
-# Example blog data
-blogs = [
-    {
-        "id": 1,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 2,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 3,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    },
-    {
-        "id": 4,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 5,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 6,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    },
-    {
-        "id": 7,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 8,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 9,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    }
-]
+@app.route('/blog-viewer', methods=['POST'])
+def blog_viewer_page():
+    data = request.json  # Get the form data from the request body
+    b_id = data.get("b_id")
+    print(b_id)
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT b_title as title, b_summary as summary, '
+        'b_cover as coverPhoto, b_content as content, b_timestamp as date, b_tag as tag, '
+        'U.profile_pic as profilePhoto, CONCAT(P.first_name, " ", P.last_name) AS author '
+        'FROM Blog_Post B INNER JOIN Person AS P ON B.owner_id = P.user_id '
+        'INNER JOIN User AS U On U.user_id = B.owner_id '
+        'WHERE b_id = %s', b_id)
+    blog = cursor.fetchone()
+    print(blog)
+    print("here")
+    return jsonify({'blog': blog}), 200
+
+
+@app.route('/blog-comments', methods=['POST'])
+def blog_comments_page():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    b_id = data.get("b_id")
+    c_content = data.get("c_content")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if c_content:
+        # Insert the new comment into the Comment table
+        cursor.execute(
+            'INSERT INTO Comment (owner_id, root_blog_id, c_content) '
+            'VALUES (%s, %s, %s)',
+            (u_id, b_id, c_content)
+        )
+        mysql.connection.commit()
+
+    # Retrieve the updated comments for the specified blog
+    cursor.execute(
+        'SELECT C.c_content AS content, C.c_timestamp as timeWritten, '
+        'U.profile_pic as writerPhoto, CONCAT(P.first_name, " ", P.last_name) AS writerName '
+        'FROM Comment C INNER JOIN Person AS P ON C.owner_id = P.user_id '
+        'INNER JOIN User AS U On U.user_id = C.owner_id '
+        'WHERE C.root_blog_id = %s',
+        (b_id,)
+    )
+    comments = list(cursor.fetchall())
+    print(comments)
+
+    return jsonify({'comments': comments}), 200
 
 
 @app.route('/retrieve-c-e-previous-blogs', methods=['POST'])
@@ -1229,6 +1175,25 @@ def blog_editor():
     response = {'message': message}
     print(response)
     return jsonify(response), status_code
+
+
+@app.route('/blogEditorGetTag', methods=['POST'])
+def blog_editor_get_tag():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT expert_in_tag FROM Career_Expert WHERE user_id = %s', (u_id,))
+    result = cursor.fetchone()
+
+    if result:
+        if result[0] == "all":
+            tag = "career"
+        else:
+            tag = result[0]
+    else:
+        tag = None
+    return jsonify({"tag": tag}), 200
 
 
 @app.route('/blogEditorer', methods=['POST'])

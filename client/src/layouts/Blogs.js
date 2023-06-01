@@ -9,63 +9,42 @@ import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import sendRequest from "../utils/request";
 import BlogCard from "../components/BlogCard"
 import {Link} from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 const Blogs = () => {
     const [showModal, setShowModal] = useState(false);
     const tags = ['Career', 'Job Search', 'Workplace', 'Technology', 'Engineering', 'Job Skills', 'Education', 'Marketing'];
     const [blogs, setBlogs] = useState([]);
-    const [selectedTag, setSelectedTag] = useState(null);
+    const [selectedTag, setSelectedTag] = useState("Career");
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
 
     const handleTagClick = (tag) => {
+        setLoading(true);
+        setPage(0);
+        setHasMore(true);
+        setBlogs([]);
         setSelectedTag(tag);
     };
 
-    const sampleBlogs = [
-        {
-            id: 1,
-            coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
-            title: "Remote Work: Pros and Cons",
-            summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
-            name: "Sarah Smith",
-            likeNumber: 25,
-            commentNumber: 10,
-        },
-        {
-            id: 2,
-            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
-            title: "The Benefits of Internships",
-            summary: "Internships are a valuable experience for students and recent graduates looking to gain practical skills and knowledge. This blog discusses the benefits of internships, and offers tips for making the most of your internship experience.",
-            name: "John Doe",
-            likeNumber: 15,
-            commentNumber: 5,
-        },
-        {
-            id: 3,
-            coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-            title: "Retirement Planning: What You Need to Know",
-            summary: "Retirement planning is an important part of financial planning. This blog provides an overview of retirement planning, including the different types of retirement accounts, how to calculate your retirement needs, and tips for saving for retirement.",
-            name: "Jane Smith",
-            likeNumber: 20,
-            commentNumber: 7,
-        }
-    ]
-
     const [mockData, setMockData] = useState([
-        { tag: 'Career', isChecked: true },
-        { tag: 'Job Search', isChecked: false },
-        { tag: 'Workplace', isChecked: true },
-        { tag: 'Technology', isChecked: false },
-        { tag: 'Engineering', isChecked: true },
-        { tag: 'Job Skills', isChecked: false },
-        { tag: 'Education', isChecked: true },
-        { tag: 'Marketing', isChecked: false },
+        {tag: 'Career', isChecked: true},
+        {tag: 'Job Search', isChecked: false},
+        {tag: 'Workplace', isChecked: true},
+        {tag: 'Technology', isChecked: false},
+        {tag: 'Engineering', isChecked: true},
+        {tag: 'Job Skills', isChecked: false},
+        {tag: 'Education', isChecked: true},
+        {tag: 'Marketing', isChecked: false},
     ]);
 
     const handleFollowTag = (tag) => {
         const updatedData = mockData.map((item) => {
             if (item.tag === tag) {
-                return { ...item, isChecked: !item.isChecked };
+                return {...item, isChecked: !item.isChecked};
             }
             return item;
         });
@@ -77,16 +56,31 @@ const Blogs = () => {
         setShowModal(false);
     };
 
-    useEffect(() => {
+    const fetchData = () => {
+        try {
+            setLoading(true);
 
-        const sendData = {
-            selectedTag
+            const b_id = blogs.length > 0 ? blogs[blogs.length - 1].id : 0
+            console.log(b_id)
+            sendRequest('retrieve-blogs', 'POST', {b_id, selectedTag}, (data) => {
+                setBlogs([...blogs, ...data.blogs]);
+                // Update the page number
+                setPage(prevPage => prevPage + blogs.length);
+
+                // Check if there are more items to load
+                setHasMore(data.blogs.length > 0);
+                console.log(data.blogs)
+                setLoading(false);
+            });
+
+        } catch (error) {
+            setError(error);
+            setLoading(false);
         }
+    }
 
-        sendRequest('blogs', 'POST', sendData, (data) => {
-            // Here comes blog data from backend
-            setBlogs(data);
-        });
+    useEffect(() => {
+        fetchData()
     }, [selectedTag]);
 
     const [showFollowTagModal, setShowFollowTagModal] = useState(false);
@@ -108,7 +102,7 @@ const Blogs = () => {
                     <div>
                         <Row className="align-items-center">
                             <Col xs="auto">
-                                <h2 className="mt-2" style={{ fontSize: '2.5rem' }}>
+                                <h2 className="mt-2" style={{fontSize: '2.5rem'}}>
                                     From Your Followings
                                 </h2>
                             </Col>
@@ -123,7 +117,7 @@ const Blogs = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form>
-                                        {mockData.map(({ tag, isChecked }) => (
+                                        {mockData.map(({tag, isChecked}) => (
                                             <Form.Check
                                                 key={tag}
                                                 type="checkbox"
@@ -159,40 +153,35 @@ const Blogs = () => {
                                 </Badge>
                             ))}
                         </div>
-                        <Row>
-                            {blogs.map((blog) => (
-                                <Col key={blog.id}>
-                                    <BlogCard
-                                        coverPhoto={blog.coverPhoto}
-                                        title={blog.title}
-                                        summary={blog.summary}
-                                        name={blog.name}
-                                        likeNumber={blog.likeNumber}
-                                        commentNumber={blog.commentNumber}
-                                    />
-                                </Col>
-                            ))}
-                            {sampleBlogs.map((blog) => (
-                                <Col key={blog.id}>
-                                    <Link style={{ textDecoration: 'none', color: 'black' }} to={`/blog-viewer/${blog.id}`}>
-                                        <BlogCard
-                                            coverPhoto={blog.coverPhoto}
-                                            title={blog.title}
-                                            summary={blog.summary}
-                                            name={blog.name}
-                                            likeNumber={blog.likeNumber}
-                                            commentNumber={blog.commentNumber}
-                                        />
-                                    </Link>
-                                </Col>
-                            ))}
-                        </Row>
+                        <InfiniteScroll
+                            dataLength={blogs.length}
+                            next={fetchData}
+                            hasMore={hasMore}
+                            loader={<p>Loading...</p>}
+                            endMessage={<p>No more data to load.</p>}
+                            className={"overflow-hidden"}
+                        >
+                            <Row className="justify-content-center">
+                                {blogs.map((blog, index) => (
+                                    <Col key={index} className="col-5 mb-3 mx-auto my-auto">
+                                        <Link style={{textDecoration: 'none', color: 'black'}}
+                                              to={`/blog-viewer/${blog.id}`}>
+                                            <BlogCard
+                                                coverPhoto={blog.coverPhoto}
+                                                title={blog.title}
+                                                summary={blog.summary}
+                                                name={blog.name}
+                                                likeNumber={blog.likeNumber}
+                                                commentNumber={blog.commentNumber}
+                                            />
+                                        </Link>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </InfiniteScroll>
+                        {error && <p>Error: {error.message}</p>}
                     </div>
                 </Col>
-            </Row>
-            <Row className="text-center m-3">
-                <span className={"mb-2 fw-bold"}>Swipe down for more</span>
-                <FontAwesomeIcon icon={faArrowDown}/>
             </Row>
         </Container>
     );
