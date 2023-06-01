@@ -1017,6 +1017,113 @@ def blog_page():
     return jsonify(blogs)
 
 
+# Example blog data
+blogs = [
+    {
+        "id": 1,
+        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
+        "title": "Blog Title 1",
+        "summary": "This is the summary of Blog 1.",
+        "name": "Author 1",
+        "likeNumber": 10,
+        "commentNumber": 5,
+    },
+    {
+        "id": 2,
+        "coverPhoto": "https://example.com/cover2.jpg",
+        "title": "Blog Title 2",
+        "summary": "This is the summary of Blog 2.",
+        "name": "Author 2",
+        "likeNumber": 15,
+        "commentNumber": 8,
+    },
+    {
+        "id": 3,
+        "coverPhoto": "https://example.com/cover3.jpg",
+        "title": "Blog Title 3",
+        "summary": "This is the summary of Blog 3.",
+        "name": "Author 3",
+        "likeNumber": 20,
+        "commentNumber": 12,
+    },
+    {
+        "id": 4,
+        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
+        "title": "Blog Title 1",
+        "summary": "This is the summary of Blog 1.",
+        "name": "Author 1",
+        "likeNumber": 10,
+        "commentNumber": 5,
+    },
+    {
+        "id": 5,
+        "coverPhoto": "https://example.com/cover2.jpg",
+        "title": "Blog Title 2",
+        "summary": "This is the summary of Blog 2.",
+        "name": "Author 2",
+        "likeNumber": 15,
+        "commentNumber": 8,
+    },
+    {
+        "id": 6,
+        "coverPhoto": "https://example.com/cover3.jpg",
+        "title": "Blog Title 3",
+        "summary": "This is the summary of Blog 3.",
+        "name": "Author 3",
+        "likeNumber": 20,
+        "commentNumber": 12,
+    },
+    {
+        "id": 7,
+        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
+        "title": "Blog Title 1",
+        "summary": "This is the summary of Blog 1.",
+        "name": "Author 1",
+        "likeNumber": 10,
+        "commentNumber": 5,
+    },
+    {
+        "id": 8,
+        "coverPhoto": "https://example.com/cover2.jpg",
+        "title": "Blog Title 2",
+        "summary": "This is the summary of Blog 2.",
+        "name": "Author 2",
+        "likeNumber": 15,
+        "commentNumber": 8,
+    },
+    {
+        "id": 9,
+        "coverPhoto": "https://example.com/cover3.jpg",
+        "title": "Blog Title 3",
+        "summary": "This is the summary of Blog 3.",
+        "name": "Author 3",
+        "likeNumber": 20,
+        "commentNumber": 12,
+    }
+]
+
+
+@app.route('/retrieve-c-e-previous-blogs', methods=['POST'])
+def retrieve_c_e_previous_blogs():
+    data = request.json  # Get the form data from the request body
+    owner_id = data.get("id")
+    b_id = int(data.get("b_id"))
+
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT b_id as id, b_title as title, b_summary as summary, b_com_count as commentNumber, '
+        'b_like_count as likeNumber, b_cover as coverPhoto, CONCAT(P.first_name, " ", P.last_name) AS name '
+        'FROM Blog_Post B INNER JOIN Person AS P ON B.owner_id = P.user_id '
+        'WHERE owner_id = %s AND b_id > %s LIMIT 4',
+        (owner_id, b_id)
+    )
+    blogs = list(cursor.fetchall())
+    print(blogs)
+    print("here")
+    return jsonify({'blogs': blogs}), 200
+
+
 @app.route('/cv-pool', methods=['POST'])
 def get_cv_pool():
     # Example blog data
