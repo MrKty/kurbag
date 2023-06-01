@@ -85,13 +85,11 @@ def create_tables():
                 birth_date DATE,
                 gender varchar(20),
                 connections INT,
-                e_id integer,
                 liked_post int,
                 works_for int,
                 works_since DATE,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
-                FOREIGN KEY (e_id) REFERENCES Event(e_id),
                 FOREIGN KEY (liked_post) REFERENCES Post(p_id),
                 FOREIGN KEY (works_for) REFERENCES User (user_id)
             );

@@ -48,6 +48,7 @@ const HomePage = () => {
 
     const toggleCreatePostModal = () => {
         setShowCreatePostModal(!showCreatePostModal);
+        fetchData()
     };
 
     const toggleCreateEventModal = () => {
@@ -98,10 +99,12 @@ const HomePage = () => {
             sendRequest('home-get-post', 'POST', {page, p_id, e_id}, (data) => {
                 // Update the state with the new data
                 setPosts([...posts, ...data.posts]);
-                setEvents([...posts, ...data.events]);
+                setEvents([...events, ...data.events]);
 
                 if (data.posts && data.events) {
+                    console.log("Here")
                     const combinedList = data.posts.concat(data.events);
+                    console.log(combinedList)
                     setFeeds([...feeds, ...combinedList])
                 } else if (data.posts) {
                     setFeeds([...feeds, ...data.posts]);
@@ -109,10 +112,15 @@ const HomePage = () => {
                     setFeeds([...feeds, ...data.events]);
                 }
 
+                console.log("feeds")
+                console.log(feeds)
+
                 // Update the page number
                 setPage(prevPage => prevPage + 4);
 
                 // Check if there are more items to load
+                console.log(data.posts.length)
+                console.log(data.events.length)
                 setHasMore(data.posts.length > 0 || data.events.length > 0);
 
                 setLoading(false);
@@ -209,7 +217,7 @@ const HomePage = () => {
                                         event={feed}
                                         onRegisterEvent={null}
                                     />}
-                                    {feed.likeNumber &&
+                                    {feed.likeNumber >= 0 &&
                                         <PostCard content={feed.content} name={feed.name} title={feed.title}
                                                   likeNumber={feed.likeNumber} commentNumber={feed.commentNumber}
                                                   timestamp={feed.timestamp}/>}
