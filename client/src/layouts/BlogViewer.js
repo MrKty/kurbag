@@ -1,6 +1,6 @@
 import {Card, Button, Row, Col, Badge, Navbar, Container, Modal, Form, Image} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faThumbsUp, faComment} from '@fortawesome/free-solid-svg-icons';
+import {faThumbsUp, faComment, faThumbsDown} from '@fortawesome/free-solid-svg-icons';
 import {Link, useParams} from "react-router-dom";
 import NavBar from "../components/NavBar";
 import React, {useEffect, useState} from "react";
@@ -71,6 +71,8 @@ function CommentCard(props) {
 function BlogCard(props) {
 
     const {coverPhoto, profilePhoto, title, summary, content, date, tag, author} = props.blog;
+    const [like, setLike] = useState(true);
+
     const formattedDate = formatDate(date)
     const {id} = useParams(); // Access the blog ID from the URL
 
@@ -113,9 +115,19 @@ function BlogCard(props) {
         });
     }
 
+    function likeBlog() {
+        sendRequest('blog-like', 'POST', {"like": true, "b_id": id}, (data) => {
+            try {
+                setLike(!like)
+            } catch (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+    }
+
     return (
         <Card className="mx-auto my-4 col-9">
-            <Card.Img variant="top" src={coverPhoto}/>
+            <Card.Img variant="top" className={"img-fluid"} style={{maxHeight: "400px"}} src={coverPhoto}/>
             <Card.Body>
                 <div>
                     <hr/>
@@ -155,9 +167,18 @@ function BlogCard(props) {
                 <Card.Text>{paragraphs}</Card.Text>
                 <div className="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                        <Button className="me-3" variant="primary">
-                            <FontAwesomeIcon icon={faThumbsUp} className="me-2"/>
-                            Like
+                        <Button className="me-3" variant="primary" onClick={likeBlog}>
+                            {like ? (
+                                <div>
+                                    <FontAwesomeIcon icon={faThumbsUp} className="me-2"/>
+                                    Like
+                                </div>
+                            ) : (
+                                <div>
+                                    <FontAwesomeIcon icon={faThumbsDown} className="me-2"/>
+                                    Dislike
+                                </div>
+                            )}
                         </Button>
                         <Button variant="secondary" onClick={toggleModal}>
                             <FontAwesomeIcon icon={faComment} className="me-2"/>

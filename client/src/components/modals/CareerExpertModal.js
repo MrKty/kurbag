@@ -109,14 +109,14 @@ const CareerExpertModal = ({showModal, handleClose}) => {
                                     className="mb-3"
                                 >
                                     <option value="">Select a tag</option>
-                                    <option value="career">Career</option>
-                                    <option value="job-search">Job Search</option>
-                                    <option value="workplace">Workplace</option>
-                                    <option value="technology">Technology</option>
-                                    <option value="engineering">Engineering</option>
-                                    <option value="job-skills">Job Skills</option>
-                                    <option value="education">Education</option>
-                                    <option value="marketing">Marketing</option>
+                                    <option value="Career">Career</option>
+                                    <option value="Job Search">Job Search</option>
+                                    <option value="Workplace">Workplace</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Job Skills">Job Skills</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Marketing">Marketing</option>
                                 </Form.Control>
                             </Form.Group>
                             <Form.Group>

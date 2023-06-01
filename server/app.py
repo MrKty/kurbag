@@ -23,8 +23,8 @@ mysql = MySQL(app)
 
 
 # Initiate database
-db.create_tables()
-db.populate_table()
+# db.create_tables()
+# db.populate_table()
 
 
 @app.route('/')
@@ -37,10 +37,10 @@ def login():
     password = login_data['password']
 
     # Perform authentication logic
-    cursor = db.get_cursor()
-    cursor.execute('SELECT user_id, mail_addr, password, user_type FROM User WHERE mail_addr = %s', email)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT user_id, mail_addr, password, user_type FROM User WHERE mail_addr = %s', (email,))
 
-    user = db.fetch_one(cursor)
+    user = cursor.fetchone()
 
     if user:
         print(password)
@@ -125,7 +125,7 @@ def signup():
                 (user_id,))
 
             if user_type == 1:
-                cursor.execute('INSERT INTO Career_Expert (user_id) VALUES (%s)', user_id)
+                cursor.execute('INSERT INTO Career_Expert (user_id, expert_in_tag) VALUES (%s, "all")', user_id)
 
             # Commit the transaction
             cursor.execute('COMMIT')
@@ -467,145 +467,6 @@ def create_job():
         return jsonify({'message': 'Invalid due date format'}), 400
 
 
-# Mockup data
-posts = [
-    {
-        "id": 1,
-        "title": "Post 1",
-        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        "timestamp": "May 21, 2023",
-        "name": "John Doe",
-        "likeNumber": 10,
-        "commentNumber": 5
-    },
-    {
-        "id": 2,
-        "title": "Post 2",
-        "content": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-        "timestamp": "May 22, 2023",
-        "name": "Jane Smith",
-        "likeNumber": 15,
-        "commentNumber": 3
-    },
-    {
-        "id": 3,
-        "title": "Post 3",
-        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed gravida pharetra convallis. Proin vitae semper dui. Nullam pharetra leo eu nisi commodo, at aliquam urna aliquet. Cras efficitur, erat ac tincidunt sagittis, tortor ex iaculis elit, at malesuada nisl sapien id erat. Curabitur placerat est tellus, eu placerat diam molestie ac. Nullam viverra, enim a facilisis venenatis, tellus metus consequat felis, et dictum nunc massa non tellus. Mauris tristique ipsum sed luctus placerat. Mauris elementum nisi at nisl volutpat placerat. Quisque fringilla finibus est, in hendrerit augue tempor sed. Integer tincidunt ex et velit rhoncus, sit amet aliquam est semper.",
-        "timestamp": "May 23, 2023",
-        "name": "Mark Johnson",
-        "likeNumber": 20,
-        "commentNumber": 8
-    },
-    {
-        "id": 4,
-        "title": "Post 4",
-        "content": "Vestibulum consequat elit sit amet dapibus tincidunt. Suspendisse faucibus condimentum felis non facilisis. In consectetur venenatis ultrices. Donec in ex justo. Duis ac ligula vel nisi tincidunt finibus ac ut quam. Nullam nec arcu a massa iaculis lobortis. Sed venenatis fermentum neque, a suscipit ante condimentum at. Nulla facilisi.",
-        "timestamp": "May 24, 2023",
-        "name": "Emily Davis",
-        "likeNumber": 12,
-        "commentNumber": 6
-    },
-    {
-        "id": 5,
-        "title": "Post 5",
-        "content": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce vel sapien at magna eleifend rhoncus vitae ac enim. Nullam accumsan, sem ac varius iaculis, justo felis convallis lacus, a ultrices dolor neque sit amet est. Donec rutrum rhoncus rutrum. Fusce aliquet enim et lectus rhoncus, eu ultrices nunc varius. Aenean pulvinar tristique bibendum. Aenean sagittis urna vitae mauris finibus, id posuere odio molestie.",
-        "timestamp": "May 25, 2023",
-        "name": "Michael Wilson",
-        "likeNumber": 18,
-        "commentNumber": 7
-    },
-    {
-        "id": 6,
-        "title": "Post 6",
-        "content": "Curabitur consectetur est et diam eleifend, vel facilisis ligula aliquet. Maecenas tristique est ut ligula hendrerit, sed condimentum mi fringilla. Phasellus pulvinar ex ut tincidunt euismod. In congue tristique diam, sed vulputate nisl venenatis vel. Cras vitae facilisis enim. Mauris in velit nunc. Vestibulum luctus tortor at dui consequat interdum.",
-        "timestamp": "May 26, 2023",
-        "name": "Sophia Anderson",
-        "likeNumber": 25,
-        "commentNumber": 4
-    },
-    {
-        "id": 7,
-        "title": "Post 7",
-        "content": "Maecenas tincidunt justo eu dolor consectetur, ut commodo sapien volutpat. Suspendisse non felis ac risus gravida semper. Sed faucibus ipsum sed erat semper auctor. Nullam fringilla turpis sit amet erat posuere tincidunt. Suspendisse potenti. Nullam blandit vestibulum nulla ac posuere. Cras id ex ut enim dignissim aliquet ut id sem. Curabitur a arcu odio.",
-        "timestamp": "May 27, 2023",
-        "name": "Oliver Taylor",
-        "likeNumber": 14,
-        "commentNumber": 3
-    },
-    {
-        "id": 8,
-        "title": "Post 8",
-        "content": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Maecenas blandit ex id scelerisque euismod. Proin non diam fringilla, vulputate elit a, euismod leo. Aenean a nibh ac neque finibus tempus et eu nibh. Sed blandit, arcu vel aliquam tempor, nisl sapien finibus magna, nec interdum ligula nunc vitae nisl.",
-        "timestamp": "May 28, 2023",
-        "name": "Ava Thompson",
-        "likeNumber": 22,
-        "commentNumber": 5
-    },
-    {
-        "id": 9,
-        "title": "Post 9",
-        "content": "Nullam quis elit vel nisl fermentum eleifend. Proin at est tellus. Integer bibendum sem et nunc semper aliquam. Maecenas pellentesque nulla id facilisis dignissim. Suspendisse scelerisque, leo vel consequat mattis, leo neque laoreet magna, id consequat ex nisl nec augue. Cras dapibus rhoncus nunc, nec maximus nunc vehicula et. Duis gravida varius ipsum auctor lobortis. Vivamus sit amet laoreet nulla.",
-        "timestamp": "May 29, 2023",
-        "name": "William Clark",
-        "likeNumber": 17,
-        "commentNumber": 6
-    },
-    {
-        "id": 10,
-        "title": "Post 10",
-        "content": "Sed pharetra efficitur purus, eu fringilla odio vestibulum sed. Cras sed magna finibus, aliquet tellus a, bibendum mi. Suspendisse et tempor massa. Maecenas sagittis ligula odio, non iaculis turpis scelerisque sed. Curabitur tincidunt sem nec dolor dictum pharetra. In cursus venenatis sem, id fringilla quam consectetur in. Fusce efficitur ligula sed lectus dictum, non vulputate erat semper.",
-        "timestamp": "May 30, 2023",
-        "name": "Emma Turner",
-        "likeNumber": 20,
-        "commentNumber": 7
-    },
-    {
-        "id": 11,
-        "title": "Post 11",
-        "content": "Aliquam varius odio sit amet felis vulputate, ut bibendum nisi efficitur. Nam facilisis lectus sed nibh vulputate semper. Maecenas tincidunt efficitur tristique. Duis efficitur gravida tellus, vitae bibendum sem fermentum at. Nullam finibus elit id magna tristique vestibulum. Sed eu arcu faucibus, congue ipsum a, ultrices nisl. Mauris ac finibus justo. Proin in orci sem.",
-        "timestamp": "May 31, 2023",
-        "name": "Daniel Harris",
-        "likeNumber": 15,
-        "commentNumber": 4
-    },
-    {
-        "id": 12,
-        "title": "Post 12",
-        "content": "Vestibulum auctor, tortor sed tincidunt faucibus, quam justo rutrum nisi, ut interdum quam nisi nec ligula. Aliquam id metus facilisis, dapibus neque non, pulvinar metus. Fusce sodales ipsum vitae commodo scelerisque. Maecenas id ullamcorper erat, sit amet placerat nisi. Mauris rhoncus, justo ac dapibus aliquet, sem nulla eleifend nisi, non tempor lorem neque et tortor.",
-        "timestamp": "June 1, 2023",
-        "name": "Liam Martin",
-        "likeNumber": 19,
-        "commentNumber": 3
-    },
-    {
-        "id": 13,
-        "title": "Post 13",
-        "content": "Phasellus vel hendrerit ante. Nullam interdum, ligula a consectetur hendrerit, turpis est viverra nulla, eu hendrerit dolor elit et metus. In tincidunt eros et mauris rutrum, eu euismod metus consequat. Mauris vitae quam id turpis lacinia eleifend. Suspendisse potenti. Curabitur scelerisque quam eu enim gravida, ut tristique risus egestas. Sed luctus sem non diam interdum, sit amet accumsan velit finibus.",
-        "timestamp": "June 2, 2023",
-        "name": "Olivia Garcia",
-        "likeNumber": 23,
-        "commentNumber": 5
-    },
-    {
-        "id": 14,
-        "title": "Post 14",
-        "content": "Praesent id quam nec ante egestas gravida. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque a interdum odio. Sed auctor est at tempor porttitor. Morbi pharetra sollicitudin rutrum. Sed ultricies luctus turpis, in rhoncus enim interdum et. Nam id justo a risus laoreet feugiat. Proin ut venenatis enim, sit amet luctus velit.",
-        "timestamp": "June 3, 2023",
-        "name": "Noah Martinez",
-        "likeNumber": 16,
-        "commentNumber": 4
-    },
-    {
-        "id": 15,
-        "title": "Post 15",
-        "content": "Aenean feugiat commodo luctus. In ultricies aliquet ex, in fringilla ex sollicitudin quis. Fusce ac justo nisi. Nunc ac justo urna. Integer facilisis ante vel magna consectetur, id bibendum ipsum tempor. Aliquam erat volutpat. Donec nec lorem odio. Morbi sed leo nec nisl laoreet dignissim. Suspendisse fermentum orci vel est lobortis, ac pellentesque est cursus.",
-        "timestamp": "June 4, 2023",
-        "name": "Isabella Robinson",
-        "likeNumber": 21,
-        "commentNumber": 5
-    }
-]
-
 events = [
     {
         'id': 1,
@@ -675,9 +536,55 @@ def get_posts():
     print(p_id)
     print(e_id)
 
-    # TODO biri tam değilse diğerinden devam edilcek
-    paginated_posts = posts[p_id:p_id + 2]
-    paginated_events = events[e_id:e_id + 2]
+    # Retrieve paginated posts
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT COUNT(*) AS event_count FROM Event WHERE e_id > %s', (e_id,)
+    )
+    event_count = cursor.fetchone()["event_count"]
+    print("event", event_count)
+    post_count = 4 - event_count if event_count < 2 else 2
+
+    # Retrieve paginated posts count
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT COUNT(*) AS post_count '
+        'FROM Post '
+        'WHERE p_id > %s', (p_id,)
+    )
+    temp = cursor.fetchone()['post_count']
+    print("temp", temp)
+    if event_count > 2 and temp < 2:
+        event_count = 4 - temp
+
+    cursor.execute(
+        'SELECT p_id AS id, p_title AS title, p_content AS content, p_timestamp AS timestamp, '
+        'CONCAT(P.first_name, " ", P.last_name) AS name, p_like_count as likeNumber, p_com_count as commentNumber '
+        'FROM Post JOIN Person P ON P.user_id = Post.user_id '
+        'WHERE p_id > %s '
+        'ORDER BY p_id ASC '
+        'LIMIT %s',
+        (p_id, post_count)
+    )
+    paginated_posts = list(cursor.fetchall())
+    print(paginated_posts)
+
+    # Select events based on the post_count
+    cursor.execute(
+        'SELECT E.e_id as id, e_name as eventName, CONCAT(P.first_name, " ", P.last_name) AS organizer, '
+        'cover_photo as coverPhoto,'
+        'e_start_date as startDate, e_end_date as endDate, e_limit as "limit", '
+        'e_link as websiteLink, e_content as content, e_timestamp as creation_date, '
+        'e_speakers as speakers '
+        'FROM Event E '
+        'JOIN Person AS P ON P.user_id = E.organizer_id '
+        'WHERE e_id > %s '
+        'LIMIT %s',
+        (e_id, event_count)
+    )
+
+    paginated_events = cursor.fetchall()
+    print(paginated_events)
 
     return jsonify({'posts': paginated_posts, 'events': paginated_events}), 200
 
@@ -725,6 +632,7 @@ def retrieve_c_e_applications():
     data = request.json  # Get the form data from the request body
     user_id = data.get("id")
 
+    # Doğru cursor
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     print("id")
     print(user_id)
@@ -1047,6 +955,33 @@ def blog_comments_page():
     print(comments)
 
     return jsonify({'comments': comments}), 200
+
+
+@app.route('/blog-like', methods=['POST'])
+def blog_like():
+    data = request.json  # Get the form data from the request body
+    b_id = data.get("b_id")
+    b_like = data.get("b_like")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if b_like is not None:
+        if b_like:  # Increment likeCount by 1
+            cursor.execute(
+                'UPDATE Blog_Post '
+                'SET likeCount = likeCount + 1 '
+                'WHERE b_id = %s',
+                (b_id,)
+            )
+        else:  # Decrement likeCount by 1
+            cursor.execute(
+                'UPDATE Blog_Post '
+                'SET likeCount = likeCount - 1 '
+                'WHERE b_id = %s',
+                (b_id,)
+            )
+        mysql.connection.commit()
+
+    return jsonify({'message': "ok"}), 200
 
 
 @app.route('/retrieve-c-e-previous-blogs', methods=['POST'])
