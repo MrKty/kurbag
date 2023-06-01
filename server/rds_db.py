@@ -21,6 +21,8 @@ def create_tables():
     # Table Creation
     cursor = conn.cursor()
     create_tables_entity = textwrap.dedent("""
+            
+            
             CREATE TABLE IF NOT EXISTS User
             (
                 user_id int AUTO_INCREMENT,
@@ -72,7 +74,8 @@ def create_tables():
                 PRIMARY KEY (p_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
-
+            
+            
             CREATE TABLE IF NOT EXISTS Person
             (
                 user_id int,
@@ -136,7 +139,10 @@ def create_tables():
                 j_type varchar(20),
                 j_organization varchar(20),
                 j_location varchar(20),
+                j_skills varchar(200),
                 j_mode varchar(20),
+                j_min_age int,
+                j_max_age int,
                 due_date_apply datetime,
                 j_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 recruiter_id int,
@@ -242,16 +248,15 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS Education (
                 user_id int,
                 exp_id int,
-                gpa INT,
+                gpa DOUBLE,
                 dept varchar(20),
                 degree varchar(20),
                 edu_end_date DATE,
                 edu_start_date DATE,
-                inst_id int,
+                inst_name varchar(100),
                 PRIMARY KEY (user_id, exp_id),
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (user_id) REFERENCES Person (user_id),
-                FOREIGN KEY (inst_id) REFERENCES Institution (user_id)
+                FOREIGN KEY (user_id) REFERENCES Person (user_id)
             );
 
             CREATE TABLE IF NOT EXISTS Certificate (
