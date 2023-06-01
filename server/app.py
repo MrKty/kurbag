@@ -14,8 +14,8 @@ CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
 
 # Initiate database
-db.create_tables()
-db.populate_table()
+#db.create_tables()
+#db.populate_table()
 
 
 @app.route('/')
@@ -207,31 +207,44 @@ def apply_career_expert():
     # Assuming the form data contains the fields: name, surname, email, phone, password, day, month, year, gender
     selected_tag = form_data['selectedTag']
     motivation = form_data['motivation']
-    certificates = form_data['selectedCertificates']
-    print(selected_tag, motivation, certificates)
+    certificateURLs = form_data['selectedCertificates']
+    certificateNames = form_data['selectedCertificateNames']
+    print(selected_tag, motivation, certificateURLs, certificateNames)
     print(form_data["id"])
 
     cursor = db.get_cursor()
+
     try:
         # Start a transaction
         cursor.execute('START TRANSACTION')
 
-        cursor.execute('SELECT * FROM Tag WHERE tag_name = %s', (selected_tag,))
-        tag = db.fetch_one(cursor)
+        # Check if an entry already exists for the applicant in Sends_Request table
+        cursor.execute('SELECT * FROM Sends_Request WHERE applicant_id = %s', (form_data["id"],))
+        existing_entry = cursor.fetchone()
 
-        cursor.execute('INSERT INTO Sends_request (applicant_id, motivation_letter, tag_id) VALUES (%s, %s, %s)',
-                       (form_data["id"], motivation, tag["tag_id"]))
+        if existing_entry:
+            # If an entry exists, update it
+            cursor.execute('UPDATE Sends_Request SET motivation_letter = %s, tag_name = %s WHERE applicant_id = %s',
+                           (motivation, selected_tag, form_data["id"]))
+        else:
+            # If no entry exists, insert a new one
+            cursor.execute('INSERT INTO Sends_Request (applicant_id, motivation_letter, tag_name) VALUES (%s, %s, %s)',
+                           (form_data["id"], motivation, selected_tag))
 
-        for certificate in certificates:
+        # Delete existing certificate entries for the applicant
+        cursor.execute('DELETE FROM Certificate WHERE applicant_id = %s', (form_data["id"],))
+
+        for i in range(len(certificateURLs)):
             cursor.execute(
-                'INSERT INTO Certificate (applicant_id, cert_url) VALUES (%s, %s)',
-                (form_data["id"], certificate))
+                'INSERT INTO Certificate (applicant_id, cert_url, cert_name) VALUES (%s, %s, %s)',
+                (form_data["id"], certificateURLs[i], certificateNames[i]))
 
         # Commit the transaction
         cursor.execute('COMMIT')
 
         message = 'Successfully applied!'
-    except:
+    except Exception as e:
+        print(str(e))
         # Rollback the transaction if an error occurs
         cursor.execute('ROLLBACK')
         message = 'Error occurred during application. Please try again.'
@@ -244,30 +257,31 @@ def apply_career_expert():
 
 @app.route('/career-expert-modal', methods=['POST'])
 def fill_career_expert_modal():
-    # Create a response object
-    response = {
-        'motivation_letter': "motivation-letter from back-end",
-        'tag_name': "tag-name from back-end",
-        'certificates': [
-            {
-                'certificate_name': 'Certificate 1 backendCertificate 1 backendCertificate 1 backendCertificate 1 backend',
-                'certificate_url': 'https://example.com/certificates/certificate1.pdf'
-            },
-            {
-                'certificate_name': 'Certificate 2 backend',
-                'certificate_url': 'https://example.com/certificates/certificate2.pdf'
-            },
-            {
-                'certificate_name': 'Certificate 3 backend',
-                'certificate_url': 'https://example.com/certificates/certificate2.pdf'
-            },
-            # Add more certificate entries as needed
-        ]
-    }
+    u_id = request.json.get('id')
+    print(u_id)
+    cursor = db.get_cursor()
+    cursor.execute('SELECT tag_name, motivation_letter FROM Sends_Request WHERE applicant_id = %s',
+                   (u_id,))
+    application = db.fetch_one(cursor)
 
-    return jsonify(response)
+    if application:
+        cursor.execute('SELECT cert_url, cert_name FROM Certificate WHERE applicant_id = %s',
+                       (u_id,))
+        certificates = db.fetch_all(cursor)
 
-#Endpoint for displaying jobs.@app.route('/jobs', methods=['POST'])
+        print(certificates)
+        print(application)
+        # Create a response object
+        response = {
+            'motivation_letter': application["motivation_letter"],
+            'tag_name': application["tag_name"],
+            'certificates': certificates
+        }
+        return jsonify(response)
+    return jsonify({'error': 'Entry already exists for the given ID.'})
+
+
+# Endpoint for displaying jobs.@app.route('/jobs', methods=['POST'])
 @app.route('/jobs', methods=['POST'])
 def get_jobs():
     response = [
@@ -335,6 +349,7 @@ def update_profile():
     # Return a success response
     return jsonify({'message': 'Profile updated successfully'}), 200
 
+
 # Endpoint for creating a new post
 @app.route('/home-create-post', methods=['POST'])
 def create_post():
@@ -364,6 +379,7 @@ def create_post():
     else:
         # Return an error response
         return jsonify({'message': 'Failed to create post'}), 500
+
 
 # Endpoint for creating a new job (by a recruiter)
 @app.route('/create-job', methods=['POST'])
@@ -426,8 +442,6 @@ def create_job():
         # Handle the case when job_due_date is not in the expected format
         print("Invalid due date format")
         return jsonify({'message': 'Invalid due date format'}), 400
-
-
 
 
 # Mockup data
@@ -638,7 +652,7 @@ def get_posts():
     print(p_id)
     print(e_id)
 
-    #TODO biri tam değilse diğerinden devam edilcek
+    # TODO biri tam değilse diğerinden devam edilcek
     paginated_posts = posts[p_id:p_id + 2]
     paginated_events = events[e_id:e_id + 2]
 
@@ -751,7 +765,6 @@ def creates_event():
     else:
         # Return an error response
         return jsonify({'message': 'Failed to create event'}), 500
-
 
 
 @app.route('/conversations', methods=['POST'])
@@ -927,7 +940,6 @@ def blog_page():
 
 @app.route('/cv-pool', methods=['POST'])
 def get_cv_pool():
-
     # Example blog data
     response = [
         {
@@ -998,10 +1010,10 @@ def blog_editor():
 
     return jsonify(data)
 
+
 # Endpoint for fetching user information for profile page.
 @app.route('/profile', methods=['POST'])
 def profile_page():
-
     data = request.json
     print(data)
 

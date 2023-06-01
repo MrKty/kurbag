@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Modal, Button, Form, Row, Col} from 'react-bootstrap';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import sendRequest from '../../utils/request';
 
-const CareerExpertModal = ({ showModal, handleClose }) => {
+const CareerExpertModal = ({showModal, handleClose}) => {
     const [selectedTag, setSelectedTag] = useState('');
     const [motivation, setMotivation] = useState('');
     const [selectedCertificates, setSelectedCertificates] = useState([]);
@@ -19,33 +19,39 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
     };
 
     useEffect(() => {
-        // Fetch data from Sends_Request table
-        sendRequest('career-expert-modal', 'POST', {}, (data) => {
-            try {
-                const { motivation_letter, tag_name, certificates } = data;
+        if (showModal){
+            // Fetch data from Sends_Request table
+            sendRequest('career-expert-modal', 'POST', {}, (data) => {
+                try {
+                    const {motivation_letter, tag_name, certificates} = data;
 
-                setSelectedTag(tag_name);
-                setMotivation(motivation_letter);
+                    setSelectedTag(tag_name);
+                    setMotivation(motivation_letter);
 
-                // Convert certificates array to array of certificate URLs
-                const urls = certificates.map((certificate) => certificate.certificate_url);
-                const names = certificates.map((certificate) => certificate.certificate_name);
+                    // Convert certificates array to array of certificate URLs
+                    const urls = certificates.map((certificate) => {
+                        console.log(certificate.cert_url)
+                        return certificate.cert_url
+                    });
+                    const names = certificates.map((certificate) => certificate.cert_name);
 
-                setSelectedCertificates(urls);
-                setSelectedCertificateNames(names);
+                    setSelectedCertificates(urls);
+                    setSelectedCertificateNames(names);
 
-                setCertificateUrls(urls);
-                setCertificateNames(names);
+                    setCertificateUrls(urls);
+                    setCertificateNames(names);
 
-                // Check if motivation letter exists
-                if (motivation_letter) {
-                    setHasApplication(true);
+                    // Check if motivation letter exists
+                    if (motivation_letter) {
+                        setHasApplication(true);
+                    }
+                } catch (error) {
+                    console.log('Error fetching data:', error);
+                    setHasApplication(false)
                 }
-            } catch (error) {
-                console.log('Error fetching data:', error);
-            }
-        });
-    }, []);
+            });
+        }
+    }, [showModal]);
 
     const handleCertificateSelect = async (event) => {
         const files = event.target.files;
@@ -75,12 +81,14 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
             selectedTag,
             motivation,
             selectedCertificates,
+            selectedCertificateNames
         };
 
         sendRequest('career-expert-application', 'POST', applicationData, (data) => {
-            console.log(data);
-            setHasApplication(true); // Update application status
+            console.log(data.message);
+            alert(data.message);
         });
+        handleClose()
     };
 
     return (
@@ -131,6 +139,33 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                                     className="mb-3"
                                 />
                             </Form.Group>
+
+                            {certificateNames.length > 0 &&
+                                <Form.Group className={"mb-3"}>
+                                    <Form.Label className="fw-bold">Certificates:</Form.Label>
+                                    <Row>
+                                        <Col md={12}>
+                                            {certificateNames.map((name, index) => (
+                                                <div
+                                                    key={index}
+                                                    style={{
+                                                        maxWidth: "100%",
+                                                        whiteSpace: "nowrap",
+                                                        textOverflow: "ellipsis",
+                                                        overflow: "hidden",
+                                                    }}
+                                                >
+                                                    <a href={certificateUrls[index]} target="_blank"
+                                                       rel="noopener noreferrer">
+                                                        {name}
+                                                    </a>
+                                                </div>
+                                            ))}
+                                        </Col>
+                                    </Row>
+                                </Form.Group>
+                            }
+
                             <div className="d-grid gap-2">
                                 <Button variant="success" type="submit" className="mb-3">
                                     Apply
@@ -210,7 +245,8 @@ const CareerExpertModal = ({ showModal, handleClose }) => {
                                                     overflow: "hidden",
                                                 }}
                                             >
-                                                <a href={certificateUrls[index]} target="_blank" rel="noopener noreferrer">
+                                                <a href={certificateUrls[index]} target="_blank"
+                                                   rel="noopener noreferrer">
                                                     {name}
                                                 </a>
                                             </div>

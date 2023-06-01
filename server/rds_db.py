@@ -376,7 +376,7 @@ def create_tables():
             isApproved 		    BOOLEAN DEFAULT FALSE,
             date        		datetime DEFAULT CURRENT_TIMESTAMP,
             motivation_letter 	text,
-            tag_id 			    INT,
+            tag_name 			char(20),
             PRIMARY KEY (applicant_id),
             FOREIGN KEY (applicant_id) REFERENCES Regular_User (user_id),
             FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
@@ -500,3 +500,15 @@ def fetch_one(cursor):
     else:
         user = None
     return user
+
+
+def fetch_all(cursor):
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    users = []
+
+    for row in rows:
+        user = dict(zip(column_names, row))
+        users.append(user)
+
+    return users
