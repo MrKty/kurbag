@@ -59,7 +59,7 @@ const CreateJob = () => {
             setBackEndMessage(data);
         });
 
-        // Clear form fields
+        // Clear form fields comment
         setOrganization("");
         setDescription("");
         setTitle("");
