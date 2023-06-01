@@ -1,6 +1,6 @@
 import {Navbar, Container, Nav, NavDropdown, Form, InputGroup, Button, Image, Alert} from 'react-bootstrap';
 import logo from '../icons/app_logo.svg';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
     faHome,
@@ -13,12 +13,14 @@ import {
     faExchangeAlt
 } from '@fortawesome/free-solid-svg-icons';
 import CareerExpertModal from "./modals/CareerExpertModal";
+import sendRequest from "../utils/request";
 
 
 
 const NavBar = (props) => {
     const [activeLink, setActiveLink] = useState(props.activeLink);
     const [showModal, setShowModal] = useState(false);
+    const [userType, setUserType] = useState(0);
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
@@ -29,14 +31,18 @@ const NavBar = (props) => {
     };
 
     const handleOptionClick = () => {
-        if (userType === 1 || userType === 3) {
+        console.log(userType)
+        if (userType == "1" || userType == "3") {
             window.location.href = '/previous-blogs';
         } else {
             setShowModal(true);
         }
     };
 
-    const userType = localStorage.getItem("userType")
+    useEffect( () => {
+        setUserType(localStorage.getItem("userType"));
+    }, []);
+
 
     return (
         <Navbar bg="light" expand="lg">

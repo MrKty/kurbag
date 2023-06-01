@@ -55,6 +55,8 @@ function BlogEditor() {
 
             sendRequest("blogEditor", "POST", requestData, (data) => {
                 // Handle the response from the backend
+                alert(data.message)
+                window.location.href = "/previous-blogs";
             });
         }
     };
@@ -71,37 +73,16 @@ function BlogEditor() {
 
                 <Row className={'my-4'}>
                     <Col className="d-flex flex-column justify-content-center align-items-center">
-                        <Form.Group className={"col-9"}>
-                            <Form.Label>Choose the main area from your expertise areas that you will write about:</Form.Label>
-                            <Form.Control as="select" value={selectedTag} onChange={(event) => handleTagSelect(event.target.value)} className="mb-3">
-                                <option value="">Select a tag</option>
-                                <option value="career">Career</option>
-                                <option value="job-search">Job Search</option>
-                                <option value="workplace">Workplace</option>
-                                <option value="technology">Technology</option>
-                                <option value="engineering">Engineering</option>
-                                <option value="job-skills">Job Skills</option>
-                                <option value="education">Education</option>
-                                <option value="marketing">Marketing</option>
-                            </Form.Control>
+                        <Form.Group className={"col-9 text-center"}>
+                            <Form.Label className={"fw-bold"}>Area of expertise that you will write about</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={selectedTag}
+                                onChange={(event) => handleTagSelect(event.target.value)}
+                                className="mb-3"
+                                readOnly
+                            />
                         </Form.Group>
-                        {selectedTag && (
-                            <Form.Group className={"col-9"}>
-                                <Form.Label>Choose the subtags the blog is about:</Form.Label>
-                                <div className="mb-3">
-                                    <Form.Check type="checkbox" label="Remote Work" />
-                                </div>
-                                <div className="mb-3">
-                                    <Form.Check type="checkbox" label="Internships" />
-                                </div>
-                                <div className="mb-3">
-                                    <Form.Check type="checkbox" label="Retirement" />
-                                </div>
-                                <div className="mb-3">
-                                    <Form.Check type="checkbox" label="Freelancer" />
-                                </div>
-                            </Form.Group>
-                        )}
                     </Col>
                 </Row>
 

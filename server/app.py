@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import datetime
 
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -10,12 +11,20 @@ from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
+app.secret_key = 'abcdefgh'
+
+app.config['MYSQL_HOST'] = 'kurbagdb.crhbzjj4nyp2.us-east-1.rds.amazonaws.com'
+app.config['MYSQL_USER'] = 'mrkty'
+app.config['MYSQL_PASSWORD'] = '12345678'
+app.config['MYSQL_DB'] = 'kurbagdb'
+
 CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
 
+
 # Initiate database
-#db.create_tables()
-#db.populate_table()
+# db.create_tables()
+# db.populate_table()
 
 
 @app.route('/')
@@ -40,6 +49,7 @@ def login():
         if bcrypt.checkpw(password.encode(), user["password"].encode()):
             message = 'Logged in successfully!'
             response = {'message': message, 'id': user['user_id'], 'userType': user['user_type']}
+            print(response)
             return jsonify(response)
 
         else:
@@ -88,9 +98,19 @@ def signup():
             # Start a transaction
             cursor.execute('START TRANSACTION')
 
+            cursor.execute('Select * From User WHERE user_type = 1')
+            is_career_expert = cursor.fetchone()
+
+            if is_career_expert:
+                user_type = 0
+            else:
+                user_type = 1
+
             # Insert the user data into the User table
-            cursor.execute('INSERT INTO User (mail_addr, password, phone_no, user_type) VALUES (%s, %s, %s, %s)',
-                           (email, hashed_password, phone, 0))
+            cursor.execute(
+                'INSERT INTO User (mail_addr, password, phone_no, user_type, profile_pic) VALUES (%s, %s, %s, %s, %s)',
+                (email, hashed_password, phone, user_type,
+                 "https://firebasestorage.googleapis.com/v0/b/cs353db.appspot.com/o/user.png?alt=media&token=8f6d1e4f-349c-482b-83e7-74fc61f8453f"))
             user_id = cursor.lastrowid
             # Insert the person data into the Person table
             birth_date = f'{year}-{month}-{day}'  # Format birth date correctly
@@ -103,6 +123,9 @@ def signup():
             cursor.execute(
                 'INSERT INTO Regular_User (user_id) VALUES (%s)',
                 (user_id,))
+
+            if user_type == 1:
+                cursor.execute('INSERT INTO Career_Expert (user_id) VALUES (%s)', user_id)
 
             # Commit the transaction
             cursor.execute('COMMIT')
@@ -697,51 +720,107 @@ def create_event():
         return jsonify({'message': 'Failed to create event'}), 500
 
 
-applications = [
-    {
-        "id": 1,
-        "name": "John Doe",
-        "date": "2022-02-14",
-        "tag": "Career",
-        "photo": "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-        "id": 2,
-        "name": "Jane Doe",
-        "date": "2022-02-12",
-        "tag": "Career",
-        "photo": "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-        "id": 3,
-        "name": "Bob Smith",
-        "date": "2022-02-10",
-        "tag": "Career",
-        "photo": "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-        "id": 4,
-        "name": "Alice Johnson",
-        "date": "2022-02-09",
-        "tag": "Career",
-        "photo": "https://randomuser.me/api/portraits/women/4.jpg",
-    },
-    {
-        "id": 5,
-        "name": "Michael Brown",
-        "date": "2022-02-08",
-        "tag": "Career",
-        "photo": "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-]
-
-
 @app.route('/career-expert-applications', methods=['POST'])
-def send_c_e_applications():
-    print("here")
+def retrieve_c_e_applications():
     data = request.json  # Get the form data from the request body
+    user_id = data.get("id")
 
-    return jsonify({"applications": "applications"})
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    print("id")
+    print(user_id)
+    # Start a transaction
+    cursor.execute('START TRANSACTION')
+    cursor.execute('SELECT expert_in_tag FROM Career_Expert WHERE user_id = %s', user_id)
+
+    expert_tag = cursor.fetchone()
+    if expert_tag["expert_in_tag"] == "all":
+        print("here")
+        # Retrieve all the applications for the career expert
+        cursor.execute(
+            'SELECT P.user_id AS appID, CONCAT(P.first_name, " ", P.last_name) AS name, U.profile_pic AS photo, SR.date, SR.tag_name AS tag '
+            'FROM Sends_Request SR '
+            'JOIN Person P ON P.user_id = SR.applicant_id JOIN User U ON SR.applicant_id = U.user_id '
+            'WHERE SR.isApproved = false')
+    else:
+        print("heressss")
+
+        # Retrieve all the applications for the career expert
+        cursor.execute(
+            'SELECT P.user_id AS appID, CONCAT(P.first_name, " ", P.last_name) AS name, U.profile_pic, SR.date, SR.tag_name FROM Sends_Request SR '
+            'JOIN Person P ON P.user_id = SR.applicant_id JOIN User U ON SR.applicant_id = U.user_id '
+            'WHERE SR.isApproved = false AND SR.tag_name = %s', (expert_tag,))
+
+    applications = cursor.fetchall()
+    print(applications)
+
+    # Create a response object with the applications
+    response = {"applications": applications}
+    return jsonify(response), 200
+
+
+@app.route('/get-specific-c-e-application', methods=['POST'])
+def get_specific_c_e_application():
+    # Get post data from the request
+    data = request.json
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    user_id = data.get("id")
+    applicant_id = data.get("appID")
+
+    # Fetch the application data from the Sends_Request table
+    cursor.execute(
+        'SELECT motivation_letter FROM Sends_Request WHERE applicant_id = %s',
+        (applicant_id,)
+    )
+    motivation = cursor.fetchone()["motivation_letter"]
+
+    # Fetch the certificate data from the Certificate table
+    cursor.execute(
+        'SELECT cert_id as id, cert_name as name, cert_url as url FROM Certificate WHERE applicant_id = %s',
+        (applicant_id,)
+    )
+    certificates = list(cursor.fetchall())
+    cursor.close()
+
+    # Create a response object with the applications
+    response = {"motivation": motivation, "certificates": certificates}
+    return jsonify(response), 200
+
+
+@app.route('/approve-c-e-application', methods=['POST'])
+def approve_c_e_application():
+    # Get post data from the request
+    data = request.json
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    user_id = data.get("id")
+    applicant_id = data.get("appID")
+
+    try:
+        # Update Sends_Request to approve the application
+        cursor.execute('UPDATE Sends_Request SET expert_id = %s, isApproved = TRUE WHERE applicant_id = %s',
+                       (user_id, applicant_id))
+
+        # Get the tag_name from Sends_Request for the approved application
+        cursor.execute('SELECT tag_name FROM Sends_Request WHERE applicant_id = %s', (applicant_id,))
+        tag_name = cursor.fetchone()["tag_name"]
+
+        # Insert a new entry in Career_Expert table for the approved expert
+        cursor.execute('INSERT INTO Career_Expert (user_id, expert_in_tag) VALUES (%s, %s)', (applicant_id, tag_name))
+
+        cursor.execute('UPDATE User SET user_type = 1 WHERE user_id = %s', (applicant_id,))
+
+        # Commit the transaction
+        cursor.execute('COMMIT')
+
+        # Return a success response
+        return jsonify({'message': 'Application approved successfully'}), 200
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+
+        # Return an error response
+        return jsonify({'message': 'Failed to approve application. Please try again.'}), 500
 
 
 # Endpoint for creating a new event
@@ -1007,8 +1086,51 @@ def get_cv_pool():
 def blog_editor():
     data = request.json  # Get the form data from the request body
     print(data)
+    u_id = data.get("id")
 
-    return jsonify(data)
+    # Extract the necessary data from the form
+    cover_photo_url = data.get('coverPhotoUrl')
+    title = data.get('title')
+    summary = data.get('summary')
+    content = data.get('content')
+    selected_tag = data.get('selectedTag')
+
+    cursor = db.get_cursor()
+
+    try:
+        # Start a transaction
+        cursor.execute('START TRANSACTION')
+
+        # Insert the blog post into the database
+        cursor.execute(
+            'INSERT INTO Blog_Post (owner_id, b_title, b_content, b_summary, b_cover, b_tag) VALUES (%s, %s, %s, %s, %s, %s)',
+            (u_id, title, content, summary, cover_photo_url, selected_tag))
+
+        # Commit the transaction
+        cursor.execute('COMMIT')
+
+        message = 'Blog is successfully published'
+        status_code = 200
+    except Exception as e:
+        print(str(e))
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+        message = 'Error occurred while publishing the blog. Please try again.'
+        status_code = 500
+
+    # Create a response object
+    response = {'message': message}
+    print(response)
+    return jsonify(response), status_code
+
+
+@app.route('/blogEditorer', methods=['POST'])
+def bloger_editor():
+    data = request.json  # Get the form data from the request body
+    print(data)
+    u_id = data.get("id")
+
+    return jsonify({"message": "Blog is successfully published"}), 200
 
 
 # Endpoint for fetching user information for profile page.

@@ -4,53 +4,51 @@ import CareerExpertNavBar from "../components/CareerExpertNavBar";
 import FilterBar from "../components/FilterBar";
 import sendRequest from "../utils/request";
 
-const uploadedFilesData = [
-    {id: 1, name: "Cert_Compensation_Professional_(CCP).pdf"},
-    {id: 2, name: "Cert_Compensation_Professional_(CCP).pdf"},
-    {id: 3, name: "Cert_Professional_in_Talent_Development_(CPTD).pdf"},
-];
-
-const FileList = () => {
-    return (
-        <table className="table">
-            <thead>
-            <tr>
-                <th>Certificates</th>
-            </tr>
-            </thead>
-            <tbody>
-            {uploadedFilesData.map((file) => (
-                <tr key={file.id}>
-                    <td>{file.name}</td>
-                    <td>
-                        <a href={`https://example.com/files/${file.id}`} download>
-                            Download
-                        </a>
-                    </td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
-    );
-};
-
 function ApplicationCard({application, handleClick}) {
-    const {name, date, tag, photo} = application;
-    const [selectedCertificates, setSelectedCertificates] = useState([]);
+    const {appID, name, date, tag, photo} = application;
+    const [files, setFiles] = useState([]);
     const [show, setShow] = useState(false);
+    const [motivationText, setMotivationText] = useState("dasdsad")
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const handleCertificateSelect = (event) => {
-        setSelectedCertificates([...selectedCertificates, event.target.files[0]]);
-    };
+
+    useEffect(() => {
+        if (show) {
+            // Fetch applications data from the Flask backend
+            sendRequest('get-specific-c-e-application', 'POST', {appID}, (data) => {
+                console.log("here")
+                console.log(data)
+                if (data.motivation) {
+                    setMotivationText(data.motivation)
+                }
+                if (data.certificates) {
+                    setFiles(data.certificates)
+                }
+            });
+        }
+    }, [show]);
+
+
+    function approveApplication() {
+
+        // Fetch applications data from the Flask backend
+        sendRequest('approve-c-e-application', 'POST', {appID}, (data) => {
+            console.log("here")
+            console.log(data)
+            alert(data.message)
+            handleClose()
+        });
+    }
+
 
     return (
         <>
-            <Card className="my-2" onClick={handleShow} style={{cursor: 'pointer'}}>
+            <Card className="my-2" onClick={handleShow}
+                  style={{cursor: 'pointer'}}>
                 <Row>
-                    <Col md={3}>
-                        <Image src={photo} rounded fluid/>
+                    <Col md={3} style={{maxWidth: '150px'}}>
+                        <Image src={photo} rounded className={"img-fluid"}/>
                     </Col>
                     <Col md={2} className={'center-wrapper'}>
                         <div className="fw-bold">{name}</div>
@@ -70,7 +68,7 @@ function ApplicationCard({application, handleClick}) {
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
-                        <Col>
+                        <Col style={{maxWidth: '150px'}}>
                             <Image src={photo} rounded fluid className="mb-1"/>
                         </Col>
                         <Col>
@@ -91,39 +89,34 @@ function ApplicationCard({application, handleClick}) {
                             id="motivation"
                             className="border border-dark rounded col-12 mx-auto p-1"
                             contentEditable="true"
-                            style={{minHeight: '6em'}}>I am writing to express my interest in applying to write blogs in
-                                                       the career expertise, internships, and remote work subareas. As a
-                                                       passionate writer with a strong background in these areas, I
-                                                       believe that I have the skills and experience necessary to create
-                                                       informative, engaging, and insightful content for Kurbağ
-                                                       audience.
-
-                                                       Throughout my career, I have gained valuable experience in
-                                                       various aspects of these areas, from my own personal experiences
-                                                       to my research and work. With my unique perspective and
-                                                       expertise, I am confident that I can create content that
-                                                       resonates with your audience, offering practical tips, advice,
-                                                       and insights that can help them achieve success in their careers.
-
-                                                       As a writer, I am committed to delivering high-quality work that
-                                                       meets your expectations and exceeds your readers' expectations. I
-                                                       am well-versed in the latest trends, technologies, and best
-                                                       practices in content creation, and I am confident that I can
-                                                       deliver well-researched, relevant, and engaging articles that
-                                                       capture the readers' attention.
-
-                                                       Thank you for considering my application. I look forward to
-                                                       contribute to this beautiful platform.
-
-                                                       Sincerely,
+                            style={{minHeight: '6em'}}>
+                            {motivationText}
                         </div>
                     </Row>
                     <Form.Group>
                         <Form.Label className={"visually-hidden"}>Certificates:</Form.Label>
-                        <FileList/>
+                        <table className="table">
+                            <thead>
+                            <tr>
+                                <th>Certificates</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {files.map((file) => (
+                                <tr key={file.id}>
+                                    <td>{file.name}</td>
+                                    <td>
+                                        <a href={file.url} download>
+                                            Download
+                                        </a>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
                     </Form.Group>
                     <Modal.Footer>
-                        <Button variant="success" onClick={handleClose} className={"fw-bold w-100"}>
+                        <Button variant="success" onClick={approveApplication} className={"fw-bold w-100"}>
                             Approve
                         </Button>
                     </Modal.Footer>
@@ -139,11 +132,14 @@ function CareerExpertApplications() {
 
     useEffect(() => {
         // Fetch applications data from the Flask backend
-        sendRequest('career-expert-applications', 'POST', null, (data) => {
+        sendRequest('career-expert-applications', 'POST', {}, (data) => {
             console.log("here")
-            setApplications(data.applications);
+            if (data.applications) {
+                console.log(data.applications)
+                setApplications(data.applications);
+            }
         });
-    }, []);
+    }, [selectedApplication]);
 
     const handleApplicationClick = (application) => {
         setSelectedApplication(application);
@@ -159,7 +155,7 @@ function CareerExpertApplications() {
             <FilterBar filters={["Date", "Main Tag"]}/>
             <div className="center-wrapper">
                 {applications.map((application) => (
-                    <Col key={application.id} md={8}>
+                    <Col key={application.appID} md={8}>
                         <ApplicationCard
                             application={application}
                             handleClick={handleApplicationClick}

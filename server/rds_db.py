@@ -9,7 +9,7 @@ import textwrap
 import pymysql
 
 conn = pymysql.connect(
-    host="kurbag-database.cvcoj4rml3kh.eu-north-1.rds.amazonaws.com",  # endpoint link
+    host="kurbagdb.crhbzjj4nyp2.us-east-1.rds.amazonaws.com",  # endpoint link
     port=3306,  # 3306
     user="mrkty",  # admin
     password="12345678",  # adminadmin
@@ -114,7 +114,7 @@ def create_tables():
 
             CREATE TABLE IF NOT EXISTS Career_Expert (
                 user_id int,
-                certificate varchar(128),
+                expert_in_tag char(20),
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
@@ -154,8 +154,9 @@ def create_tables():
                 b_summary TEXT,
                 b_cover varchar(128),
                 b_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                b_like_count INT,
-                b_com_count INT,
+                b_tag   char(20),
+                b_like_count INT DEFAULT 0,
+                b_com_count INT DEFAULT 0,
                 PRIMARY KEY (b_id),
                 FOREIGN KEY (owner_id) REFERENCES Career_Expert (user_id)
             );
@@ -296,14 +297,6 @@ def create_tables():
             PRIMARY KEY (user_id, tag_name),
             FOREIGN KEY (user_id) REFERENCES Person(user_id),
             FOREIGN KEY (tag_name) REFERENCES Tag(tag_name) 
-        );
-        
-        CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
-        	b_id        int,
-            tag_name    char(20),
-            PRIMARY KEY (b_id, tag_name),
-            FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
-            FOREIGN KEY (tag_name) REFERENCES Tag(tag_name)
         );
         
         CREATE TABLE IF NOT EXISTS Likes_Blog(
@@ -491,6 +484,7 @@ def get_details():
 
 def fetch_one(cursor):
     row = cursor.fetchone()
+
     if row:
         # Get the column names from the cursor description
         column_names = [desc[0] for desc in cursor.description]

@@ -22,6 +22,7 @@ function LoginCard() {
                 // Store the ID in the local storage
                 localStorage.setItem('userId', data.id);
                 localStorage.setItem('userType', data.userType);
+                console.log(data.userType);
 
                 // Redirect to the home URL
                 if (data.userType <= 3) {
