@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
-import {Modal, Button, Form, Col} from 'react-bootstrap';
+import {Modal, Button, Form} from 'react-bootstrap';
 import sendRequest from "../../utils/request";
+import ReactSearchBox from "react-search-box";
 
 const AddWorkExperienceModal = ({showModal, handleClose}) => {
     const [workMode, setWorkMode] = useState('');
@@ -12,6 +13,8 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
     const [jobStartDate, setJobStartDate] = useState('');
     const [about, setAbout] = useState('');
     const [location, setLocation] = useState('');
+    const [companyList, setCompanyList] = useState([]);
+    const [currentlyWorked, setCurrentlyWorked] = useState(false);
     const userId = localStorage.getItem('userId');
 
     const handleWorkModeChange = (event) => {
@@ -26,12 +29,26 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
         setAbout(event.target.value);
     };
 
+    const handleCurrentlyWorkedChange = (event) => {
+        setCurrentlyWorked(event.target.checked);
+    };
+
     const handleLocationChange = (event) => {
         setLocation(event.target.value);
     };
 
     const handleOrgNameChange = (event) => {
-        setOrgName(event.target.value);
+        console.log(event)
+        if (event) {
+            if (event.item) {
+                setOrgName(event)
+            } else {
+                setOrgName(event)
+                sendRequest('search-company', 'POST', {orgName}, (data) => {
+                    setCompanyList(data.company_names);
+                });
+            }
+        }
     };
 
     const handleRoleChange = (event) => {
@@ -61,7 +78,8 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
             jobEndDate,
             jobStartDate,
             about,
-            location
+            location,
+            currentlyWorked
         };
 
         // Send the form data to the backend
@@ -107,36 +125,16 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
                             placeholder="Enter work type"
                         />
                     </Form.Group>
-
-
-                    <Form.Group controlId="workType">
-                        <Form.Label>Work Type</Form.Label>
-                        <Form.Control as="select" value={workType}
-                                      onChange={(e) => setWorkType(e.target.value)}>
-                            <option value="">Select work type</option>
-                            <option value="full-time">Full-time</option>
-                            <option value="part-time">Part-time</option>
-                            <option value="internship">Internship</option>
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group controlId="workMode">
-                        <Form.Label>Work Mode</Form.Label>
-                        <Form.Control as="select" value={workMode}
-                                      onChange={(e) => setWorkMode(e.target.value)}>
-                            <option value="">Select work mode</option>
-                            <option value="on-site">On-site</option>
-                            <option value="remote">Remote</option>
-                        </Form.Control>
-                    </Form.Group>
-
                     <Form.Group controlId="orgName">
                         <Form.Label>Company</Form.Label>
-                        <Form.Control
-                            type="text"
+                        <ReactSearchBox
+                            placeholder="Enter Company Name"
+                            name={"instName"}
                             value={orgName}
+                            data={companyList}
                             onChange={handleOrgNameChange}
-                            placeholder="Enter company name"
+                            clearOnSelect={false}
+                            onSelect={handleOrgNameChange}
                         />
                     </Form.Group>
                     <Form.Group controlId="role">
@@ -157,15 +155,6 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
                             placeholder="Enter profession"
                         />
                     </Form.Group>
-                    <Form.Group controlId="jobEndDate">
-                        <Form.Label>Job End Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={jobEndDate}
-                            onChange={handleJobEndDateChange}
-                            placeholder="Enter job end date"
-                        />
-                    </Form.Group>
                     <Form.Group controlId="jobStartDate">
                         <Form.Label>Job Start Date</Form.Label>
                         <Form.Control
@@ -175,6 +164,23 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
                             placeholder="Enter job start date"
                         />
                     </Form.Group>
+                    <Form.Group controlId="currentlyWorked" className={"my-2"}>
+                        <Form.Check
+                            type="checkbox"
+                            label="I am currently worked here"
+                            checked={currentlyWorked}
+                            onChange={handleCurrentlyWorkedChange}
+                        />
+                    </Form.Group>
+                    {!currentlyWorked && <Form.Group controlId="jobEndDate">
+                        <Form.Label>Job End Date</Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={jobEndDate}
+                            onChange={handleJobEndDateChange}
+                            placeholder="Enter job end date"
+                        />
+                    </Form.Group>}
                     <Form.Group controlId="location">
                         <Form.Label>Location</Form.Label>
                         <Form.Control
