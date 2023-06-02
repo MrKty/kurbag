@@ -312,8 +312,9 @@ def fill_career_expert_modal():
 def get_jobs():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT * FROM Job_Opening J "
-        ""
+        "SELECT J.*, U.profile_pic as companyLogo FROM Job_Opening J "
+        "JOIN Organization O ON O.org_name = J.j_organization "
+        "JOIN User U ON U.user_id = O.user_id"
     )
     jobs_data = cursor.fetchall()
     print("jobs")
@@ -323,13 +324,12 @@ def get_jobs():
 
     return jsonify(jobs_data)
 
+
 @app.route('/applied-jobs', methods=['POST'])
 def get_applied_jobs():
     data = request.json
-    print("data")
     print(data)
     user_id = data.get('id')  # Get the user_id from the request
-
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(

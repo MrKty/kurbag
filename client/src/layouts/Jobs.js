@@ -133,15 +133,17 @@ const Jobs = () => {
                     </Card>
                 </Col>
                 <Col className="col-3 mt-3 mx-3" style={{overflowY: 'auto', maxHeight: maxHeight}}>
-                    {jobs.map((job) => (
-                        <JobListing
-                            jobTitle={job.j_title}
-                            companyName={job.j_organization}
-                            companyLogo={job.companyLogo}
-                            location={job.j_location}
-                            isSelected={selectedJob === job}
-                            onClick={() => handleJobClick(job)}
-                        />
+                    {jobs.map((job, index) => (
+                        <div key={index}>
+                            <JobListing
+                                jobTitle={job.j_title}
+                                companyName={job.j_organization}
+                                companyLogo={job.companyLogo}
+                                location={job.j_location}
+                                isSelected={selectedJob === job}
+                                onClick={() => handleJobClick(job)}
+                            />
+                        </div>
                     ))}
 
                 </Col>

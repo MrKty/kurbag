@@ -7,10 +7,10 @@ const JobListing = ({ jobTitle, companyName, companyLogo , location, isSelected,
         style={{ backgroundColor: isSelected ? 'white' : '#ecebeb' }}
         onClick={onClick}
     >
-        <Col md={3}>
-            <Image src={companyLogo} fluid rounded />
+        <Col md={4}>
+            <Image src={companyLogo} className={"img-fluid"} />
         </Col>
-        <Col md={9}>
+        <Col md={8}>
             <h5>{jobTitle}</h5>
             <p className="mb-1">{companyName}</p>
             <p className="mb-0">{location}</p>
