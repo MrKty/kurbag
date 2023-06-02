@@ -481,6 +481,34 @@ def getCompanyRecruiter():
 
     return jsonify({"org_name": org_name}), 200
 
+
+@app.route('/get-user-for-job-application', methods=['POST'])
+def get_user_job_application():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch user details from Person table using user_id
+    cursor.execute("SELECT P.first_name, P.last_name, U.phone_no, U.mail_addr, "
+                   "U.profile_pic FROM Person P INNER JOIN User U ON P.user_id = U.user_id "
+                   "WHERE P.user_id = %s", (u_id,))
+    user = cursor.fetchone()
+    print(user)
+    return jsonify(user), 200
+
+
+@app.route('/apply-job', methods=['POST'])
+def apply_job():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    print(data)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+
+    return jsonify({"message": "Successfully applied"}), 200
+
+
 @app.route('/home-get-post', methods=['POST'])
 def get_posts():
     print("here")

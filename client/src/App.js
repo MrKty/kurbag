@@ -16,7 +16,9 @@ import OrganizationEmployeePage from "./layouts/OrganizationEmployeePage";
 import BlogViewer from "./layouts/BlogViewer";
 import RecruiterViewer from "./layouts/RecruiterViewer";
 import Profile from "./layouts/Profile";
+import Analysis from "./layouts/Analysis";
 import HomePage from "./layouts/HomePage";
+import Admin from "./layouts/Admin";
 import PreviousBlogs from "./layouts/PreviousBlogs";
 import CvPool from "./layouts/CvPool";
 import CreateEventPage from "./layouts/CreateEventPage";
@@ -61,6 +63,8 @@ function App() {
                 <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+                <Route path="/analysis" element={<Analysis/>}/>
+                <Route path="/admin" element={<Admin/>}/>
                 <Route path="/org-profile" element={<OrganizationProfile/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>

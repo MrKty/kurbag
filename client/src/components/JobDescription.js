@@ -4,11 +4,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAdd, faEnvelope, faPaperPlane, faPlus, faSave} from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import ApplyJobModal1 from "./modals/ApplyJobModal1";
-import ApplyJobModal2 from "./modals/ApplyJobModal2";
-import ApplyJobModal3 from "./modals/ApplyJobModal3";
-import ApplyJobModal4 from "./modals/ApplyJobModal4";
-import ApplyJobModal5 from "./modals/ApplyJobModal5";
-import ApplyJobModal6 from "./modals/ApplyJobModal6";
 
 
 const JobDescription = (props) => {
@@ -169,7 +164,6 @@ const JobDescription = (props) => {
                 </Col>
             </Row>
             <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} />
-            <ApplyJobModal2 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(2)} />
         </div>
     );
 };
