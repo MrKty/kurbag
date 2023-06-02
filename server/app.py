@@ -22,8 +22,8 @@ mysql = MySQL(app)
 
 
 # Initiate database
-# db.create_tables()
-# db.populate_table()
+db.create_tables()
+db.populate_table()
 
 
 @app.route('/')
@@ -361,7 +361,7 @@ def get_applied_jobs():
 
     for job in jobs_data:
         job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
-
+    print(jobs_data)
     return jsonify(jobs_data)
 
 
@@ -434,7 +434,7 @@ def create_job():
     job_location = data.get('location')
     job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
-    job_recruiter_id = data.get('id')
+    job_recruiter_id = data.get('userId')
     job_min_age = data.get('minAge')
     job_max_age = data.get('maxAge')
     job_skills = data.get('skillsString')
@@ -546,6 +546,25 @@ def apply_job():
 
     return jsonify({"message": "Successfully applied"}), 200
 
+@app.route('/delete-application', methods=['POST'])
+def delete_application():
+    data = request.json  # Get the data from the request body
+    job_id = data.get("jobId")
+    user_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Delete the application from the Applies_Job table
+    cursor.execute(
+        "DELETE FROM Applies_Job WHERE user_id = %s AND j_id = %s",
+        (user_id, job_id)
+    )
+
+    # Commit the transaction and close the cursor
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify({"message": "Application deleted successfully"}), 200
 
 @app.route('/home-get-post', methods=['POST'])
 def get_posts():

@@ -33,7 +33,7 @@ const Jobs = () => {
 
     const handleJobClick = (job) => {
         setSelectedJob(job);
-        
+
         sendRequest("get-recruiter-info", "POST", {"recruiterId": selectedJob.recruiter_id}, (data) => {
             // Handle the response from the backend
             setHiringManagerName(data.name)
@@ -78,6 +78,13 @@ const Jobs = () => {
         setShowModal(false);
     };
 
+    const handleDeleteApplication = (jobId) => {
+        const user_id = localStorage.getItem("userId")
+        sendRequest('delete-application', 'POST', {jobId}, (data) => {
+            // Here comes blog data from backend
+        });
+    };
+
     return (
         <Container fluid className="p-1">
             <NavBar activeLink="jobs"/>
@@ -89,54 +96,34 @@ const Jobs = () => {
                         <Row>
                             <Col className={"col-9"}>
                                 <h4>Applied Jobs</h4>
+                                <hr></hr>
                             </Col>
                             <Col>
                                 <FontAwesomeIcon icon={faAngleDown} className={"px-2"}/>
                             </Col>
                         </Row>
                         <Row className="border-bottom p-2">
-                            <Col md={3}>
-                                <img
-                                    src="https://static.vecteezy.com/system/resources/previews/009/469/630/non_2x/google-logo-isolated-editorial-icon-free-vector.jpg"
-                                    alt="Profile"
-                                    className="rounded"
-                                    width="75"
-                                    height="75"
-                                />
-                            </Col>
-                            <Col md={9}>
-                                <Row><h5>Web Developer</h5></Row>
-                                <Row>
-                                    <Col>
-                                        <p className="mt-2 me-auto fw-bold">Google</p>
+                            {appliedJobs.map((job) => (
+                                <div key={job.id}>
+                                    <Col md={9}>
+                                        <Row>
+                                            <h5>{job.j_title} @ {job.j_organization}</h5>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <p className="mt-2 me-auto fw-bold">{job.j_mode} - {job.j_type}</p>
+                                            </Col>
+
+                                        </Row>
+                                        <Row>
+                                            <Button onClick={() => handleDeleteApplication(job.j_id)} className="btn btn-danger btn-sm text-left">
+                                                Cancel
+                                            </Button>
+                                        </Row>
                                     </Col>
-                                    <Col>
-                                        <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending
-                                        </button>
-                                    </Col>
-                                </Row>
-                            </Col>
-                            <Col md={3}>
-                                <img
-                                    src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
-                                    alt="Profile"
-                                    className="rounded"
-                                    width="75"
-                                    height="75"
-                                />
-                            </Col>
-                            <Col md={9}>
-                                <Row><h5>Data Analyst</h5></Row>
-                                <Row>
-                                    <Col>
-                                        <p className="mt-2 me-auto fw-bold">Sony</p>
-                                    </Col>
-                                    <Col>
-                                        <button className={"btn btn-info fw-bold"} style={{color: "white"}}>Pending
-                                        </button>
-                                    </Col>
-                                </Row>
-                            </Col>
+                                    <hr></hr>
+                                </div>
+                            ))}
                         </Row>
                     </Card>
                 </Col>
