@@ -312,7 +312,7 @@ def fill_career_expert_modal():
 def get_jobs():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT J.*, U.profile_pic as companyLogo FROM Job_Opening J "
+        "SELECT J.*, U.profile_pic as companyLogo, U.about_info as about, O.num_followers as companyFollowers FROM Job_Opening J "
         "JOIN Organization O ON O.org_name = J.j_organization "
         "JOIN User U ON U.user_id = O.user_id"
     )
@@ -323,6 +323,25 @@ def get_jobs():
         job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
 
     return jsonify(jobs_data)
+
+
+@app.route('/get-recruiter-info', methods=['POST'])
+def get_recruiter_info():
+    data = request.json
+    recId = data.get("recruiterId")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.current_position as position "
+        "FROM Person P "
+        "JOIN User U ON U.user_id = P.user_id "
+        "WHERE P.user_id = %s ", (recId, )
+    )
+    recData = cursor.fetchone()
+
+    print(recData)
+
+    return jsonify(recData),200
 
 
 @app.route('/applied-jobs', methods=['POST'])

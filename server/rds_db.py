@@ -196,7 +196,7 @@ def create_tables():
                 size varchar(20),
                 location varchar(100),
                 website varchar(64),
-                num_followers INT,
+                num_followers INT DEFAULT 0,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );

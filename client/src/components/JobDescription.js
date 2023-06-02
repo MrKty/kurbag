@@ -4,6 +4,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAdd, faEnvelope, faPaperPlane, faPlus, faSave} from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import ApplyJobModal1 from "./modals/ApplyJobModal1";
+import sendRequest from "../utils/request";
 
 
 const JobDescription = (props) => {
@@ -16,13 +17,16 @@ const JobDescription = (props) => {
         skills,
         jobDescription,
         companyLogo,
+        companyAbout,
         companyFollowers,
         dueDateApply,
+        hiringManagerPhoto,
+        hiringManagerName,
+        hiringManagerPosition,
         jobTimestamp
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
-    const [hiringManagerPhoto, setHiringManagerPhoto] = useState(null);
 
     // Check if skills are available
     if (!skills) {
@@ -45,7 +49,7 @@ const JobDescription = (props) => {
             <Row>
                 <Col className={"col-9"}>
                     <Row className={"p-1"}>
-                        <Col style={{ overflowY: "auto" }}>
+                        <Col style={{overflowY: "auto"}}>
                             <h2>{jobTitle}</h2>
                             <div className={"mb-2"}>{companyName} - {location}</div>
                             <Row>
@@ -81,23 +85,23 @@ const JobDescription = (props) => {
             <Row className={"py-2"}>
                 <Col className={"col-2"}>
                     <Button variant="primary" onClick={() => handleApplyClick(0)}>
-                        <FontAwesomeIcon icon={faPaperPlane} className={"px-2"} />
+                        <FontAwesomeIcon icon={faPaperPlane} className={"px-2"}/>
                         Apply
                     </Button>
                 </Col>
                 <Col className={"col-2"}>
                     <Button variant="success">
-                        <FontAwesomeIcon icon={faSave} className={"px-2"} />
+                        <FontAwesomeIcon icon={faSave} className={"px-2"}/>
                         Save
                     </Button>
                 </Col>
             </Row>
-            <hr />
+            <hr/>
             <Row>
                 <Col>
                     <Card className={"p-3"}>
                         <h4>About the Hiring Manager</h4>
-                        <hr />
+                        <hr/>
                         <Row className="align-items-center">
                             <Col xs={1} className={"me-2"}>
                                 <img
@@ -109,12 +113,13 @@ const JobDescription = (props) => {
                                 />
                             </Col>
                             <Col xs={8}>
-                                <Link to={"#"} className={"text-start no-underline fw-bold"}>Jane Smith</Link>
-                                <div className={"text-start fw-bold"}>HR Assistant Specialist | IT Recruitment at Sony</div>
+                                <Link to={"#"} className={"text-start no-underline fw-bold"}>{hiringManagerName}</Link>
+                                <div className={"text-start fw-bold"}>{hiringManagerPosition} at {companyName}
+                                </div>
                             </Col>
                             <Col xs={2} className={"text-end"}>
                                 <button className="btn btn-primary">
-                                    <FontAwesomeIcon icon={faEnvelope} className="me-2" />
+                                    <FontAwesomeIcon icon={faEnvelope} className="me-2"/>
                                     Send Message
                                 </button>
                             </Col>
@@ -133,7 +138,7 @@ const JobDescription = (props) => {
                 <Col>
                     <Card className={"p-3"}>
                         <h4>About the Company</h4>
-                        <hr />
+                        <hr/>
                         <Row className="align-items-center">
                             <Col className={"col-1 me-2"}>
                                 <img
@@ -145,26 +150,24 @@ const JobDescription = (props) => {
                                 />
                             </Col>
                             <Col className={"col-7"}>
-                                <Link to={"#"} className={"text-start no-underline fw-bold"}>Sony</Link>
-                                <div className={"text-start fw-bold"}>1,097,845 followers</div>
+                                <Link to={"#"} className={"text-start no-underline fw-bold"}>{companyName}</Link>
+                                <div className={"text-start fw-bold"}>{companyFollowers}</div>
                             </Col>
                             <Col className={"text-end col-3"}>
                                 <button className="btn btn-primary">
-                                    <FontAwesomeIcon icon={faAdd} className="me-2" />
+                                    <FontAwesomeIcon icon={faAdd} className="me-2"/>
                                     Follow
                                 </button>
                             </Col>
                         </Row>
-                        <hr />
-                        <div>Sony’s purpose is simple. We aim to fill the world with emotion, through the power of
-                            creativity and technology. We want to be responsible for getting hearts racing, stirring
-                            ambition, and putting a smile on the faces of our customers. That challenge,
-                            …show more
+                        <hr/>
+                        <div>{companyAbout}
                         </div>
                     </Card>
                 </Col>
             </Row>
-            <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} jobId={jobId} />
+            <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal}
+                            handleApplyClick={() => handleApplyClick(1)} jobId={jobId}/>
         </div>
     );
 };

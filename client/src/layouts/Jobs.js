@@ -27,13 +27,23 @@ const Jobs = () => {
     const [selectedJob, setSelectedJob] = useState(1);
     const [jobs, setJobs] = useState([]);
     const [appliedJobs, setAppliedJobs] = useState([]);
+    const [hiringManagerPhoto, setHiringManagerPhoto] = useState("");
+    const [hiringManagerName, setHiringManagerName] = useState("");
+    const [hiringManagerPosition, setHiringManagerPosition] = useState("");
 
     const handleJobClick = (job) => {
         setSelectedJob(job);
+        
+        sendRequest("get-recruiter-info", "POST", {"recruiterId": selectedJob.recruiter_id}, (data) => {
+            // Handle the response from the backend
+            setHiringManagerName(data.name)
+            setHiringManagerPhoto(data.photo)
+            setHiringManagerPosition(data.position)
+        });
     };
 
 
-    useEffect( () => {
+    useEffect(() => {
 
         const user_id = localStorage.getItem("userId")
 
@@ -44,14 +54,12 @@ const Jobs = () => {
     }, []);
 
 
-    useEffect( () => {
+    useEffect(() => {
         sendRequest('applied-jobs', 'POST', {}, (data) => {
             // Here comes blog data from backend
             setAppliedJobs(data);
         });
     }, []);
-
-
 
 
     useEffect(() => {
@@ -76,8 +84,8 @@ const Jobs = () => {
             <FilterBar
                 filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
             <Row className="flex-grow-1">
-                <Col className="col-3 mt-3 me-2" style={{overflowY:"scroll", maxHeight: maxHeight}}>
-                    <Card className={"border p-2"} style={{overflowY:"auto", maxHeight: maxHeight}}>
+                <Col className="col-3 mt-3 me-2" style={{overflowY: "scroll", maxHeight: maxHeight}}>
+                    <Card className={"border p-2"} style={{overflowY: "auto", maxHeight: maxHeight}}>
                         <Row>
                             <Col className={"col-9"}>
                                 <h4>Applied Jobs</h4>
@@ -147,7 +155,8 @@ const Jobs = () => {
                     ))}
 
                 </Col>
-                <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb", overflowY:"auto", maxHeight: maxHeight}}>
+                <Col className="col-5 mt-3 p-2"
+                     style={{backgroundColor: "#ecebeb", overflowY: "auto", maxHeight: maxHeight}}>
                     <JobDescription
                         jobId={selectedJob ? selectedJob.j_id : ''}
                         jobTitle={selectedJob ? selectedJob.j_title : ''}
@@ -158,6 +167,10 @@ const Jobs = () => {
                         employmentType={selectedJob ? selectedJob.j_type : ''}
                         jobDescription={selectedJob ? selectedJob.j_desc : ''}
                         companyLogo={selectedJob ? selectedJob.companyLogo : ''}
+                        companyAbout={selectedJob ? selectedJob.about : ''}
+                        hiringManagerPhoto={selectedJob ? hiringManagerPhoto : ''}
+                        hiringManagerName={selectedJob ? hiringManagerName : ''}
+                        hiringManagerPosition={selectedJob ? hiringManagerPosition : ''}
                         companyFollowers={selectedJob ? selectedJob.companyFollowers : ''}
                         dueDateApply={selectedJob ? selectedJob.due_date_apply : ''}
                     />
