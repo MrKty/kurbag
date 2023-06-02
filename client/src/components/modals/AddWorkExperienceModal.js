@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Modal, Button, Form} from 'react-bootstrap';
 import sendRequest from "../../utils/request";
 import ReactSearchBox from "react-search-box";
 
-const AddWorkExperienceModal = ({ showModal, handleClose }) => {
+const AddWorkExperienceModal = ({showModal, handleClose}) => {
     const [workMode, setWorkMode] = useState('');
     const [workType, setWorkType] = useState('');
     const [role, setRole] = useState('');
@@ -14,6 +14,7 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
     const [about, setAbout] = useState('');
     const [location, setLocation] = useState('');
     const [companyList, setCompanyList] = useState([]);
+    const [currentlyWorked, setCurrentlyWorked] = useState(false);
     const userId = localStorage.getItem('userId');
 
     const handleWorkModeChange = (event) => {
@@ -26,6 +27,10 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
 
     const handleAboutChange = (event) => {
         setAbout(event.target.value);
+    };
+
+    const handleCurrentlyWorkedChange = (event) => {
+        setCurrentlyWorked(event.target.checked);
     };
 
     const handleLocationChange = (event) => {
@@ -73,7 +78,8 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
             jobEndDate,
             jobStartDate,
             about,
-            location
+            location,
+            currentlyWorked
         };
 
         // Send the form data to the backend
@@ -149,15 +155,6 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
                             placeholder="Enter profession"
                         />
                     </Form.Group>
-                    <Form.Group controlId="jobEndDate">
-                        <Form.Label>Job End Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={jobEndDate}
-                            onChange={handleJobEndDateChange}
-                            placeholder="Enter job end date"
-                        />
-                    </Form.Group>
                     <Form.Group controlId="jobStartDate">
                         <Form.Label>Job Start Date</Form.Label>
                         <Form.Control
@@ -167,6 +164,23 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
                             placeholder="Enter job start date"
                         />
                     </Form.Group>
+                    <Form.Group controlId="currentlyWorked" className={"my-2"}>
+                        <Form.Check
+                            type="checkbox"
+                            label="I am currently worked here"
+                            checked={currentlyWorked}
+                            onChange={handleCurrentlyWorkedChange}
+                        />
+                    </Form.Group>
+                    {!currentlyWorked && <Form.Group controlId="jobEndDate">
+                        <Form.Label>Job End Date</Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={jobEndDate}
+                            onChange={handleJobEndDateChange}
+                            placeholder="Enter job end date"
+                        />
+                    </Form.Group>}
                     <Form.Group controlId="location">
                         <Form.Label>Location</Form.Label>
                         <Form.Control

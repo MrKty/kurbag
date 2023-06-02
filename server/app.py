@@ -1182,15 +1182,18 @@ def add_work_experience():
     job_start_date = data.get('jobStartDate')
     location = data.get('location')
     about = data.get('about')
+    active = data.get('currentlyWorked')
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     exp_id = None
+
+    print(job_end_date)
 
     try:
         # Save the work experience to the database
         cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
                        'VALUES (%s, %s, %s, %s, %s, %s)',
-                       (data.get('userId'), True, about, location, job_end_date, job_start_date))
+                       (data.get('userId'), active, about, location, job_end_date, job_start_date))
         exp_id = cursor.lastrowid
 
         cursor.execute('INSERT INTO Work_Experience (user_id, exp_id, work_mode, work_type, role, profession, '
@@ -1277,7 +1280,8 @@ def fetch_work_experience_data():
     print(work_experience_data)
     for work_experience in work_experience_data:
         work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%y")
-        work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%y")
+        if work_experience["end_date"]:
+            work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%y")
     cursor.close()
     return jsonify(work_experience_data)
 
