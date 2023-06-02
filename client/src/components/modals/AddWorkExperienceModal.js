@@ -10,6 +10,8 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
     const [profession, setProfession] = useState('');
     const [jobEndDate, setJobEndDate] = useState('');
     const [jobStartDate, setJobStartDate] = useState('');
+    const [about, setAbout] = useState('');
+    const [location, setLocation] = useState('');
     const userId = localStorage.getItem('userId');
 
     const handleWorkModeChange = (event) => {
@@ -18,6 +20,14 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
 
     const handleWorkTypeChange = (event) => {
         setWorkType(event.target.value);
+    };
+
+    const handleAboutChange = (event) => {
+        setAbout(event.target.value);
+    };
+
+    const handleLocationChange = (event) => {
+        setLocation(event.target.value);
     };
 
     const handleOrgNameChange = (event) => {
@@ -49,7 +59,9 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
             profession,
             orgName,
             jobEndDate,
-            jobStartDate
+            jobStartDate,
+            about,
+            location
         };
 
         // Send the form data to the backend
@@ -65,6 +77,8 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
         setJobEndDate('');
         setJobStartDate('');
         setOrgName('');
+        setAbout('');
+        setLocation('');
         handleClose();
     };
 
@@ -136,6 +150,25 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
                             value={jobStartDate}
                             onChange={handleJobStartDateChange}
                             placeholder="Enter job start date"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="location">
+                        <Form.Label>Location</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={location}
+                            onChange={handleLocationChange}
+                            placeholder="Enter location"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="about">
+                        <Form.Label>Enter Job Description</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={about}
+                            onChange={handleAboutChange}
+                            placeholder="Enter description"
                         />
                     </Form.Group>
                 </Form>

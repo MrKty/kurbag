@@ -22,7 +22,7 @@ const ProfileCard = ({
             <Card.Body>
                 <Row className="align-items-center">
                     <Col xs={3} sm={3} md={3} className="text-center mb-3 mb-sm-0">
-                        <img src={profilePicture} alt="Profile Picture" roundedCircle fluid/>
+                        <img src={profilePicture} alt="Profile Picture" className={"rounded-circle img-fluid"}/>
                     </Col>
                     <Col xs={3} sm={3} md={3}>
                         <h4>{firstName} {lastName}</h4>
@@ -31,7 +31,7 @@ const ProfileCard = ({
                         <p><strong>Connections:</strong> {connectionCount}</p>
                     </Col>
                     <Col xs={3} sm={3} md={3}>
-                        <p><strong>Location:</strong> {city}, {country}</p>
+                        <p><strong>Location:</strong> {city}{city && (<span> , </span>)}{country}</p>
                         <p><strong>Sector:</strong> {sector}</p>
                         <p><strong>Position:</strong> {position}</p>
                     </Col>

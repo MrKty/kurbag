@@ -42,45 +42,50 @@ const Profile = () => {
 
     const handleClose = () => {
         setShowModal(false);
+        profileFetch();
     };
 
     const handleEducationModalClose = () => {
         setShowEducationModal(false);
+        eduFetch();
     };
     const handleWorkExperienceModalClose = () => {
         setShowWorkExperienceModal(false);
+        workExpFetch();
     };
 
-    //fetch the profile data from backend.
-    useEffect( () => {
-
+    const profileFetch = () => {
         const userId = localStorage.getItem("userId");
 
         sendRequest('profile-real', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
             setProfileData(data)
         });
-    }, [])
+    }
 
-
-    useEffect( () => {
-
+    const workExpFetch = () => {
         const userId = localStorage.getItem("userId");
 
         sendRequest('get-work-experience', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
             setWorkExperiences(data)
         });
-    }, [])
+    }
 
-    useEffect( () => {
-
+    const eduFetch = () => {
         const userId = localStorage.getItem("userId");
 
         sendRequest('get-education', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
             setEducationExperiences(data)
         });
+    }
+
+    //fetch the profile data from backend.
+    useEffect( () => {
+        profileFetch()
+        workExpFetch()
+        eduFetch()
     }, [])
 
 
@@ -111,7 +116,7 @@ const Profile = () => {
                                     city={profileData.current_city}
                                     country={profileData.current_country}
                                     connectionCount={profileData.connections}
-                                    profilePicture=""
+                                    profilePicture={profileData.profilePicture}
                                     handleEditProfile={handleEditProfile}
                                     handleAddWorkExperience={handleAddWorkExperience}
                                     handleAddEducation={handleAddEducation}
@@ -135,6 +140,7 @@ const Profile = () => {
                                             role={work_experience.profession}
                                             startDate={work_experience.start_date}
                                             endDate={work_experience.end_date}
+                                            about={work_experience.description}
                                         />
                                     </Row>
                                 ))}
@@ -155,8 +161,9 @@ const Profile = () => {
                                             institutionLogo=""
                                             institutionName={education.inst_name}
                                             degree={education.degree}
-                                            startDate={education.edu_start_date}
-                                            endDate={education.edu_end_date}
+                                            startDate={education.start_date}
+                                            endDate={education.end_date}
+                                            dept={education.dept.toUpperCase()}
                                         />
                                     </Row>
                                 ))}

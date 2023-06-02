@@ -158,11 +158,15 @@ def create_organization():
     ins_type = form_data['institutionType']
     org_email = form_data['email']
     org_password = form_data['password']
+    org_about = form_data['about']
+    print(org_about)
 
     if org_type == 'Company':
         user_type = 4
+        org_pic = "https://firebasestorage.googleapis.com/v0/b/cs353db.appspot.com/o/company.png?alt=media&token=9c070b00-e238-4a51-b5d3-721fa09fc228&_gl=1*1cs788b*_ga*OTAxMzI0ODYyLjE2ODUxNzYxNDI.*_ga_CW55HF8NVT*MTY4NTY5NDk0MC43LjEuMTY4NTY5NTA4NS4wLjAuMA.."
     else:
         user_type = 5
+        org_pic = "https://firebasestorage.googleapis.com/v0/b/cs353db.appspot.com/o/school.png?alt=media&token=1556814e-5a64-4092-9f6d-d59346b23b1f&_gl=1*1f9zuqe*_ga*OTAxMzI0ODYyLjE2ODUxNzYxNDI.*_ga_CW55HF8NVT*MTY4NTY5NDk0MC43LjEuMTY4NTY5NTI0MC4wLjAuMA.."
 
     # Hash the password
     hashed_password = bcrypt.hashpw(org_password.encode('utf-8'), bcrypt.gensalt())
@@ -180,8 +184,8 @@ def create_organization():
 
             # Insert the user data into the User table
             cursor.execute(
-                'INSERT INTO User (mail_addr, password, phone_no, user_type) VALUES (%s, %s, %s, %s)',
-                (org_email, hashed_password, org_phone, user_type))
+                'INSERT INTO User (mail_addr, password, phone_no, user_type, profile_pic, about_info) VALUES (%s, %s, %s, %s, %s, %s)',
+                (org_email, hashed_password, org_phone, user_type, org_pic, org_about))
             user_id = cursor.lastrowid
 
             # Insert the organization data into the Organization table
@@ -1138,7 +1142,7 @@ def blog_editor_get_tag():
 
 
 @app.route('/blogEditorer', methods=['POST'])
-def bloger_editor():
+def temp():
     data = request.json  # Get the form data from the request body
     print(data)
     u_id = data.get("id")
@@ -1146,22 +1150,25 @@ def bloger_editor():
     return jsonify({"message": "Blog is successfully published"}), 200
 
 
-
-    # Route to fetch data from the Person table
+# Route to fetch data from the Person table
 @app.route("/profile-real", methods=["POST"])
 def fetch_person_data():
-        user_id = request.json["userId"]
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    user_id = request.json["userId"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        cursor.execute(
-            "SELECT * FROM Person WHERE user_id = %s",
-            (user_id,)
-        )
-        person_data = cursor.fetchone()
+    cursor.execute(
+        "SELECT Person.*, User.profile_pic AS profilePicture FROM Person "
+        "INNER JOIN User ON Person.user_id = User.user_id WHERE Person.user_id = %s",
+        (user_id,)
+    )
+    person_data = cursor.fetchone()
 
-        return jsonify(person_data)
+    person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%y")
 
-    # Route to fetch data from Work_Experience joined with CV_Component
+    return jsonify(person_data)
+
+
+# Route to fetch data from Work_Experience joined with CV_Component
 
 @app.route('/add-work-experience', methods=['POST'])
 def add_work_experience():
@@ -1173,21 +1180,23 @@ def add_work_experience():
     profession = data.get('profession')
     job_end_date = data.get('jobEndDate')
     job_start_date = data.get('jobStartDate')
+    location = data.get('location')
+    about = data.get('about')
 
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     exp_id = None
 
     try:
         # Save the work experience to the database
         cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
                        'VALUES (%s, %s, %s, %s, %s, %s)',
-                       (data.get('userId'), True, '', '', job_end_date, job_start_date))
+                       (data.get('userId'), True, about, location, job_end_date, job_start_date))
         exp_id = cursor.lastrowid
 
         cursor.execute('INSERT INTO Work_Experience (user_id, exp_id, work_mode, work_type, role, profession, '
-                       'job_end_date, job_start_date, org_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                       (data.get('userId'), exp_id, work_mode, work_type, role, profession, job_end_date, job_start_date,
-                        data.get('orgName')))
+                       'org_name) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                       (
+                           data.get('userId'), exp_id, work_mode, work_type, role, profession, data.get('orgName')))
 
         cursor.execute('COMMIT')
 
@@ -1202,6 +1211,7 @@ def add_work_experience():
         # Return an error response
         return jsonify({'message': 'Failed to add work experience'}), 500
 
+
 @app.route('/add-education', methods=['POST'])
 def add_education():
     # Get education data from the request
@@ -1209,22 +1219,27 @@ def add_education():
     gpa = data.get('gpa')
     department = data.get('department')
     degree = data.get('degree')
-    edu_end_date = data.get('eduEndDate')
-    edu_start_date = data.get('eduStartDate')
+    edu_end_date = data.get('endDate')
+    edu_start_date = data.get('startDate')
+    location = data.get('location')
+    about = data.get('about')
 
-    cursor = db.get_cursor()
+    print(data)
+    print(edu_end_date)
+    print(edu_start_date)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     exp_id = None
 
     try:
         # Save the education to the database
         cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
                        'VALUES (%s, %s, %s, %s, %s, %s)',
-                       (data.get('userId'), True, '', '', edu_end_date, edu_start_date))
+                       (data.get('userId'), True, about, location, edu_end_date, edu_start_date))
         exp_id = cursor.lastrowid
 
-        cursor.execute('INSERT INTO Education (user_id, exp_id, gpa, dept, degree, edu_end_date, edu_start_date, '
-                       'inst_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                       (data.get('userId'), exp_id, gpa, department, degree, edu_end_date, edu_start_date, data.get('instName')))
+        cursor.execute('INSERT INTO Education (user_id, exp_id, gpa, dept, degree, '
+                       'inst_name) VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), exp_id, gpa, department, degree, data.get('instName')))
 
         cursor.execute('COMMIT')
 
@@ -1240,47 +1255,54 @@ def add_education():
         return jsonify({'message': 'Failed to add education'}), 500
 
 
-
 @app.route("/get-work-experience", methods=["POST"])
 def fetch_work_experience_data():
-        user_id = request.json["userId"]
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        print(request.json)
-        cursor.execute(
-            """
-            SELECT *
-            FROM Work_Experience we
-            INNER JOIN CV_Component cv ON we.exp_id = cv.exp_id
-            WHERE cv.user_id = %s
-            """,
-            (user_id,)
-        )
-        work_experience_data = cursor.fetchall()
-        print(work_experience_data)
-        cursor.close()
-        return jsonify(work_experience_data)
+    user_id = request.json["userId"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    print(request.json)
+    cursor.execute(
+        """
+        SELECT *
+        FROM Work_Experience we
+        INNER JOIN CV_Component cv ON we.exp_id = cv.exp_id
+        WHERE cv.user_id = %s
+        """,
+        (user_id,)
+    )
 
-    # Route to fetch data from Education joined with CV_Component
+    work_experience_data = cursor.fetchall()
+    print(work_experience_data)
+    for work_experience in work_experience_data:
+        work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%y")
+        work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%y")
+    cursor.close()
+    return jsonify(work_experience_data)
+
+
+# Route to fetch data from Education joined with CV_Component
 @app.route("/get-education", methods=["POST"])
 def fetch_education_data():
-        user_id = request.json["userId"]
-        print(request.json)
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    user_id = request.json["userId"]
+    print(request.json)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        cursor.execute(
-            """
-            SELECT *
-            FROM Education e
-            INNER JOIN CV_Component cv ON e.exp_id = cv.exp_id
-            WHERE cv.user_id = %s
-            """,
-            (user_id,)
-        )
-        education_data = cursor.fetchall()
-        cursor.close()
-        print(education_data)
-        return jsonify(education_data)
+    cursor.execute(
+        """
+        SELECT *
+        FROM Education e
+        INNER JOIN CV_Component cv ON e.exp_id = cv.exp_id
+        WHERE cv.user_id = %s
+        """,
+        (user_id,)
+    )
+    education_data = cursor.fetchall()
+    print(education_data)
+    for education in education_data:
+        education["start_date"] = education["start_date"].strftime("%d-%m-%y")
+        education["end_date"] = education["end_date"].strftime("%d-%m-%y")
 
+    cursor.close()
+    return jsonify(education_data)
 
 
 # Endpoint for fetching user information for profile page.
@@ -1381,6 +1403,35 @@ def profile_page():
     }
 
     return jsonify(response)
+
+
+@app.route('/search-school', methods=['POST'])
+def find_school_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    inst_name = data.get("instName")
+    print("requested")
+
+    if inst_name:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Execute the query to fetch case-insensitive school names matching the criteria
+        cursor.execute(
+            "SELECT user_id AS 'key', org_name as value FROM Organization WHERE LOWER(org_name) LIKE %s",
+            ('%' + inst_name.lower() + '%',)
+        )
+
+        # Fetch all the results
+        school_names = cursor.fetchall()
+        print(school_names)
+
+        # Close the cursor
+        cursor.close()
+    else:
+        school_names = []
+
+    # Return the school names as a JSON response
+    return jsonify({"school_names": school_names}), 200
 
 
 # Endpoint for creating a new post

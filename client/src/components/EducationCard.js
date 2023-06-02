@@ -13,7 +13,7 @@ function formatDate(date) {
 
 }
 
-const EducationCard = ({institutionLogo, institutionName, degree, startDate, endDate}) => {
+const EducationCard = ({institutionLogo, institutionName, degree, startDate, endDate, dept}) => {
 
     const formatted_end_date = formatDate(endDate);
     const formatted_start_date = formatDate(startDate);
@@ -25,12 +25,13 @@ const EducationCard = ({institutionLogo, institutionName, degree, startDate, end
                     <Col xs={3} md={2}>
                         <img src={institutionLogo} alt="Company Logo" className="img-fluid"/>
                     </Col>
-                    <Col xs={9} md={10}>
-                        <h5>{institutionName}</h5>
-                        <p>{degree}</p>
-                        <p>
-                            {startDate} - {endDate}
-                        </p>
+                    <Col>
+                        <Card.Text>
+                            School: <strong>{institutionName}</strong><br/>
+                            Degree: <strong>{degree} Degree</strong><br/>
+                            Major / Field of Study: <strong>{dept}</strong><br/>
+                            Dates attended: <strong>{startDate} - {endDate}</strong>
+                        </Card.Text>
                     </Col>
                 </Row>
             </Card.Body>

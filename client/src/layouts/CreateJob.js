@@ -171,7 +171,6 @@ const CreateJob = () => {
                                         </ul>
                                     )}
                                 </Form.Group>
-
                                 <Col md={6}>
                                     <Form.Group controlId="location" className="mt-2">
                                         <Form.Label>Location</Form.Label>
