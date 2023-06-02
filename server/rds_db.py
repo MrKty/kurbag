@@ -280,7 +280,7 @@ def create_tables():
             user_id         int,
             j_id            int,
             resume 	        varchar(128),
-            cover_letter 	varchar(128),
+            cover_letter 	varchar(256),
             skills 		    TEXT,
             PRIMARY KEY (user_id, j_id),
             FOREIGN KEY (user_id) REFERENCES Person(user_id),

@@ -60,7 +60,7 @@ const OrganizationNavBar = (props) => {
                                     <NavDropdown.Item href="#">Profile 1</NavDropdown.Item>
                                     <NavDropdown.Item href="#">Profile 2</NavDropdown.Item>
                                     <NavDropdown.Divider/>
-                                    <NavDropdown.Item href="#">Logout</NavDropdown.Item>
+                                    <NavDropdown.Item href="/login">Logout</NavDropdown.Item>
                                 </NavDropdown>
                             </div>
                         </Nav.Link>

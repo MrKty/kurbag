@@ -129,7 +129,7 @@ const NavBar = (props) => {
                                 >
                                     <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
                                     <NavDropdown.Divider/>
-                                    <NavDropdown.Item href="#">Logout</NavDropdown.Item>
+                                    <NavDropdown.Item href="/login">Logout</NavDropdown.Item>
                                 </NavDropdown>
                             </div>
                         </Nav.Link>

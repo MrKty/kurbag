@@ -33,7 +33,7 @@ const Jobs = () => {
 
     const handleJobClick = (job) => {
         setSelectedJob(job);
-        
+
         sendRequest("get-recruiter-info", "POST", {"recruiterId": selectedJob.recruiter_id}, (data) => {
             // Handle the response from the backend
             setHiringManagerName(data.name)

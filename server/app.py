@@ -335,13 +335,13 @@ def get_recruiter_info():
         "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.current_position as position "
         "FROM Person P "
         "JOIN User U ON U.user_id = P.user_id "
-        "WHERE P.user_id = %s ", (recId, )
+        "WHERE P.user_id = %s ", (recId,)
     )
     recData = cursor.fetchone()
 
     print(recData)
 
-    return jsonify(recData),200
+    return jsonify(recData), 200
 
 
 @app.route('/applied-jobs', methods=['POST'])
@@ -545,6 +545,43 @@ def apply_job():
     cursor.close()
 
     return jsonify({"message": "Successfully applied"}), 200
+
+
+@app.route('/get-application-info', methods=['POST'])
+def get_application_info():
+    data = request.json
+    applicant_id = data.get("applicantId")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Execute the SQL query to fetch application information
+    cursor.execute("SELECT skills, cover_letter as coverLetter, resume FROM Applies_Job WHERE user_id = %s",
+                   (applicant_id,))
+    application_info = cursor.fetchone()
+    print(application_info)
+
+    return jsonify({'application_info': application_info}), 200
+
+
+@app.route('/get-applicant-info', methods=['POST'])
+def get_applicant_info():
+    data = request.json
+    applicant_id = data.get("applicantId")
+    print("get-application-i")
+    print(applicant_id)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT CONCAT(P.first_name, ' ', P.last_name) as name, U.phone_no as phoneNumber, U.mail_addr as email, "
+        "U.profile_pic as profilePhoto FROM Person P INNER JOIN User U ON P.user_id = U.user_id "
+        "WHERE P.user_id = %s", (applicant_id,))
+
+    applicant_info = cursor.fetchone()
+    print("get-application-info")
+    print(applicant_info)
+
+    return jsonify({'applicant_info': applicant_info}), 200
 
 
 @app.route('/home-get-post', methods=['POST'])

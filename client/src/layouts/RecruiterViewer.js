@@ -11,8 +11,9 @@ import {
     faAngleUp, faAngleDown
 } from '@fortawesome/free-solid-svg-icons';
 import {Link} from "react-router-dom";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import RecruiterNavBar from "../components/RecruiterNavBar";
+import sendRequest from "../utils/request";
 
 const JobListing = ({position, postDate, numOfApplications}) => (
     <Row className="border-bottom p-2" style={{backgroundColor: position === "Data Analyst" ? "#ecebeb" : "white"}}>
@@ -146,7 +147,105 @@ const appData = [
     },
 ];
 
+function ApplicantEducation(props) {
+    const {institutionName, degree, department, educationDate} = props.details
+    return <Card className={"mb-2"}>
+        <Card.Body>
+            <Card.Text>
+                School: <strong>{institutionName}</strong><br/>
+                Degree: <strong>{degree}</strong><br/>
+                Major / Field of Study: <strong>{department}</strong><br/>
+                Dates attended: <strong>{educationDate}</strong>
+            </Card.Text>
+        </Card.Body>
+    </Card>;
+}
+
+function ApplicantWorkExperience(props) {
+    console.log(props)
+    const {jobTitle, company, jobDate, jobMode, jobType, jobDescription} = props.details
+    return <Card className={"mb-2"}>
+        <Card.Body>
+            <Card.Text>
+                Your title: <strong>{jobTitle}</strong><br/>
+                Company: <strong>{company}</strong><br/>
+                Dates of Employment: <strong>{jobDate}</strong><br/>
+                Type: <strong>{jobType}</strong><br/>
+                Mode: <strong>{jobMode}</strong><br/>
+                Description: <strong>{jobDescription}</strong>
+            </Card.Text>
+        </Card.Body>
+    </Card>;
+}
+
 const RecruiterViewer = () => {
+    const [workExperiences, setWorkExperiences] = useState([]);
+    const [educations, setEducations] = useState([]);
+    const [name, setName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [email, setEmail] = useState("");
+    const [summary, setSummary] = useState("");
+    const [resume, setResume] = useState("");
+    const [coverLetter, setCoverLetter] = useState("");
+    const [skillArray, setSkillArray] = useState([]);
+    const [profilePhoto, setProfilePhoto] = useState("");
+
+    useEffect(() => {
+        // Fetch data from Sends_Request table
+        sendRequest('get-application-info', 'POST', {applicantId: 4}, (data) => {
+            if (data.application_info) {
+                setSummary(data.application_info.summary)
+                setResume(data.application_info.resume)
+                setCoverLetter(data.application_info.coverLetter)
+                setSkillArray(data.application_info.skills.split(','));
+            }
+        });
+        sendRequest('get-applicant-info', 'POST', {applicantId: 4}, (data) => {
+            if (data.applicant_info) {
+                console.log(data)
+                setName(data.applicant_info.name)
+                setPhoneNumber(data.applicant_info.phoneNumber)
+                setEmail(data.applicant_info.email)
+                setProfilePhoto(data.applicant_info.profilePhoto)
+            }
+        });
+        sendRequest('get-work-experience', 'POST', {userId: 4}, (data) => {
+            if (data) {
+                const workExperiences = []
+                for (let i = 0; i < data.length; i++) {
+                    const date = data[i].active ? data[i].start_date + " - continues"
+                        : data[i].start_date + " - " + data[i].end_date;
+                    workExperiences.push({
+                        jobTitle: data[i].role,
+                        company: data[i].org_name,
+                        jobDate: date,
+                        jobMode: data[i].work_mode,
+                        jobType: data[i].work_type,
+                        jobDescription: data[i].description
+                    });
+                }
+                setWorkExperiences(workExperiences)
+            }
+        });
+        sendRequest('get-education', 'POST', {userId: 4}, (data) => {
+            console.log(data)
+            if (data) {
+                const educations = []
+                for (let i = 0; i < data.length; i++) {
+                    const date = data[i].start_date + " - " + data[i].end_date;
+                    educations.push({
+                        institutionName: data[i].inst_name,
+                        degree: data[i].degree,
+                        educationDate: date,
+                        department: data[i].dept
+                    });
+                }
+                setEducations(educations)
+            }
+        });
+    }, []);
+
+
     return (
         <Container fluid>
             <RecruiterNavBar activeLink={"recruiter-view"}/>
@@ -176,100 +275,52 @@ const RecruiterViewer = () => {
                     <h3 className={"p-2 border-bottom"}>Application Info:</h3>
                     <h5 className={"p-2 border-bottom"}>Contact Info:</h5>
                     <Col className="d-flex align-items-center mb-3">
-                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile photo"
+                        <img src={profilePhoto} alt="Profile photo"
                              className="rounded-circle me-3" style={{width: "100px"}}/>
                         <Row>
                             <Row className={"my-2"}>
                                 <Col className={"col-6 align-self-center fw-bold"}>Name:</Col>
-                                <Col>John Doe</Col>
+                                <Col>{name}</Col>
                             </Row>
                             <Row className={"mb-2"}>
                                 <Col className={"col-6 align-self-center fw-bold"}>Phone Number:</Col>
-                                <Col>+90 0536 333 22 11</Col>
+                                <Col>{phoneNumber}</Col>
                             </Row>
                             <Row>
                                 <Col className={"col-6 align-self-center fw-bold"}>Email:</Col>
-                                <Col>john.doe@bilkent.edu.tr</Col>
+                                <Col>{email}</Col>
                             </Row>
                         </Row>
                     </Col>
                     <Row className="d-flex align-items-center m-3">
                         <Row className={"fw-bold"}>Summary:</Row>
-                        <Row>About info about the applicant goes here.</Row>
+                        <Row>{summary}</Row>
                     </Row>
-                    <Row className="d-flex align-items-center m-3">
-                        <Row className={"fw-bold"}>Headline:</Row>
-                        <Row>CS Student @ Bilkent University</Row>
-                    </Row>
-                    <h5 className={"p-2 border-bottom"}>Address Info:</h5>
-                    <p className={"mx-2"}>Kurtuluş Mah. Hürriyet Cad. No.50 Gönen/Balıkesir, 10900.</p>
                     <h5 className={"p-2 border-bottom"}>Resume:</h5>
-                    <button className={"btn btn-outline-primary"}>Download Resume</button>
+                    <button className={"btn btn-outline-primary"}><a href={resume} target={"_blank"}>Download Resume</a>
+                    </button>
                     <Row className="d-flex align-items-center m-3">
                         <Row className={"fw-bold"}>Cover Letter:</Row>
-                        <Row>Dear Hiring Manager,<br/>
-                            I am excited to apply for the Data Analyst position at Sony. With a strong background in
-                            data
-                            analysis and programming, I am confident in my ability to help drive the success of the
-                            company. I am eager to contribute my skills to the team and collaborate on exciting
-                            projects.
-                            Thank you for considering my application.<br/>
-                            Sincerely, John Doe</Row>
+                        <Row>{coverLetter}</Row>
                     </Row>
                     <Row className="d-flex align-items-center m-3">
                         <Row className={"fw-bold"}>Listed Skills:</Row>
                         <Row>
-                            <Col className={"col-1"}>
-                                <Badge bg={"info"}>SQL</Badge>
-                            </Col>
-                            <Col className={"col-1 me-3"}>
-                                <Badge bg={"info"}>DBMS</Badge>
-                            </Col>
-                            <Col className={"col-1 me-4"}>
-                                <Badge bg={"info"}>Python</Badge>
-                            </Col>
-                            <Col className={"col-1"}>
-                                <Badge bg={"info"}>Java</Badge>
-                            </Col>
+                            {skillArray.map((skill, index) => (
+                                <Col className={"col-1"}>
+                                    <Badge key={index} bg={"info"} className={"me-2"}>{skill.trim()}</Badge>
+                                </Col>
+                            ))}
                         </Row>
                     </Row>
-                    <h5 className={"p-2 border-bottom"}>Photo</h5>
-                    <Row className="d-flex align-items-center m-1">
-                        <button className={"btn btn-outline-primary col-4"}>Download Photo</button>
-                    </Row>
                     <h5 className={"p-2 border-bottom"}>Work Experience</h5>
-                    <Card className={"mb-2"}>
-                        <Card.Body>
-                            <Card.Text>
-                                Your title: <strong>Information Technology Trainee</strong><br/>
-                                Company: <strong>FNSS Savunma Sistemleri A.Ş</strong><br/>
-                                Dates of Employment: <strong>Jun 2022 - Jul 2022</strong><br/>
-                                Industry: <strong>Defence Industry</strong><br/>
-                                Description: <strong>Employee Tracking System was developed using Spring Boot.</strong>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
+                    {workExperiences.map((workExperience, index) => (
+                        <div key={index}><ApplicantWorkExperience details={workExperience}/></div>
+                    ))}
                     <Row><h5>Education:</h5></Row>
-                    <Card className={"mb-2"}>
-                        <Card.Body>
-                            <Card.Text>
-                                School: <strong>Bilkent Üniversitesi</strong><br/>
-                                Degree: <strong>Bachelor's Degree</strong><br/>
-                                Major / Field of Study: <strong>Computer Science</strong><br/>
-                                Dates attended: <strong>Sep 2019 - Jun 2024</strong>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                    <Card className={"mb-2"}>
-                        <Card.Body>
-                            <Card.Text>
-                                School: <strong>Tofaş Fen Lisesi</strong><br/>
-                                Degree: <strong>High School Diploma</strong><br/>
-                                Major / Field of Study: <strong>Science</strong><br/>
-                                Dates attended: <strong>Sep 2015 - Jun 2019</strong>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
+                    {educations.map((education, index) => (
+                        <div key={index}><ApplicantEducation details={education}/></div>
+                    ))}
                 </Col>
             </Row>
         </Container>
