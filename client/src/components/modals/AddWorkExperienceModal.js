@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Modal, Button, Form, Col} from 'react-bootstrap';
 import sendRequest from "../../utils/request";
 
-const AddWorkExperienceModal = ({ showModal, handleClose }) => {
+const AddWorkExperienceModal = ({showModal, handleClose}) => {
     const [workMode, setWorkMode] = useState('');
     const [workType, setWorkType] = useState('');
     const [role, setRole] = useState('');
@@ -107,6 +107,29 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
                             placeholder="Enter work type"
                         />
                     </Form.Group>
+
+
+                    <Form.Group controlId="workType">
+                        <Form.Label>Work Type</Form.Label>
+                        <Form.Control as="select" value={workType}
+                                      onChange={(e) => setWorkType(e.target.value)}>
+                            <option value="">Select work type</option>
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                            <option value="internship">Internship</option>
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="workMode">
+                        <Form.Label>Work Mode</Form.Label>
+                        <Form.Control as="select" value={workMode}
+                                      onChange={(e) => setWorkMode(e.target.value)}>
+                            <option value="">Select work mode</option>
+                            <option value="on-site">On-site</option>
+                            <option value="remote">Remote</option>
+                        </Form.Control>
+                    </Form.Group>
+
                     <Form.Group controlId="orgName">
                         <Form.Label>Company</Form.Label>
                         <Form.Control

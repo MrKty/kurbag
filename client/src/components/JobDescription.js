@@ -161,10 +161,6 @@ const JobDescription = (props) => {
             </Row>
             <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} />
             <ApplyJobModal2 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(2)} />
-            <ApplyJobModal3 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(3)} />
-            <ApplyJobModal4 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(4)} />
-            <ApplyJobModal5 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(5)} />
-            <ApplyJobModal6 currentModal={currentModal} handleCloseModal={handleCloseModal} />
         </div>
     );
 };
