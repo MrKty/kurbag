@@ -22,8 +22,8 @@ mysql = MySQL(app)
 
 
 # Initiate database
-# db.create_tables()
-# db.populate_table()
+db.create_tables()
+db.populate_table()
 
 
 @app.route('/')
@@ -501,10 +501,23 @@ def get_user_job_application():
 @app.route('/apply-job', methods=['POST'])
 def apply_job():
     data = request.json  # Get the form data from the request body
-    u_id = data.get("id")
-    print(data)
+    user_id = data.get("userId")
+    job_id = data.get("jobId")
+    resume = data.get("resume")
+    cover_letter = data.get("coverLetter")
+    skills = data.get("skills")
+
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
+    # Insert the data into the Applies_Job table
+    cursor.execute(
+        "INSERT INTO Applies_Job (user_id, j_id, resume, cover_letter, skills) VALUES (%s, %s, %s, %s, %s)",
+        (user_id, job_id, resume, cover_letter, skills)
+    )
+
+    # Commit the transaction and close the cursor
+    mysql.connection.commit()
+    cursor.close()
 
     return jsonify({"message": "Successfully applied"}), 200
 
@@ -1135,6 +1148,25 @@ def fetch_person_data():
     person_data = cursor.fetchone()
 
     person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%y")
+
+    return jsonify(person_data)
+
+
+@app.route("/get-user-info", methods=["POST"])
+def get_user_info():
+    user_id = request.json["userId"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT Person.*, User.profile_pic AS profilePicture, User.mail_addr, User.phone_no, User.about_info "
+        "FROM Person "
+        "INNER JOIN User ON Person.user_id = User.user_id "
+        "WHERE Person.user_id = %s",
+        (user_id,)
+    )
+    person_data = cursor.fetchone()
+    print(person_data)
+    person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%Y")
 
     return jsonify(person_data)
 

@@ -163,7 +163,7 @@ const JobDescription = (props) => {
                     </Card>
                 </Col>
             </Row>
-            <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} />
+            <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} jobId={jobId} />
         </div>
     );
 };
