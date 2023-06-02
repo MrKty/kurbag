@@ -1142,7 +1142,7 @@ def blog_editor_get_tag():
 
 
 @app.route('/blogEditorer', methods=['POST'])
-def temp():
+def tempMethod():
     data = request.json  # Get the form data from the request body
     print(data)
     u_id = data.get("id")
@@ -1200,6 +1200,13 @@ def add_work_experience():
                        'org_name) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                        (
                            data.get('userId'), exp_id, work_mode, work_type, role, profession, data.get('orgName')))
+
+        if active:
+            cursor.execute("SELECT user_id FROM Organization WHERE org_name = %s", (data.get("orgName"),))
+            o_id = cursor.fetchone()
+            print(o_id)
+            cursor.execute('UPDATE Person SET works_for = %s, works_since = %s WHERE user_id = %s',
+                           (o_id["user_id"], job_start_date, data.get('id')))
 
         cursor.execute('COMMIT')
 
@@ -1442,6 +1449,44 @@ def find_school_list():
 
     # Return the school names as a JSON response
     return jsonify({"school_names": school_names}), 200
+
+@app.route('/get-org-employee-list', methods=['POST'])
+def get_org_employee_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query = "SELECT org_name FROM Organization WHERE user_id = %s"
+    cursor.execute(query, (u_id,))
+    org_name = cursor.fetchone()
+
+    # Retrieve employee data from User and Work_Experience tables
+    cursor.execute(
+        "SELECT P.user_id as id, CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, "
+        "P.works_since as workingSince, P.current_position as position, U.user_type as userType "
+        "FROM Person P JOIN User U ON U.user_id = P.user_id WHERE P.works_for = %s ", (u_id,))
+    employees = cursor.fetchall()
+
+    for employee in employees:
+        employee["workingSince"] = employee["workingSince"].strftime("%d-%m-%Y")
+
+    return jsonify({"message": "Employee list is successfully fetched", "employees": employees}), 200
+
+
+@app.route('/make-employee-recruiter', methods=['POST'])
+def make_employee_recruiter():
+    data = request.json  # Get the form data from the request body
+    e_id = data.get("employeeId")
+    print(e_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "UPDATE User SET user_type = user_type + 2 WHERE user_id = %s",
+        (e_id,))
+    mysql.connection.commit()
+
+    return jsonify({"message": "Employee successfully becomes recruiter"}), 200
 
 
 @app.route('/search-company', methods=['POST'])
