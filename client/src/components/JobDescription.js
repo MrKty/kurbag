@@ -22,6 +22,7 @@ const JobDescription = (props) => {
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
+    const [hiringManagerPhoto, setHiringManagerPhoto] = useState(null);
 
     // Check if skills are available
     if (!skills) {
@@ -100,7 +101,7 @@ const JobDescription = (props) => {
                         <Row className="align-items-center">
                             <Col xs={1} className={"me-2"}>
                                 <img
-                                    src="https://randomuser.me/api/portraits/women/2.jpg"
+                                    src={hiringManagerPhoto}
                                     alt="Profile"
                                     className="rounded-circle"
                                     width="50"
@@ -136,7 +137,7 @@ const JobDescription = (props) => {
                         <Row className="align-items-center">
                             <Col className={"col-1 me-2"}>
                                 <img
-                                    src="https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ"
+                                    src={companyLogo}
                                     alt="Profile"
                                     className="rounded"
                                     width="50"

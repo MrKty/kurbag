@@ -22,8 +22,8 @@ mysql = MySQL(app)
 
 
 # Initiate database
-db.create_tables()
-db.populate_table()
+# db.create_tables()
+# db.populate_table()
 
 
 @app.route('/')
@@ -312,9 +312,11 @@ def fill_career_expert_modal():
 def get_jobs():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT * FROM Job_Opening"
+        "SELECT * FROM Job_Opening J "
+        ""
     )
     jobs_data = cursor.fetchall()
+    print("jobs")
     print(jobs_data)
     for job in jobs_data:
         job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
@@ -323,7 +325,11 @@ def get_jobs():
 
 @app.route('/applied-jobs', methods=['POST'])
 def get_applied_jobs():
-    user_id = request.json.get('user_id')  # Get the user_id from the request
+    data = request.json
+    print("data")
+    print(data)
+    user_id = data.get('id')  # Get the user_id from the request
+
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
@@ -409,7 +415,7 @@ def create_job():
     job_location = data.get('location')
     job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
-    job_recruiter_id = data.get('userId')
+    job_recruiter_id = data.get('id')
     job_min_age = data.get('minAge')
     job_max_age = data.get('maxAge')
     job_skills = data.get('skillsString')
