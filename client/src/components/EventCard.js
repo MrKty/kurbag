@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import {Card, Button, Image} from "react-bootstrap";
 
 const EventCard = ({ event, onRegisterEvent }) => {
     const {
@@ -30,12 +30,9 @@ const EventCard = ({ event, onRegisterEvent }) => {
     }
 
     return (
-        <Card className="col-6 mt-2 mb-2" style={{ minHeight: "100px", maxHeight: "400px", position: "relative" }}>
-            <div style={{ maxHeight: "200px", overflow: "hidden", width: "100%", height: "200px" }}>
-                <div style={{ background: `url(${coverPhoto})`, backgroundSize: "cover", backgroundPosition: "center", width: "100%", height: "100%" }}></div>
-            </div>
-            <Card.Body style={{ overflowY: "auto" }}>
-                {/* Card content */}
+        <Card className="col-6 mt-2 mb-2">
+            <Card.Body style={{ minHeight: "100px", maxHeight: "300px", overflowY: "auto" }}>
+                <Card.Img className={"img-fluid"} style={{maxHeight: "150px"}} src={coverPhoto}/>
                 <Card.Title>{eventName}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">{organizer}</Card.Subtitle>
                 <Card.Text>{content}</Card.Text>
@@ -46,12 +43,12 @@ const EventCard = ({ event, onRegisterEvent }) => {
                 <Card.Text>Website: {websiteLink}</Card.Text>
                 <Card.Text>Creation Date: {creationDate}</Card.Text>
                 <Card.Text>Limit: {limit}</Card.Text>
-                <div style={{ position: "absolute", bottom: "10px", right: "40px" }}>
-                    <Button variant="primary" onClick={handleRegisterEvent}>
-                        Register Event
-                    </Button>
-                </div>
             </Card.Body>
+            <Card.Footer>
+                <Button variant="primary" onClick={handleRegisterEvent}>
+                    Register Event
+                </Button>
+            </Card.Footer>
         </Card>
 
 

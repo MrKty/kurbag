@@ -4,11 +4,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAdd, faEnvelope, faPaperPlane, faPlus, faSave} from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import ApplyJobModal1 from "./modals/ApplyJobModal1";
-import ApplyJobModal2 from "./modals/ApplyJobModal2";
-import ApplyJobModal3 from "./modals/ApplyJobModal3";
-import ApplyJobModal4 from "./modals/ApplyJobModal4";
-import ApplyJobModal5 from "./modals/ApplyJobModal5";
-import ApplyJobModal6 from "./modals/ApplyJobModal6";
 
 
 const JobDescription = (props) => {
@@ -18,6 +13,7 @@ const JobDescription = (props) => {
         companyName,
         location,
         employmentType,
+        skills,
         jobDescription,
         companyLogo,
         companyFollowers,
@@ -26,6 +22,7 @@ const JobDescription = (props) => {
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
+    const skillArray = skills.split(",");
 
     const handleApplyClick = (modalIndex) => {
         setCurrentModal(modalIndex);
@@ -65,11 +62,11 @@ const JobDescription = (props) => {
                 </Row>
                 <Row>
                     <Col>
-                        <Badge bg="secondary" className={"me-2"}>Python</Badge>
-                        <Badge bg="secondary" className={"me-2"}>R</Badge>
-                        <Badge bg="secondary" className={"me-2"}>SQL</Badge>
-                        <Badge bg="secondary" className={"me-2"}>Data Security</Badge>
-                        <Badge bg="secondary" className={"me-2"}>Statistical Analysis</Badge>
+                        {skillArray.map((skill, index) => (
+                            <Badge key={index} bg="secondary" className={"me-2"}>
+                                {skill.trim()}
+                            </Badge>
+                        ))}
                     </Col>
                 </Row>
             </Row>
@@ -160,11 +157,6 @@ const JobDescription = (props) => {
                 </Col>
             </Row>
             <ApplyJobModal1 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(1)} />
-            <ApplyJobModal2 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(2)} />
-            <ApplyJobModal3 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(3)} />
-            <ApplyJobModal4 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(4)} />
-            <ApplyJobModal5 currentModal={currentModal} handleCloseModal={handleCloseModal} handleApplyClick={() => handleApplyClick(5)} />
-            <ApplyJobModal6 currentModal={currentModal} handleCloseModal={handleCloseModal} />
         </div>
     );
 };

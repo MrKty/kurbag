@@ -21,6 +21,8 @@ def create_tables():
     # Table Creation
     cursor = conn.cursor()
     create_tables_entity = textwrap.dedent("""
+            
+            
             CREATE TABLE IF NOT EXISTS User
             (
                 user_id int AUTO_INCREMENT,
@@ -72,7 +74,8 @@ def create_tables():
                 PRIMARY KEY (p_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id)
             );
-
+            
+            
             CREATE TABLE IF NOT EXISTS Person
             (
                 user_id int,
@@ -84,14 +87,12 @@ def create_tables():
                 current_sector varchar(20),
                 birth_date DATE,
                 gender varchar(20),
-                connections INT,
-                e_id integer,
+                connections INT DEFAULT 0,
                 liked_post int,
                 works_for int,
                 works_since DATE,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
-                FOREIGN KEY (e_id) REFERENCES Event(e_id),
                 FOREIGN KEY (liked_post) REFERENCES Post(p_id),
                 FOREIGN KEY (works_for) REFERENCES User (user_id)
             );
@@ -138,7 +139,10 @@ def create_tables():
                 j_type varchar(20),
                 j_organization varchar(20),
                 j_location varchar(20),
+                j_skills varchar(200),
                 j_mode varchar(20),
+                j_min_age int,
+                j_max_age int,
                 due_date_apply datetime,
                 j_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 recruiter_id int,
@@ -215,7 +219,7 @@ def create_tables():
 
             CREATE TABLE IF NOT EXISTS CV_Component (
                 user_id int,
-                exp_id int,
+                exp_id int AUTO_INCREMENT,
                 active BOOLEAN,
                 description TEXT,
                 location varchar(20),
@@ -227,32 +231,28 @@ def create_tables():
             );
 
             CREATE TABLE IF NOT EXISTS Work_Experience (
-                work_exp_id int,
+                user_id int,
                 exp_id int,
                 work_mode varchar(20),
                 work_type varchar(20),
                 role varchar(20),
                 profession varchar(20),
-                job_end_date DATE,
-                job_start_date DATE,
-                org_id int,
-                PRIMARY KEY (exp_id, work_exp_id),
-                FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (org_id) REFERENCES Organization (user_id)
+                org_name varchar(100),
+                PRIMARY KEY (user_id, exp_id),
+                FOREIGN KEY (user_id) REFERENCES Person (user_id),
+                FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id)
             );
 
             CREATE TABLE IF NOT EXISTS Education (
-                edu_id int,
+                user_id int,
                 exp_id int,
-                gpa INT,
+                gpa DOUBLE,
                 dept varchar(20),
                 degree varchar(20),
-                edu_end_date DATE,
-                edu_start_date DATE,
-                inst_id int,
-                PRIMARY KEY (edu_id, exp_id),
+                inst_name varchar(100),
+                PRIMARY KEY (user_id, exp_id),
                 FOREIGN KEY (exp_id) REFERENCES CV_Component (exp_id),
-                FOREIGN KEY (inst_id) REFERENCES Institution (user_id)
+                FOREIGN KEY (user_id) REFERENCES Person (user_id)
             );
 
             CREATE TABLE IF NOT EXISTS Certificate (
@@ -281,11 +281,7 @@ def create_tables():
             j_id            int,
             resume 	        varchar(128),
             cover_letter 	varchar(128),
-            address 	    varchar(100),
-            photo 		    varchar(128),
             skills 		    TEXT,
-            p_start_date 	DATE,
-            p_end_date 	    DATE,
             PRIMARY KEY (user_id, j_id),
             FOREIGN KEY (user_id) REFERENCES Person(user_id),
             FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)

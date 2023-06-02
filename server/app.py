@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import datetime
 
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -37,10 +36,10 @@ def login():
     password = login_data['password']
 
     # Perform authentication logic
-    cursor = db.get_cursor()
-    cursor.execute('SELECT user_id, mail_addr, password, user_type FROM User WHERE mail_addr = %s', email)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT user_id, mail_addr, password, user_type FROM User WHERE mail_addr = %s', (email,))
 
-    user = db.fetch_one(cursor)
+    user = cursor.fetchone()
 
     if user:
         print(password)
@@ -125,7 +124,7 @@ def signup():
                 (user_id,))
 
             if user_type == 1:
-                cursor.execute('INSERT INTO Career_Expert (user_id) VALUES (%s)', user_id)
+                cursor.execute('INSERT INTO Career_Expert (user_id, expert_in_tag) VALUES (%s, "all")', user_id)
 
             # Commit the transaction
             cursor.execute('COMMIT')
@@ -158,11 +157,15 @@ def create_organization():
     ins_type = form_data['institutionType']
     org_email = form_data['email']
     org_password = form_data['password']
+    org_about = form_data['about']
+    print(org_about)
 
     if org_type == 'Company':
         user_type = 4
+        org_pic = "https://firebasestorage.googleapis.com/v0/b/cs353db.appspot.com/o/company.png?alt=media&token=9c070b00-e238-4a51-b5d3-721fa09fc228&_gl=1*1cs788b*_ga*OTAxMzI0ODYyLjE2ODUxNzYxNDI.*_ga_CW55HF8NVT*MTY4NTY5NDk0MC43LjEuMTY4NTY5NTA4NS4wLjAuMA.."
     else:
         user_type = 5
+        org_pic = "https://firebasestorage.googleapis.com/v0/b/cs353db.appspot.com/o/school.png?alt=media&token=1556814e-5a64-4092-9f6d-d59346b23b1f&_gl=1*1f9zuqe*_ga*OTAxMzI0ODYyLjE2ODUxNzYxNDI.*_ga_CW55HF8NVT*MTY4NTY5NDk0MC43LjEuMTY4NTY5NTI0MC4wLjAuMA.."
 
     # Hash the password
     hashed_password = bcrypt.hashpw(org_password.encode('utf-8'), bcrypt.gensalt())
@@ -180,8 +183,8 @@ def create_organization():
 
             # Insert the user data into the User table
             cursor.execute(
-                'INSERT INTO User (mail_addr, password, phone_no, user_type) VALUES (%s, %s, %s, %s)',
-                (org_email, hashed_password, org_phone, user_type))
+                'INSERT INTO User (mail_addr, password, phone_no, user_type, profile_pic, about_info) VALUES (%s, %s, %s, %s, %s, %s)',
+                (org_email, hashed_password, org_phone, user_type, org_pic, org_about))
             user_id = cursor.lastrowid
 
             # Insert the organization data into the Organization table
@@ -307,46 +310,16 @@ def fill_career_expert_modal():
 # Endpoint for displaying jobs.@app.route('/jobs', methods=['POST'])
 @app.route('/jobs', methods=['POST'])
 def get_jobs():
-    response = [
-        {
-            "jobId": 1,
-            "jobTitle": "Data Scientist",
-            "companyName": "Sony",
-            "location": "Istanbul, Turkey",
-            "employmentType": "Full-time",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 1097845,
-            "dueDateApply": "2023-06-15 00:00:00",
-            "jobTimestamp": "2023-05-30 10:30:00"
-        },
-        {
-            "jobId": 2,
-            "jobTitle": "SQL Developer",
-            "companyName": "Amazon",
-            "location": "Ankara, Turkey",
-            "employmentType": "Part-time",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 109,
-            "dueDateApply": "2023-06-30 00:00:00",
-            "jobTimestamp": "2023-05-30 09:45:00"
-        },
-        {
-            "jobId": 3,
-            "jobTitle": "Web Developer",
-            "companyName": "Google",
-            "location": "İzmir, Turkey",
-            "employmentType": "Remote",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 2935,
-            "dueDateApply": "2023-07-10 00:00:00",
-            "jobTimestamp": "2023-05-30 09:15:00"
-        }
-    ]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        "SELECT * FROM Job_Opening"
+    )
+    jobs_data = cursor.fetchall()
+    print(jobs_data)
+    for job in jobs_data:
+        job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
 
-    return jsonify(response)
+    return jsonify(jobs_data)
 
 
 # TODO Endpoint for updating profile
@@ -409,31 +382,34 @@ def create_post():
 def create_job():
     # Get post data from the request
     data = request.json
+    print(data)
 
     job_title = data.get('title')
     job_description = data.get('description')
     job_organization = data.get('organization')
-    job_type = data.get('type')
+    job_type = data.get('workType')
     job_location = data.get('location')
-    job_mode = data.get('mode')
+    job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
-    job_recruiter_id = 5  # mock data for now
-
-    job_timestamp = datetime.now()  # Current timestamp
+    job_recruiter_id = data.get('userId')
+    job_min_age = data.get('minAge')
+    job_max_age = data.get('maxAge')
+    job_skills = data.get('skillsString')
+    print(data)
 
     try:
         # Convert job_due_date to a timestamp
         due_date = datetime.strptime(job_due_date, "%Y-%m-%d")
         job_due_date_timestamp = due_date.strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor = db.get_cursor()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         j_id = None
 
         try:
             # Save the job opening to the database
             cursor.execute(
-                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, recruiter_id) '
-                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_min_age , j_max_age , j_skills ,recruiter_id) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s,%s ,%s, %s, %s)',
                 (
                     job_title,
                     job_description,
@@ -442,7 +418,9 @@ def create_job():
                     job_location,
                     job_mode,
                     job_due_date_timestamp,
-                    job_timestamp,
+                    job_min_age,
+                    job_max_age,
+                    job_skills,
                     job_recruiter_id,
                 ),
             )
@@ -467,204 +445,50 @@ def create_job():
         return jsonify({'message': 'Invalid due date format'}), 400
 
 
-# Mockup data
-posts = [
-    {
-        "id": 1,
-        "title": "Post 1",
-        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        "timestamp": "May 21, 2023",
-        "name": "John Doe",
-        "likeNumber": 10,
-        "commentNumber": 5
-    },
-    {
-        "id": 2,
-        "title": "Post 2",
-        "content": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-        "timestamp": "May 22, 2023",
-        "name": "Jane Smith",
-        "likeNumber": 15,
-        "commentNumber": 3
-    },
-    {
-        "id": 3,
-        "title": "Post 3",
-        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed gravida pharetra convallis. Proin vitae semper dui. Nullam pharetra leo eu nisi commodo, at aliquam urna aliquet. Cras efficitur, erat ac tincidunt sagittis, tortor ex iaculis elit, at malesuada nisl sapien id erat. Curabitur placerat est tellus, eu placerat diam molestie ac. Nullam viverra, enim a facilisis venenatis, tellus metus consequat felis, et dictum nunc massa non tellus. Mauris tristique ipsum sed luctus placerat. Mauris elementum nisi at nisl volutpat placerat. Quisque fringilla finibus est, in hendrerit augue tempor sed. Integer tincidunt ex et velit rhoncus, sit amet aliquam est semper.",
-        "timestamp": "May 23, 2023",
-        "name": "Mark Johnson",
-        "likeNumber": 20,
-        "commentNumber": 8
-    },
-    {
-        "id": 4,
-        "title": "Post 4",
-        "content": "Vestibulum consequat elit sit amet dapibus tincidunt. Suspendisse faucibus condimentum felis non facilisis. In consectetur venenatis ultrices. Donec in ex justo. Duis ac ligula vel nisi tincidunt finibus ac ut quam. Nullam nec arcu a massa iaculis lobortis. Sed venenatis fermentum neque, a suscipit ante condimentum at. Nulla facilisi.",
-        "timestamp": "May 24, 2023",
-        "name": "Emily Davis",
-        "likeNumber": 12,
-        "commentNumber": 6
-    },
-    {
-        "id": 5,
-        "title": "Post 5",
-        "content": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce vel sapien at magna eleifend rhoncus vitae ac enim. Nullam accumsan, sem ac varius iaculis, justo felis convallis lacus, a ultrices dolor neque sit amet est. Donec rutrum rhoncus rutrum. Fusce aliquet enim et lectus rhoncus, eu ultrices nunc varius. Aenean pulvinar tristique bibendum. Aenean sagittis urna vitae mauris finibus, id posuere odio molestie.",
-        "timestamp": "May 25, 2023",
-        "name": "Michael Wilson",
-        "likeNumber": 18,
-        "commentNumber": 7
-    },
-    {
-        "id": 6,
-        "title": "Post 6",
-        "content": "Curabitur consectetur est et diam eleifend, vel facilisis ligula aliquet. Maecenas tristique est ut ligula hendrerit, sed condimentum mi fringilla. Phasellus pulvinar ex ut tincidunt euismod. In congue tristique diam, sed vulputate nisl venenatis vel. Cras vitae facilisis enim. Mauris in velit nunc. Vestibulum luctus tortor at dui consequat interdum.",
-        "timestamp": "May 26, 2023",
-        "name": "Sophia Anderson",
-        "likeNumber": 25,
-        "commentNumber": 4
-    },
-    {
-        "id": 7,
-        "title": "Post 7",
-        "content": "Maecenas tincidunt justo eu dolor consectetur, ut commodo sapien volutpat. Suspendisse non felis ac risus gravida semper. Sed faucibus ipsum sed erat semper auctor. Nullam fringilla turpis sit amet erat posuere tincidunt. Suspendisse potenti. Nullam blandit vestibulum nulla ac posuere. Cras id ex ut enim dignissim aliquet ut id sem. Curabitur a arcu odio.",
-        "timestamp": "May 27, 2023",
-        "name": "Oliver Taylor",
-        "likeNumber": 14,
-        "commentNumber": 3
-    },
-    {
-        "id": 8,
-        "title": "Post 8",
-        "content": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Maecenas blandit ex id scelerisque euismod. Proin non diam fringilla, vulputate elit a, euismod leo. Aenean a nibh ac neque finibus tempus et eu nibh. Sed blandit, arcu vel aliquam tempor, nisl sapien finibus magna, nec interdum ligula nunc vitae nisl.",
-        "timestamp": "May 28, 2023",
-        "name": "Ava Thompson",
-        "likeNumber": 22,
-        "commentNumber": 5
-    },
-    {
-        "id": 9,
-        "title": "Post 9",
-        "content": "Nullam quis elit vel nisl fermentum eleifend. Proin at est tellus. Integer bibendum sem et nunc semper aliquam. Maecenas pellentesque nulla id facilisis dignissim. Suspendisse scelerisque, leo vel consequat mattis, leo neque laoreet magna, id consequat ex nisl nec augue. Cras dapibus rhoncus nunc, nec maximus nunc vehicula et. Duis gravida varius ipsum auctor lobortis. Vivamus sit amet laoreet nulla.",
-        "timestamp": "May 29, 2023",
-        "name": "William Clark",
-        "likeNumber": 17,
-        "commentNumber": 6
-    },
-    {
-        "id": 10,
-        "title": "Post 10",
-        "content": "Sed pharetra efficitur purus, eu fringilla odio vestibulum sed. Cras sed magna finibus, aliquet tellus a, bibendum mi. Suspendisse et tempor massa. Maecenas sagittis ligula odio, non iaculis turpis scelerisque sed. Curabitur tincidunt sem nec dolor dictum pharetra. In cursus venenatis sem, id fringilla quam consectetur in. Fusce efficitur ligula sed lectus dictum, non vulputate erat semper.",
-        "timestamp": "May 30, 2023",
-        "name": "Emma Turner",
-        "likeNumber": 20,
-        "commentNumber": 7
-    },
-    {
-        "id": 11,
-        "title": "Post 11",
-        "content": "Aliquam varius odio sit amet felis vulputate, ut bibendum nisi efficitur. Nam facilisis lectus sed nibh vulputate semper. Maecenas tincidunt efficitur tristique. Duis efficitur gravida tellus, vitae bibendum sem fermentum at. Nullam finibus elit id magna tristique vestibulum. Sed eu arcu faucibus, congue ipsum a, ultrices nisl. Mauris ac finibus justo. Proin in orci sem.",
-        "timestamp": "May 31, 2023",
-        "name": "Daniel Harris",
-        "likeNumber": 15,
-        "commentNumber": 4
-    },
-    {
-        "id": 12,
-        "title": "Post 12",
-        "content": "Vestibulum auctor, tortor sed tincidunt faucibus, quam justo rutrum nisi, ut interdum quam nisi nec ligula. Aliquam id metus facilisis, dapibus neque non, pulvinar metus. Fusce sodales ipsum vitae commodo scelerisque. Maecenas id ullamcorper erat, sit amet placerat nisi. Mauris rhoncus, justo ac dapibus aliquet, sem nulla eleifend nisi, non tempor lorem neque et tortor.",
-        "timestamp": "June 1, 2023",
-        "name": "Liam Martin",
-        "likeNumber": 19,
-        "commentNumber": 3
-    },
-    {
-        "id": 13,
-        "title": "Post 13",
-        "content": "Phasellus vel hendrerit ante. Nullam interdum, ligula a consectetur hendrerit, turpis est viverra nulla, eu hendrerit dolor elit et metus. In tincidunt eros et mauris rutrum, eu euismod metus consequat. Mauris vitae quam id turpis lacinia eleifend. Suspendisse potenti. Curabitur scelerisque quam eu enim gravida, ut tristique risus egestas. Sed luctus sem non diam interdum, sit amet accumsan velit finibus.",
-        "timestamp": "June 2, 2023",
-        "name": "Olivia Garcia",
-        "likeNumber": 23,
-        "commentNumber": 5
-    },
-    {
-        "id": 14,
-        "title": "Post 14",
-        "content": "Praesent id quam nec ante egestas gravida. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque a interdum odio. Sed auctor est at tempor porttitor. Morbi pharetra sollicitudin rutrum. Sed ultricies luctus turpis, in rhoncus enim interdum et. Nam id justo a risus laoreet feugiat. Proin ut venenatis enim, sit amet luctus velit.",
-        "timestamp": "June 3, 2023",
-        "name": "Noah Martinez",
-        "likeNumber": 16,
-        "commentNumber": 4
-    },
-    {
-        "id": 15,
-        "title": "Post 15",
-        "content": "Aenean feugiat commodo luctus. In ultricies aliquet ex, in fringilla ex sollicitudin quis. Fusce ac justo nisi. Nunc ac justo urna. Integer facilisis ante vel magna consectetur, id bibendum ipsum tempor. Aliquam erat volutpat. Donec nec lorem odio. Morbi sed leo nec nisl laoreet dignissim. Suspendisse fermentum orci vel est lobortis, ac pellentesque est cursus.",
-        "timestamp": "June 4, 2023",
-        "name": "Isabella Robinson",
-        "likeNumber": 21,
-        "commentNumber": 5
-    }
-]
+@app.route('/get-company-recruiter', methods=['POST'])
+def getCompanyRecruiter():
+    data = request.json  # Get the form data from the request body
+    print(data)
+    u_id = data.get("id")
 
-events = [
-    {
-        'id': 1,
-        'eventName': 'Tech Conference 2023',
-        'organizer': 'Tech Events Inc.',
-        'coverPhoto': 'https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280',
-        'platform': 'Virtual',
-        'startDate': '2023-07-15',
-        'endDate': '2023-07-17',
-        'limit': 500,
-        'websiteLink': 'https://example.com/event1',
-        'content': 'Join us for the biggest tech conference of the year!',
-        'speakers': 'John Doe, Jane Smith',
-        'creationDate': '2023-06-01',
-    },
-    {
-        'id': 2,
-        'eventName': 'Marketing Summit',
-        'organizer': 'Marketing Association',
-        'coverPhoto': 'https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280',
-        'platform': 'Online',
-        'startDate': '2023-08-10',
-        'endDate': '2023-08-12',
-        'limit': 300,
-        'websiteLink': 'https://example.com/event2',
-        'content': 'Learn the latest marketing strategies and trends.',
-        'speakers': 'Emily Johnson, Mark Thompson',
-        'creationDate': '2023-07-01',
-    },
-    {
-        'id': 3,
-        'eventName': 'Art Expo 2023',
-        'organizer': 'Art Events Co.',
-        'coverPhoto': 'https://www.example.com/artexpo.jpg',
-        'platform': 'Physical',
-        'startDate': '2023-09-20',
-        'endDate': '2023-09-23',
-        'limit': 200,
-        'websiteLink': 'https://example.com/event3',
-        'content': 'Experience the world of contemporary art.',
-        'speakers': 'Sarah Johnson, David Brown',
-        'creationDate': '2023-08-01',
-    },
-    {
-        'id': 4,
-        'eventName': 'Startup Summit',
-        'organizer': 'Startup Network',
-        'coverPhoto': 'https://www.example.com/startupsummit.jpg',
-        'platform': 'Virtual',
-        'startDate': '2023-10-05',
-        'endDate': '2023-10-06',
-        'limit': 1000,
-        'websiteLink': 'https://example.com/event4',
-        'content': 'Connect with entrepreneurs and investors.',
-        'speakers': 'Jessica Adams, Alex Wilson',
-        'creationDate': '2023-09-01',
-    },
-    # Add more mock events here...
-]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch works_for value from Person table
+    cursor.execute("SELECT works_for FROM Person WHERE user_id = %s", (u_id,))
+    works_for = cursor.fetchone().get("works_for")
+
+    # Fetch org_name from Organization table using works_for as user_id
+    cursor.execute("SELECT org_name FROM Organization WHERE user_id = %s", (works_for,))
+    org_name = cursor.fetchone().get("org_name")
+
+    return jsonify({"org_name": org_name}), 200
+
+
+@app.route('/get-user-for-job-application', methods=['POST'])
+def get_user_job_application():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch user details from Person table using user_id
+    cursor.execute("SELECT P.first_name, P.last_name, U.phone_no, U.mail_addr, "
+                   "U.profile_pic FROM Person P INNER JOIN User U ON P.user_id = U.user_id "
+                   "WHERE P.user_id = %s", (u_id,))
+    user = cursor.fetchone()
+    print(user)
+    return jsonify(user), 200
+
+
+@app.route('/apply-job', methods=['POST'])
+def apply_job():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    print(data)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+
+    return jsonify({"message": "Successfully applied"}), 200
 
 
 @app.route('/home-get-post', methods=['POST'])
@@ -675,9 +499,55 @@ def get_posts():
     print(p_id)
     print(e_id)
 
-    # TODO biri tam değilse diğerinden devam edilcek
-    paginated_posts = posts[p_id:p_id + 2]
-    paginated_events = events[e_id:e_id + 2]
+    # Retrieve paginated posts
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT COUNT(*) AS event_count FROM Event WHERE e_id > %s', (e_id,)
+    )
+    event_count = cursor.fetchone()["event_count"]
+    print("event", event_count)
+    post_count = 4 - event_count if event_count < 2 else 2
+
+    # Retrieve paginated posts count
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT COUNT(*) AS post_count '
+        'FROM Post '
+        'WHERE p_id > %s', (p_id,)
+    )
+    temp = cursor.fetchone()['post_count']
+    print("temp", temp)
+    if event_count > 2 and temp < 2:
+        event_count = 4 - temp
+
+    cursor.execute(
+        'SELECT p_id AS id, p_title AS title, p_content AS content, p_timestamp AS timestamp, '
+        'CONCAT(P.first_name, " ", P.last_name) AS name, p_like_count as likeNumber, p_com_count as commentNumber '
+        'FROM Post JOIN Person P ON P.user_id = Post.user_id '
+        'WHERE p_id > %s '
+        'ORDER BY p_id ASC '
+        'LIMIT %s',
+        (p_id, post_count)
+    )
+    paginated_posts = list(cursor.fetchall())
+    print(paginated_posts)
+
+    # Select events based on the post_count
+    cursor.execute(
+        'SELECT E.e_id as id, e_name as eventName, CONCAT(P.first_name, " ", P.last_name) AS organizer, '
+        'cover_photo as coverPhoto,'
+        'e_start_date as startDate, e_end_date as endDate, e_limit as "limit", '
+        'e_link as websiteLink, e_content as content, e_timestamp as creation_date, '
+        'e_speakers as speakers '
+        'FROM Event E '
+        'JOIN Person AS P ON P.user_id = E.organizer_id '
+        'WHERE e_id > %s '
+        'LIMIT %s',
+        (e_id, event_count)
+    )
+
+    paginated_events = cursor.fetchall()
+    print(paginated_events)
 
     return jsonify({'posts': paginated_posts, 'events': paginated_events}), 200
 
@@ -725,6 +595,7 @@ def retrieve_c_e_applications():
     data = request.json  # Get the form data from the request body
     user_id = data.get("id")
 
+    # Doğru cursor
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     print("id")
     print(user_id)
@@ -975,132 +846,105 @@ def fetch_messages():
     return jsonify(response)
 
 
-@app.route('/blogs', methods=['POST'])
+@app.route('/retrieve-blogs', methods=['POST'])
 def blog_page():
     data = request.json  # Get the form data from the request body
-    print(data['selectedTag'])
+    selected_tag = data.get("selectedTag")
+    b_id = int(data.get("b_id"))
+    print(selected_tag)
 
-    # Example blog data
-    blogs = [
-        {
-            "id": 1,
-            "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-            "title": "Blog Title 1",
-            "summary": "This is the summary of Blog 1.",
-            "name": "Author 1",
-            "likeNumber": 10,
-            "commentNumber": 5,
-            "subtag": "Subtag 1"
-        },
-        {
-            "id": 2,
-            "coverPhoto": "https://example.com/cover2.jpg",
-            "title": "Blog Title 2",
-            "summary": "This is the summary of Blog 2.",
-            "name": "Author 2",
-            "likeNumber": 15,
-            "commentNumber": 8,
-            "subtag": "Subtag 2"
-        },
-        {
-            "id": 3,
-            "coverPhoto": "https://example.com/cover3.jpg",
-            "title": "Blog Title 3",
-            "summary": "This is the summary of Blog 3.",
-            "name": "Author 3",
-            "likeNumber": 20,
-            "commentNumber": 12,
-            "subtag": "Subtag 3"
-        }
-    ]
-
-    return jsonify(blogs)
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT b_id as id, b_title as title, b_summary as summary, b_com_count as commentNumber, '
+        'b_like_count as likeNumber, b_cover as coverPhoto, CONCAT(P.first_name, " ", P.last_name) AS name '
+        'FROM Blog_Post B INNER JOIN Person AS P ON B.owner_id = P.user_id '
+        'WHERE B_tag = %s AND b_id > %s LIMIT 4',
+        (selected_tag, b_id)
+    )
+    blogs = list(cursor.fetchall())
+    print(blogs)
+    print("here")
+    return jsonify({'blogs': blogs}), 200
 
 
-# Example blog data
-blogs = [
-    {
-        "id": 1,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 2,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 3,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    },
-    {
-        "id": 4,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 5,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 6,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    },
-    {
-        "id": 7,
-        "coverPhoto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        "title": "Blog Title 1",
-        "summary": "This is the summary of Blog 1.",
-        "name": "Author 1",
-        "likeNumber": 10,
-        "commentNumber": 5,
-    },
-    {
-        "id": 8,
-        "coverPhoto": "https://example.com/cover2.jpg",
-        "title": "Blog Title 2",
-        "summary": "This is the summary of Blog 2.",
-        "name": "Author 2",
-        "likeNumber": 15,
-        "commentNumber": 8,
-    },
-    {
-        "id": 9,
-        "coverPhoto": "https://example.com/cover3.jpg",
-        "title": "Blog Title 3",
-        "summary": "This is the summary of Blog 3.",
-        "name": "Author 3",
-        "likeNumber": 20,
-        "commentNumber": 12,
-    }
-]
+@app.route('/blog-viewer', methods=['POST'])
+def blog_viewer_page():
+    data = request.json  # Get the form data from the request body
+    b_id = data.get("b_id")
+    print(b_id)
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        'SELECT b_title as title, b_summary as summary, '
+        'b_cover as coverPhoto, b_content as content, b_timestamp as date, b_tag as tag, '
+        'U.profile_pic as profilePhoto, CONCAT(P.first_name, " ", P.last_name) AS author '
+        'FROM Blog_Post B INNER JOIN Person AS P ON B.owner_id = P.user_id '
+        'INNER JOIN User AS U On U.user_id = B.owner_id '
+        'WHERE b_id = %s', b_id)
+    blog = cursor.fetchone()
+    print(blog)
+    print("here")
+    return jsonify({'blog': blog}), 200
+
+
+@app.route('/blog-comments', methods=['POST'])
+def blog_comments_page():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    b_id = data.get("b_id")
+    c_content = data.get("c_content")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if c_content:
+        # Insert the new comment into the Comment table
+        cursor.execute(
+            'INSERT INTO Comment (owner_id, root_blog_id, c_content) '
+            'VALUES (%s, %s, %s)',
+            (u_id, b_id, c_content)
+        )
+        mysql.connection.commit()
+
+    # Retrieve the updated comments for the specified blog
+    cursor.execute(
+        'SELECT C.c_content AS content, C.c_timestamp as timeWritten, '
+        'U.profile_pic as writerPhoto, CONCAT(P.first_name, " ", P.last_name) AS writerName '
+        'FROM Comment C INNER JOIN Person AS P ON C.owner_id = P.user_id '
+        'INNER JOIN User AS U On U.user_id = C.owner_id '
+        'WHERE C.root_blog_id = %s',
+        (b_id,)
+    )
+    comments = list(cursor.fetchall())
+    print(comments)
+
+    return jsonify({'comments': comments}), 200
+
+
+@app.route('/blog-like', methods=['POST'])
+def blog_like():
+    data = request.json  # Get the form data from the request body
+    b_id = data.get("b_id")
+    b_like = data.get("b_like")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if b_like is not None:
+        if b_like:  # Increment likeCount by 1
+            cursor.execute(
+                'UPDATE Blog_Post '
+                'SET likeCount = likeCount + 1 '
+                'WHERE b_id = %s',
+                (b_id,)
+            )
+        else:  # Decrement likeCount by 1
+            cursor.execute(
+                'UPDATE Blog_Post '
+                'SET likeCount = likeCount - 1 '
+                'WHERE b_id = %s',
+                (b_id,)
+            )
+        mysql.connection.commit()
+
+    return jsonify({'message': "ok"}), 200
 
 
 @app.route('/retrieve-c-e-previous-blogs', methods=['POST'])
@@ -1231,13 +1075,204 @@ def blog_editor():
     return jsonify(response), status_code
 
 
+@app.route('/blogEditorGetTag', methods=['POST'])
+def blog_editor_get_tag():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT expert_in_tag FROM Career_Expert WHERE user_id = %s', (u_id,))
+    result = cursor.fetchone()
+
+    if result:
+        if result[0] == "all":
+            tag = "career"
+        else:
+            tag = result[0]
+    else:
+        tag = None
+    return jsonify({"tag": tag}), 200
+
+
 @app.route('/blogEditorer', methods=['POST'])
-def bloger_editor():
+def tempMethod():
     data = request.json  # Get the form data from the request body
     print(data)
     u_id = data.get("id")
 
     return jsonify({"message": "Blog is successfully published"}), 200
+
+
+# Route to fetch data from the Person table
+@app.route("/profile-real", methods=["POST"])
+def fetch_person_data():
+    user_id = request.json["userId"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT Person.*, User.profile_pic AS profilePicture FROM Person "
+        "INNER JOIN User ON Person.user_id = User.user_id WHERE Person.user_id = %s",
+        (user_id,)
+    )
+    person_data = cursor.fetchone()
+
+    person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%y")
+
+    return jsonify(person_data)
+
+
+# Route to fetch data from Work_Experience joined with CV_Component
+
+@app.route('/add-work-experience', methods=['POST'])
+def add_work_experience():
+    # Get work experience data from the request
+    data = request.json
+    work_mode = data.get('workMode')
+    work_type = data.get('workType')
+    role = data.get('role')
+    profession = data.get('profession')
+    job_end_date = data.get('jobEndDate')
+    job_start_date = data.get('jobStartDate')
+    location = data.get('location')
+    about = data.get('about')
+    active = data.get('currentlyWorked')
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    exp_id = None
+
+    print(job_end_date)
+
+    try:
+        # Save the work experience to the database
+        cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
+                       'VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), active, about, location, job_end_date, job_start_date))
+        exp_id = cursor.lastrowid
+
+        cursor.execute('INSERT INTO Work_Experience (user_id, exp_id, work_mode, work_type, role, profession, '
+                       'org_name) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                       (
+                           data.get('userId'), exp_id, work_mode, work_type, role, profession, data.get('orgName')))
+
+        if active:
+            cursor.execute("SELECT user_id FROM Organization WHERE org_name = %s", (data.get("orgName"),))
+            o_id = cursor.fetchone()
+            print(o_id)
+            cursor.execute('UPDATE Person SET works_for = %s, works_since = %s WHERE user_id = %s',
+                           (o_id["user_id"], job_start_date, data.get('id')))
+
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if exp_id:
+        # Return a success response
+        return jsonify({'message': 'Work experience added successfully', 'expId': exp_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to add work experience'}), 500
+
+
+@app.route('/add-education', methods=['POST'])
+def add_education():
+    # Get education data from the request
+    data = request.json
+    gpa = data.get('gpa')
+    department = data.get('department')
+    degree = data.get('degree')
+    edu_end_date = data.get('endDate')
+    edu_start_date = data.get('startDate')
+    location = data.get('location')
+    about = data.get('about')
+
+    print(data)
+    print(edu_end_date)
+    print(edu_start_date)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    exp_id = None
+
+    try:
+        # Save the education to the database
+        cursor.execute('INSERT INTO CV_Component (user_id, active, description, location, end_date, start_date) '
+                       'VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), True, about, location, edu_end_date, edu_start_date))
+        exp_id = cursor.lastrowid
+
+        cursor.execute('INSERT INTO Education (user_id, exp_id, gpa, dept, degree, '
+                       'inst_name) VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data.get('userId'), exp_id, gpa, department, degree, data.get('instName')))
+
+        cursor.execute('COMMIT')
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+    if exp_id:
+        # Return a success response
+        return jsonify({'message': 'Education added successfully', 'expId': exp_id}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to add education'}), 500
+
+
+@app.route("/get-work-experience", methods=["POST"])
+def fetch_work_experience_data():
+    user_id = request.json["userId"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    print(request.json)
+    cursor.execute(
+        """
+        SELECT we.*, cv.*, U.profile_pic as companyLogo
+        FROM Work_Experience we
+        INNER JOIN CV_Component cv ON we.exp_id = cv.exp_id
+        INNER JOIN Organization O ON O.org_name = we.org_name
+        INNER JOIN User U ON O.user_id = U.user_id
+        WHERE cv.user_id = %s
+        """,
+        (user_id,)
+    )
+
+    work_experience_data = cursor.fetchall()
+    print("work_experience_data")
+    print(work_experience_data)
+    for work_experience in work_experience_data:
+        work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%y")
+        if work_experience["end_date"]:
+            work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%y")
+    cursor.close()
+    return jsonify(work_experience_data)
+
+
+# Route to fetch data from Education joined with CV_Component
+@app.route("/get-education", methods=["POST"])
+def fetch_education_data():
+    user_id = request.json["userId"]
+    print(request.json)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        """
+        SELECT e.*, cv.*, U.profile_pic as institutionLogo
+        FROM Education e
+        INNER JOIN CV_Component cv ON e.exp_id = cv.exp_id
+        INNER JOIN Organization O ON O.org_name = e.inst_name
+        INNER JOIN User U ON O.user_id = U.user_id
+        WHERE cv.user_id = %s
+        """,
+        (user_id,)
+    )
+    education_data = cursor.fetchall()
+    print("education_data")
+    print(education_data)
+    for education in education_data:
+        education["start_date"] = education["start_date"].strftime("%d-%m-%y")
+        education["end_date"] = education["end_date"].strftime("%d-%m-%y")
+
+    cursor.close()
+    return jsonify(education_data)
 
 
 # Endpoint for fetching user information for profile page.
@@ -1305,9 +1340,9 @@ def profile_page():
                 "edu_id": 1,
                 "exp_id": 1,
                 "gpa": 3.8,
-                "dept": "Computer Science",
+                "dept": "Engineering",
                 "inst_name": "Bilkent University",
-                "degree": "Bachelor's Degree",
+                "degree": "Bachelor's",
                 "edu_end_date": "2021-12-31",
                 "edu_start_date": "2017-09-01",
                 "inst_id": 1001
@@ -1338,6 +1373,103 @@ def profile_page():
     }
 
     return jsonify(response)
+
+
+@app.route('/search-school', methods=['POST'])
+def find_school_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    inst_name = data.get("instName")
+    print("requested")
+
+    if inst_name:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Execute the query to fetch case-insensitive school names matching the criteria
+        cursor.execute(
+            "SELECT user_id AS 'key', org_name as value FROM Organization WHERE LOWER(org_name) LIKE %s",
+            ('%' + inst_name.lower() + '%',)
+        )
+
+        # Fetch all the results
+        school_names = cursor.fetchall()
+        print(school_names)
+
+        # Close the cursor
+        cursor.close()
+    else:
+        school_names = []
+
+    # Return the school names as a JSON response
+    return jsonify({"school_names": school_names}), 200
+
+
+@app.route('/get-org-employee-list', methods=['POST'])
+def get_org_employee_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query = "SELECT org_name FROM Organization WHERE user_id = %s"
+    cursor.execute(query, (u_id,))
+    org_name = cursor.fetchone()
+
+    # Retrieve employee data from User and Work_Experience tables
+    cursor.execute(
+        "SELECT P.user_id as id, CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, "
+        "P.works_since as workingSince, P.current_position as position, U.user_type as userType "
+        "FROM Person P JOIN User U ON U.user_id = P.user_id WHERE P.works_for = %s ", (u_id,))
+    employees = cursor.fetchall()
+
+    for employee in employees:
+        employee["workingSince"] = employee["workingSince"].strftime("%d-%m-%Y")
+
+    return jsonify({"message": "Employee list is successfully fetched", "employees": employees}), 200
+
+
+@app.route('/make-employee-recruiter', methods=['POST'])
+def make_employee_recruiter():
+    data = request.json  # Get the form data from the request body
+    e_id = data.get("employeeId")
+    print(e_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "UPDATE User SET user_type = user_type + 2 WHERE user_id = %s",
+        (e_id,))
+    mysql.connection.commit()
+
+    return jsonify({"message": "Employee successfully becomes recruiter"}), 200
+
+
+@app.route('/search-company', methods=['POST'])
+def find_company_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    org_name = data.get("orgName")
+    print("requested")
+
+    if org_name:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Execute the query to fetch case-insensitive school names matching the criteria
+        cursor.execute(
+            "SELECT user_id AS 'key', org_name as value FROM Organization WHERE LOWER(org_name) LIKE %s",
+            ('%' + org_name.lower() + '%',)
+        )
+
+        # Fetch all the results
+        company_names = cursor.fetchall()
+        print(company_names)
+
+        # Close the cursor
+        cursor.close()
+    else:
+        company_names = []
+
+    # Return the school names as a JSON response
+    return jsonify({"company_names": company_names}), 200
 
 
 # Endpoint for creating a new post

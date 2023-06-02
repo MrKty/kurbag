@@ -11,92 +11,6 @@ import DropdownItem from "react-bootstrap/DropdownItem";
 import sendRequest from "../utils/request";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-
-const mockBlogCards = [
-    {
-        coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
-        title: "Remote Work: Pros and Cons",
-        summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
-        name: "Sarah Smith",
-        likeNumber: 25,
-        commentNumber: 10,
-        subtag: "Remote Work"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
-        title: "The Future of Artificial Intelligence",
-        summary: "Discover the latest advancements and potential future developments in the field of artificial intelligence. Explore the impact of AI on various industries and its ethical considerations.",
-        name: "John Doe",
-        likeNumber: 15,
-        commentNumber: 5,
-        subtag: "Artificial Intelligence"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        title: "Effective Time Management Techniques",
-        summary: "Learn practical time management techniques to boost productivity and achieve better work-life balance. This blog provides valuable tips and strategies for managing your time effectively.",
-        name: "Emily Johnson",
-        likeNumber: 12,
-        commentNumber: 8,
-        subtag: "Productivity"
-    },
-    {
-        coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
-        title: "Remote Work: Pros and Cons",
-        summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
-        name: "Sarah Smith",
-        likeNumber: 25,
-        commentNumber: 10,
-        subtag: "Remote Work"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
-        title: "The Future of Artificial Intelligence",
-        summary: "Discover the latest advancements and potential future developments in the field of artificial intelligence. Explore the impact of AI on various industries and its ethical considerations.",
-        name: "John Doe",
-        likeNumber: 15,
-        commentNumber: 5,
-        subtag: "Artificial Intelligence"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        title: "Effective Time Management Techniques",
-        summary: "Learn practical time management techniques to boost productivity and achieve better work-life balance. This blog provides valuable tips and strategies for managing your time effectively.",
-        name: "Emily Johnson",
-        likeNumber: 12,
-        commentNumber: 8,
-        subtag: "Productivity"
-    },
-    {
-        coverPhoto: "https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280",
-        title: "Remote Work: Pros and Cons",
-        summary: "Remote work is a growing trend in the modern workplace. This blog explores the benefits and drawbacks of remote work, and offers tips for staying productive and connected when working from home.",
-        name: "Sarah Smith",
-        likeNumber: 25,
-        commentNumber: 10,
-        subtag: "Remote Work"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ7yHyUsKGbYlicodSZ3THUG3h0sZRGk76IQ&usqp=CAU",
-        title: "The Future of Artificial Intelligence",
-        summary: "Discover the latest advancements and potential future developments in the field of artificial intelligence. Explore the impact of AI on various industries and its ethical considerations.",
-        name: "John Doe",
-        likeNumber: 15,
-        commentNumber: 5,
-        subtag: "Artificial Intelligence"
-    },
-    {
-        coverPhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lzBSkaFUhiXlIzFFfLmtzhWF2ueFMrv4Jg&usqp=CAU",
-        title: "Effective Time Management Techniques",
-        summary: "Learn practical time management techniques to boost productivity and achieve better work-life balance. This blog provides valuable tips and strategies for managing your time effectively.",
-        name: "Emily Johnson",
-        likeNumber: 12,
-        commentNumber: 8,
-        subtag: "Productivity"
-    },
-    // Add more mock blog card data here...
-];
-
 const PreviousBlogs = () => {
     const [showModal, setShowModal] = useState(false);
     const [blogs, setBlogs] = useState([]);
@@ -226,6 +140,7 @@ const PreviousBlogs = () => {
                 hasMore={hasMore}
                 loader={<p>Loading...</p>}
                 endMessage={<p>No more data to load.</p>}
+                className={"overflow-hidden"}
             >
                 <Row className="justify-content-center">
                     {blogs.map((blog, index) => (

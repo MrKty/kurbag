@@ -4,6 +4,8 @@ import sendRequest from "../utils/request";
 
 //TODO BOOTSTRAP KARTLARINDA HEIGHT-OVERFLOW OLUNCA SIDEBAR'I CARD İÇİNDE GÖSTERME. ŞUAN DIŞINDA GÖSTERİYO.
 
+
+
 const OrganizationCreationCard = () => {
     const [formData, setFormData] = useState({
         organizationName: '',
@@ -17,6 +19,7 @@ const OrganizationCreationCard = () => {
         institutionType: '',
         email: '',
         password: '',
+        about: ''
     });
 
     const handleChange = (e) => {
@@ -253,6 +256,18 @@ const OrganizationCreationCard = () => {
                     </Form.Group>
 
                     {showContent}
+
+                    <Form.Group className="mb-3" controlId="about">
+                        <Form.Label className={"visually-hidden"}>Enter About Info</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            name="about"
+                            rows={3}
+                            value={formData.about}
+                            onChange={handleChange}
+                            placeholder="Enter about info"
+                        />
+                    </Form.Group>
 
                     <Button variant={"success"} type="submit"
                             className={"col-12 rounded-3 p-2 fw-bold bg-color-green "}>
