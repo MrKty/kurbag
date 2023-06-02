@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Container, Card, Form, Button, Row, Col} from "react-bootstrap";
+import React, {useEffect, useState} from "react";
+import {Container, Card, Form, Button, Row, Col, Badge} from "react-bootstrap";
 import NavBar from "../components/NavBar";
 import RecruiterNavBar from "../components/RecruiterNavBar";
 import sendRequest from "../utils/request";
@@ -60,7 +60,6 @@ const CreateJob = () => {
         });
 
         // Clear form fields
-        setOrganization("");
         setDescription("");
         setTitle("");
         setWorkType("");
@@ -80,10 +79,19 @@ const CreateJob = () => {
         }
     }
 
+    useEffect(() => {
+        // Fetch data from Sends_Request table
+        sendRequest('get-company-recruiter', 'POST', {}, (data) => {
+                if (data.org_name){
+                    setOrganization(data.org_name)
+                }
+        });
+    }, []);
+
     return (
         <Container fluid>
             <RecruiterNavBar/>
-            <Card className="mt-2" style={{height: "600px", overflowY: "scroll"}}>
+            <Card className="mt-2" style={{maxHeight: "600px", overflowY: "scroll"}}>
                 <Col>
                     <Card.Header className="fw-bold">Create Job: {backEndMessage}</Card.Header>
                     <Card.Body>
@@ -107,6 +115,7 @@ const CreateJob = () => {
                                             type="text"
                                             placeholder="Enter organization"
                                             value={organization}
+                                            readOnly={true}
                                             onChange={(e) => setOrganization(e.target.value)}
                                         />
                                     </Form.Group>
@@ -154,6 +163,13 @@ const CreateJob = () => {
                                 </Row>
                                 <Form.Group controlId="skills">
                                     <Form.Label>Skills</Form.Label>
+                                    <div className={"mb-2"}>
+                                        {skills.map((skill, index) => (
+                                            <Badge key={index} variant="primary" className="me-2">
+                                                {skill}
+                                            </Badge>
+                                        ))}
+                                    </div>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter a skill"
@@ -163,13 +179,6 @@ const CreateJob = () => {
                                     <Button variant="primary" onClick={handleAddSkill} className="mt-2">
                                         Add Skill
                                     </Button>
-                                    {skills.length > 0 && (
-                                        <ul className="mt-2">
-                                            {skills.map((skill, index) => (
-                                                <li key={index}>{skill}</li>
-                                            ))}
-                                        </ul>
-                                    )}
                                 </Form.Group>
                                 <Col md={6}>
                                     <Form.Group controlId="location" className="mt-2">

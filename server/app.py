@@ -391,10 +391,11 @@ def create_job():
     job_location = data.get('location')
     job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
-    job_recruiter_id = 5  # mock data for now
+    job_recruiter_id = data.get('userId')
     job_min_age = data.get('minAge')
     job_max_age = data.get('maxAge')
     job_skills = data.get('skillsString')
+    print(data)
 
     try:
         # Convert job_due_date to a timestamp
@@ -444,66 +445,23 @@ def create_job():
         return jsonify({'message': 'Invalid due date format'}), 400
 
 
-events = [
-    {
-        'id': 1,
-        'eventName': 'Tech Conference 2023',
-        'organizer': 'Tech Events Inc.',
-        'coverPhoto': 'https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280',
-        'platform': 'Virtual',
-        'startDate': '2023-07-15',
-        'endDate': '2023-07-17',
-        'limit': 500,
-        'websiteLink': 'https://example.com/event1',
-        'content': 'Join us for the biggest tech conference of the year!',
-        'speakers': 'John Doe, Jane Smith',
-        'creationDate': '2023-06-01',
-    },
-    {
-        'id': 2,
-        'eventName': 'Marketing Summit',
-        'organizer': 'Marketing Association',
-        'coverPhoto': 'https://www.zdnet.com/a/img/resize/b875a130a720d51fc03b9ab0f2cb84fa104a0080/2020/12/18/96b7b3e9-d4a9-4b6e-ac5b-36f21ab777ff/remote-work-2021-header.jpg?auto=webp&width=1280',
-        'platform': 'Online',
-        'startDate': '2023-08-10',
-        'endDate': '2023-08-12',
-        'limit': 300,
-        'websiteLink': 'https://example.com/event2',
-        'content': 'Learn the latest marketing strategies and trends.',
-        'speakers': 'Emily Johnson, Mark Thompson',
-        'creationDate': '2023-07-01',
-    },
-    {
-        'id': 3,
-        'eventName': 'Art Expo 2023',
-        'organizer': 'Art Events Co.',
-        'coverPhoto': 'https://www.example.com/artexpo.jpg',
-        'platform': 'Physical',
-        'startDate': '2023-09-20',
-        'endDate': '2023-09-23',
-        'limit': 200,
-        'websiteLink': 'https://example.com/event3',
-        'content': 'Experience the world of contemporary art.',
-        'speakers': 'Sarah Johnson, David Brown',
-        'creationDate': '2023-08-01',
-    },
-    {
-        'id': 4,
-        'eventName': 'Startup Summit',
-        'organizer': 'Startup Network',
-        'coverPhoto': 'https://www.example.com/startupsummit.jpg',
-        'platform': 'Virtual',
-        'startDate': '2023-10-05',
-        'endDate': '2023-10-06',
-        'limit': 1000,
-        'websiteLink': 'https://example.com/event4',
-        'content': 'Connect with entrepreneurs and investors.',
-        'speakers': 'Jessica Adams, Alex Wilson',
-        'creationDate': '2023-09-01',
-    },
-    # Add more mock events here...
-]
+@app.route('/get-company-recruiter', methods=['POST'])
+def getCompanyRecruiter():
+    data = request.json  # Get the form data from the request body
+    print(data)
+    u_id = data.get("id")
 
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch works_for value from Person table
+    cursor.execute("SELECT works_for FROM Person WHERE user_id = %s", (u_id,))
+    works_for = cursor.fetchone().get("works_for")
+
+    # Fetch org_name from Organization table using works_for as user_id
+    cursor.execute("SELECT org_name FROM Organization WHERE user_id = %s", (works_for,))
+    org_name = cursor.fetchone().get("org_name")
+
+    return jsonify({"org_name": org_name}), 200
 
 @app.route('/home-get-post', methods=['POST'])
 def get_posts():
@@ -1109,7 +1067,7 @@ def blog_editor_get_tag():
 
 
 @app.route('/blogEditorer', methods=['POST'])
-def temp():
+def tempMethod():
     data = request.json  # Get the form data from the request body
     print(data)
     u_id = data.get("id")
@@ -1167,6 +1125,13 @@ def add_work_experience():
                        'org_name) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                        (
                            data.get('userId'), exp_id, work_mode, work_type, role, profession, data.get('orgName')))
+
+        if active:
+            cursor.execute("SELECT user_id FROM Organization WHERE org_name = %s", (data.get("orgName"),))
+            o_id = cursor.fetchone()
+            print(o_id)
+            cursor.execute('UPDATE Person SET works_for = %s, works_since = %s WHERE user_id = %s',
+                           (o_id["user_id"], job_start_date, data.get('id')))
 
         cursor.execute('COMMIT')
 
@@ -1409,6 +1374,45 @@ def find_school_list():
 
     # Return the school names as a JSON response
     return jsonify({"school_names": school_names}), 200
+
+
+@app.route('/get-org-employee-list', methods=['POST'])
+def get_org_employee_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query = "SELECT org_name FROM Organization WHERE user_id = %s"
+    cursor.execute(query, (u_id,))
+    org_name = cursor.fetchone()
+
+    # Retrieve employee data from User and Work_Experience tables
+    cursor.execute(
+        "SELECT P.user_id as id, CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, "
+        "P.works_since as workingSince, P.current_position as position, U.user_type as userType "
+        "FROM Person P JOIN User U ON U.user_id = P.user_id WHERE P.works_for = %s ", (u_id,))
+    employees = cursor.fetchall()
+
+    for employee in employees:
+        employee["workingSince"] = employee["workingSince"].strftime("%d-%m-%Y")
+
+    return jsonify({"message": "Employee list is successfully fetched", "employees": employees}), 200
+
+
+@app.route('/make-employee-recruiter', methods=['POST'])
+def make_employee_recruiter():
+    data = request.json  # Get the form data from the request body
+    e_id = data.get("employeeId")
+    print(e_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "UPDATE User SET user_type = user_type + 2 WHERE user_id = %s",
+        (e_id,))
+    mysql.connection.commit()
+
+    return jsonify({"message": "Employee successfully becomes recruiter"}), 200
 
 
 @app.route('/search-company', methods=['POST'])
