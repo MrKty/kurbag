@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 
-const ApplyJobModal1 = ({currentModal, handleCloseModal, handleApplyClick}) => {
+const ApplyJobModal1 = ({currentModal, handleCloseModal, handleApplyClick, jobId}) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phone, setPhone] = useState("");
@@ -18,6 +18,7 @@ const ApplyJobModal1 = ({currentModal, handleCloseModal, handleApplyClick}) => {
     const [skills, setSkills] = useState([]);
     const [skillInput, setSkillInput] = useState('');
     const [resume, setResume] = useState('');
+    const userId = localStorage.getItem("userId")
 
     const handleImageChange = async (event) => {
         const newPhoto = event.target.files[0]
@@ -56,6 +57,8 @@ const ApplyJobModal1 = ({currentModal, handleCloseModal, handleApplyClick}) => {
         }
 
         const requestData = {
+            userId,
+            jobId,
             firstName,
             lastName,
             phone,
@@ -94,6 +97,22 @@ const ApplyJobModal1 = ({currentModal, handleCloseModal, handleApplyClick}) => {
             setSkillInput('');
         }
     }
+
+
+    useEffect(() => {
+        // Fetch data from Sends_Request table
+
+        sendRequest("get-user-info", "POST", {userId}, (data) => {
+            // Handle the response from the backend
+            setFirstName(data.first_name);
+            setLastName(data.last_name);
+            setPhone(data.phone_no);
+            setEmail(data.mail_addr);
+            setProfilePhoto(data.profilePicture);
+        });
+    }, []);
+
+
 
 
     useEffect(() => {
