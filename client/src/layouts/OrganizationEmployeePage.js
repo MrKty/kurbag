@@ -50,11 +50,13 @@ const OrganizationEmployeePage = () => {
                             <div><span className="fw-bold">Working Since: </span> {employee.workingSince}</div>
                         </Col>
                         <Col xs={12} sm={3} md={3}>
-                            {employee.userType === 0 ?
+                            {employee.userType === 2 && employee.userType === 3 ?
+                                <div className={"fw-bold"}>Employee is already recruiter</div> :
                                 <Button variant="primary" onClick={() => handleMakeRecruiter(employee.id)}>
                                     <FontAwesomeIcon icon={faUserPlus}/>
                                     <span className="ms-2">Make Recruiter</span>
-                                </Button> : <div className={"fw-bold"}>Employee is already recruiter</div>}
+                                </Button>
+                            }
 
                         </Col>
 
