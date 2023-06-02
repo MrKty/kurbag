@@ -281,11 +281,7 @@ def create_tables():
             j_id            int,
             resume 	        varchar(128),
             cover_letter 	varchar(128),
-            address 	    varchar(100),
-            photo 		    varchar(128),
             skills 		    TEXT,
-            p_start_date 	DATE,
-            p_end_date 	    DATE,
             PRIMARY KEY (user_id, j_id),
             FOREIGN KEY (user_id) REFERENCES Person(user_id),
             FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)

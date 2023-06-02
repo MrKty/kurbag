@@ -17,7 +17,7 @@ const CreateJob = () => {
     const [skillInput, setSkillInput] = useState('');
     const [dueDate, setDueDate] = useState("");
     const recruiterId = localStorage.getItem("userId");
-    const [backEndMessage, setBackEndMessage] = useState("initial back-end message.");
+    const [backEndMessage, setBackEndMessage] = useState();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -56,7 +56,7 @@ const CreateJob = () => {
 
         sendRequest("create-job", "POST", requestData, (data) => {
             // Handle the response from the backend
-            setBackEndMessage(data);
+            alert(data.message)
         });
 
         // Clear form fields
@@ -212,7 +212,7 @@ const CreateJob = () => {
                                     </Form.Group>
                                 </Col>
                             </Row>
-                            <Button variant="primary" type="submit" className="mt-3">
+                            <Button variant="primary" type="submit" className="mt-3" onClick={handleSubmit}>
                                 Create Job
                             </Button>
                         </Form>

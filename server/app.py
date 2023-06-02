@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import datetime
 
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -413,34 +412,35 @@ def create_post():
 def create_job():
     # Get post data from the request
     data = request.json
+    print(data)
 
     job_title = data.get('title')
     job_description = data.get('description')
     job_organization = data.get('organization')
-    job_type = data.get('type')
+    job_type = data.get('workType')
     job_location = data.get('location')
-    job_mode = data.get('mode')
+    job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
     job_recruiter_id = 5  # mock data for now
     job_min_age = data.get('minAge')
     job_max_age = data.get('maxAge')
     job_skills = data.get('skillsString')
 
-    job_timestamp = datetime.now()  # Current timestamp
+
 
     try:
         # Convert job_due_date to a timestamp
         due_date = datetime.strptime(job_due_date, "%Y-%m-%d")
         job_due_date_timestamp = due_date.strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor = db.get_cursor()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         j_id = None
 
         try:
             # Save the job opening to the database
             cursor.execute(
-                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_timestamp, j_min_age , j_max_age , j_skills ,recruiter_id) '
-                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s)',
+                'INSERT INTO Job_Opening (j_title, j_desc, j_type, j_organization, j_location, j_mode, due_date_apply, j_min_age , j_max_age , j_skills ,recruiter_id) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s,%s ,%s, %s, %s)',
                 (
                     job_title,
                     job_description,
@@ -449,7 +449,6 @@ def create_job():
                     job_location,
                     job_mode,
                     job_due_date_timestamp,
-                    job_timestamp,
                     job_min_age,
                     job_max_age,
                     job_skills,
