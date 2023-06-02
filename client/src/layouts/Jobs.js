@@ -128,10 +128,10 @@ const Jobs = () => {
                 <Col className="col-3 mt-3 mx-3" style={{overflowY: 'auto', maxHeight: maxHeight}}>
                     {jobs.map((job) => (
                         <JobListing
-                            jobTitle={job.jobTitle}
-                            companyName={job.companyName}
+                            jobTitle={job.j_title}
+                            companyName={job.j_organization}
                             companyLogo={job.companyLogo}
-                            location={job.location}
+                            location={job.j_location}
                             isSelected={selectedJob === job}
                             onClick={() => handleJobClick(job)}
                         />
@@ -140,16 +140,17 @@ const Jobs = () => {
                 </Col>
                 <Col className="col-5 mt-3 p-2" style={{backgroundColor: "#ecebeb", overflowY:"auto", maxHeight: maxHeight}}>
                     <JobDescription
-                        jobId={selectedJob ? selectedJob.jobId : ''}
-                        jobTitle={selectedJob ? selectedJob.jobTitle : ''}
-                        companyName={selectedJob ? selectedJob.companyName : ''}
-                        location={selectedJob ? selectedJob.location : ''}
-                        jobTimestamp={selectedJob ? selectedJob.jobTimestamp : ''}
-                        employmentType={selectedJob ? selectedJob.employmentType : ''}
-                        jobDescription={selectedJob ? selectedJob.jobDescription : ''}
+                        jobId={selectedJob ? selectedJob.j_id : ''}
+                        jobTitle={selectedJob ? selectedJob.j_title : ''}
+                        companyName={selectedJob ? selectedJob.j_organization : ''}
+                        location={selectedJob ? selectedJob.j_location : ''}
+                        skills={selectedJob ? selectedJob.j_skills : ''}
+                        jobTimestamp={selectedJob ? selectedJob.j_timestamp : ''}
+                        employmentType={selectedJob ? selectedJob.j_type : ''}
+                        jobDescription={selectedJob ? selectedJob.j_desc : ''}
                         companyLogo={selectedJob ? selectedJob.companyLogo : ''}
                         companyFollowers={selectedJob ? selectedJob.companyFollowers : ''}
-                        dueDateApply={selectedJob ? selectedJob.dueDateApply : ''}
+                        dueDateApply={selectedJob ? selectedJob.due_date_apply : ''}
                     />
                 </Col>
             </Row>

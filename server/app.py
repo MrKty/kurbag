@@ -310,46 +310,16 @@ def fill_career_expert_modal():
 # Endpoint for displaying jobs.@app.route('/jobs', methods=['POST'])
 @app.route('/jobs', methods=['POST'])
 def get_jobs():
-    response = [
-        {
-            "jobId": 1,
-            "jobTitle": "Data Scientist",
-            "companyName": "Sony",
-            "location": "Istanbul, Turkey",
-            "employmentType": "Full-time",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 1097845,
-            "dueDateApply": "2023-06-15 00:00:00",
-            "jobTimestamp": "2023-05-30 10:30:00"
-        },
-        {
-            "jobId": 2,
-            "jobTitle": "SQL Developer",
-            "companyName": "Amazon",
-            "location": "Ankara, Turkey",
-            "employmentType": "Part-time",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 109,
-            "dueDateApply": "2023-06-30 00:00:00",
-            "jobTimestamp": "2023-05-30 09:45:00"
-        },
-        {
-            "jobId": 3,
-            "jobTitle": "Web Developer",
-            "companyName": "Google",
-            "location": "İzmir, Turkey",
-            "employmentType": "Remote",
-            "jobDescription": "Sony Europe Ltd. is seeking a talented and motivated Data Scientist to join our team in Istanbul, Turkey. As a Data Scientist, you will be responsible for analyzing complex datasets, developing statistical models, and providing insights to drive business decisions. The ideal candidate should have a Bachelor's Degree in Computer Science, Economics, Statistics, or a related technical discipline, along with 3-4 years of practical experience in analytical processes and statistical analysis. Proficiency in Python programming and experience with Microsoft technologies such as MS SQL Server and MS Power BI are also required. Fluency in English is essential for this role.",
-            "companyLogo": "https://media.licdn.com/dms/image/C560BAQFeD2stV0OSRQ/company-logo_100_100/0/1573437846744?e=1689811200&v=beta&t=SsNwdP4WCbCt2_R-k_WeH3teobB2pe-pFTU3G3VMOgQ",
-            "companyFollowers": 2935,
-            "dueDateApply": "2023-07-10 00:00:00",
-            "jobTimestamp": "2023-05-30 09:15:00"
-        }
-    ]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        "SELECT * FROM Job_Opening"
+    )
+    jobs_data = cursor.fetchall()
+    print(jobs_data)
+    for job in jobs_data:
+        job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
 
-    return jsonify(response)
+    return jsonify(jobs_data)
 
 
 # TODO Endpoint for updating profile

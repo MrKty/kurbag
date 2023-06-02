@@ -13,6 +13,7 @@ const JobDescription = (props) => {
         companyName,
         location,
         employmentType,
+        skills,
         jobDescription,
         companyLogo,
         companyFollowers,
@@ -21,6 +22,7 @@ const JobDescription = (props) => {
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
+    const skillArray = skills.split(",");
 
     const handleApplyClick = (modalIndex) => {
         setCurrentModal(modalIndex);
@@ -60,11 +62,11 @@ const JobDescription = (props) => {
                 </Row>
                 <Row>
                     <Col>
-                        <Badge bg="secondary" className={"me-2"}>Python</Badge>
-                        <Badge bg="secondary" className={"me-2"}>R</Badge>
-                        <Badge bg="secondary" className={"me-2"}>SQL</Badge>
-                        <Badge bg="secondary" className={"me-2"}>Data Security</Badge>
-                        <Badge bg="secondary" className={"me-2"}>Statistical Analysis</Badge>
+                        {skillArray.map((skill, index) => (
+                            <Badge key={index} bg="secondary" className={"me-2"}>
+                                {skill.trim()}
+                            </Badge>
+                        ))}
                     </Col>
                 </Row>
             </Row>
