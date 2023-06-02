@@ -24,8 +24,9 @@ const Jobs = () => {
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
     const [maxHeight, setMaxHeight] = useState(window.innerHeight);
-    const [selectedJob, setSelectedJob] = useState(null);
+    const [selectedJob, setSelectedJob] = useState(1);
     const [jobs, setJobs] = useState([]);
+    const [appliedJobs, setAppliedJobs] = useState([]);
 
     const handleJobClick = (job) => {
         setSelectedJob(job);
@@ -33,11 +34,25 @@ const Jobs = () => {
 
 
     useEffect( () => {
-        sendRequest('jobs', 'POST', {}, (data) => {
+
+        const user_id = localStorage.getItem("userId")
+
+        sendRequest('jobs', 'POST', {user_id}, (data) => {
             // Here comes blog data from backend
             setJobs(data);
         });
     }, []);
+
+
+    useEffect( () => {
+        sendRequest('applied-jobs', 'POST', {}, (data) => {
+            // Here comes blog data from backend
+            setAppliedJobs(data);
+        });
+    }, []);
+
+
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -63,14 +78,6 @@ const Jobs = () => {
             <Row className="flex-grow-1">
                 <Col className="col-3 mt-3 me-2" style={{overflowY:"scroll", maxHeight: maxHeight}}>
                     <Card className={"border p-2"} style={{overflowY:"auto", maxHeight: maxHeight}}>
-                        <Row>
-                            <Col className={"col-9"}>
-                                <h4>Saved Jobs</h4>
-                            </Col>
-                            <Col>
-                                <FontAwesomeIcon icon={faAngleUp} className={"px-2"}/>
-                            </Col>
-                        </Row>
                         <Row>
                             <Col className={"col-9"}>
                                 <h4>Applied Jobs</h4>

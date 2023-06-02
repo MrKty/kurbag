@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Badge, Button, Card, Col, Form, Modal, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAdd, faEnvelope, faPaperPlane, faPlus, faSave} from "@fortawesome/free-solid-svg-icons";
@@ -27,7 +27,14 @@ const JobDescription = (props) => {
     } = props;
 
     const [currentModal, setCurrentModal] = useState(null);
+
+    // Check if skills are available
+    if (!skills) {
+        return <div>Loading...</div>; // or render a placeholder component
+    }
+
     const skillArray = skills.split(",");
+
 
     const handleApplyClick = (modalIndex) => {
         setCurrentModal(modalIndex);

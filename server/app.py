@@ -321,6 +321,24 @@ def get_jobs():
 
     return jsonify(jobs_data)
 
+@app.route('/applied-jobs', methods=['POST'])
+def get_applied_jobs():
+    user_id = request.json.get('user_id')  # Get the user_id from the request
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(
+        "SELECT Job_Opening.*, Applies_Job.resume, Applies_Job.cover_letter, Applies_Job.skills FROM Job_Opening "
+        "JOIN Applies_Job ON Job_Opening.j_id = Applies_Job.j_id "
+        "WHERE Applies_Job.user_id = %s",
+        (user_id,)
+    )
+    jobs_data = cursor.fetchall()
+
+    for job in jobs_data:
+        job["due_date_apply"] = job["due_date_apply"].strftime("%Y-%m-%d %H:%M:%S")
+
+    return jsonify(jobs_data)
+
 
 # TODO Endpoint for updating profile
 @app.route('/update-profile', methods=['POST'])
