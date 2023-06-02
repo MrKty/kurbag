@@ -135,7 +135,7 @@ const Profile = () => {
                                 {workExperiences.map((work_experience) => (
                                     <Row key={work_experience.exp_id}>
                                         <ExperienceCard
-                                            companyLogo=""
+                                            companyLogo={work_experience.companyLogo}
                                             companyName={work_experience.org_name}
                                             role={work_experience.profession}
                                             startDate={work_experience.start_date}
@@ -158,7 +158,7 @@ const Profile = () => {
                                 {educationExperiences.map((education) => (
                                     <Row key={education.exp_id}>
                                         <EducationCard
-                                            institutionLogo=""
+                                            institutionLogo={education.institutionLogo}
                                             institutionName={education.inst_name}
                                             degree={education.degree}
                                             startDate={education.start_date}

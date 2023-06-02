@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import sendRequest from "../../utils/request";
+import ReactSearchBox from "react-search-box";
 
 const AddWorkExperienceModal = ({ showModal, handleClose }) => {
     const [workMode, setWorkMode] = useState('');
@@ -12,6 +13,7 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
     const [jobStartDate, setJobStartDate] = useState('');
     const [about, setAbout] = useState('');
     const [location, setLocation] = useState('');
+    const [companyList, setCompanyList] = useState([]);
     const userId = localStorage.getItem('userId');
 
     const handleWorkModeChange = (event) => {
@@ -31,7 +33,17 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
     };
 
     const handleOrgNameChange = (event) => {
-        setOrgName(event.target.value);
+        console.log(event)
+        if (event) {
+            if (event.item) {
+                setOrgName(event)
+            } else {
+                setOrgName(event)
+                sendRequest('search-company', 'POST', {orgName}, (data) => {
+                    setCompanyList(data.company_names);
+                });
+            }
+        }
     };
 
     const handleRoleChange = (event) => {
@@ -109,11 +121,14 @@ const AddWorkExperienceModal = ({ showModal, handleClose }) => {
                     </Form.Group>
                     <Form.Group controlId="orgName">
                         <Form.Label>Company</Form.Label>
-                        <Form.Control
-                            type="text"
+                        <ReactSearchBox
+                            placeholder="Enter Company Name"
+                            name={"instName"}
                             value={orgName}
+                            data={companyList}
                             onChange={handleOrgNameChange}
-                            placeholder="Enter company name"
+                            clearOnSelect={false}
+                            onSelect={handleOrgNameChange}
                         />
                     </Form.Group>
                     <Form.Group controlId="role">

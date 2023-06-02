@@ -1262,15 +1262,18 @@ def fetch_work_experience_data():
     print(request.json)
     cursor.execute(
         """
-        SELECT *
+        SELECT we.*, cv.*, U.profile_pic as companyLogo
         FROM Work_Experience we
         INNER JOIN CV_Component cv ON we.exp_id = cv.exp_id
+        INNER JOIN Organization O ON O.org_name = we.org_name
+        INNER JOIN User U ON O.user_id = U.user_id
         WHERE cv.user_id = %s
         """,
         (user_id,)
     )
 
     work_experience_data = cursor.fetchall()
+    print("work_experience_data")
     print(work_experience_data)
     for work_experience in work_experience_data:
         work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%y")
@@ -1288,14 +1291,17 @@ def fetch_education_data():
 
     cursor.execute(
         """
-        SELECT *
+        SELECT e.*, cv.*, U.profile_pic as institutionLogo
         FROM Education e
         INNER JOIN CV_Component cv ON e.exp_id = cv.exp_id
+        INNER JOIN Organization O ON O.org_name = e.inst_name
+        INNER JOIN User U ON O.user_id = U.user_id
         WHERE cv.user_id = %s
         """,
         (user_id,)
     )
     education_data = cursor.fetchall()
+    print("education_data")
     print(education_data)
     for education in education_data:
         education["start_date"] = education["start_date"].strftime("%d-%m-%y")
@@ -1432,6 +1438,35 @@ def find_school_list():
 
     # Return the school names as a JSON response
     return jsonify({"school_names": school_names}), 200
+
+
+@app.route('/search-company', methods=['POST'])
+def find_company_list():
+    data = request.json  # Get the form data from the request body
+    u_id = data.get("id")
+    org_name = data.get("orgName")
+    print("requested")
+
+    if org_name:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Execute the query to fetch case-insensitive school names matching the criteria
+        cursor.execute(
+            "SELECT user_id AS 'key', org_name as value FROM Organization WHERE LOWER(org_name) LIKE %s",
+            ('%' + org_name.lower() + '%',)
+        )
+
+        # Fetch all the results
+        company_names = cursor.fetchall()
+        print(company_names)
+
+        # Close the cursor
+        cursor.close()
+    else:
+        company_names = []
+
+    # Return the school names as a JSON response
+    return jsonify({"company_names": company_names}), 200
 
 
 # Endpoint for creating a new post
