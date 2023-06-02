@@ -343,14 +343,6 @@ def create_tables():
             FOREIGN KEY (user_id) REFERENCES Regular_User(user_id) 
         );
 
-        CREATE TABLE IF NOT EXISTS Has_Tag_Feed(
-        	p_id         	INT,
-            tag_name	    char(20),
-            PRIMARY KEY (p_id, tag_name),
-            FOREIGN KEY (p_id) REFERENCES Post (p_id),
-            FOREIGN KEY (tag_name) REFERENCES Tag (tag_name) 
-        );
-
         CREATE TABLE IF NOT EXISTS Used_Skill(
         	exp_id         	    INT,
             s_id	         	INT,
