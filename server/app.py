@@ -1720,19 +1720,25 @@ def analysis_page_1():
     print(des_start_date)
     print(des_end_date)
 
+    # Convert start and end dates to datetime objects
+    start_date = datetime.strptime(des_start_date, "%Y-%m-%d")
+    end_date = datetime.strptime(des_end_date, "%Y-%m-%d")
+
     # SQL query to retrieve blogs based on owner_id and b_id
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     cursor.execute(
-        'SELECT j_location AS location, j_type AS type, '
-        'COUNT(*) AS job_count, COUNT(*) / total_jobs * 100 AS job_percentage '
-        'FROM Job_Opening '
-        'WHERE j_location LIKE %s AND j_skills LIKE %s '
-        'AND due_date_apply >= %s AND due_date_apply <= %s ',
-        (des_location, des_skill, des_start_date, des_end_date)
+        "SELECT SUM(CASE WHEN j_type = 'full-time' THEN 1 ELSE 0 END) AS full_time_job_count, "
+        "SUM(CASE WHEN j_type = 'part-time' THEN 1 ELSE 0 END) AS part_time_job_count, "
+        "SUM(CASE WHEN j_type = 'internship' THEN 1 ELSE 0 END) AS internship_job_count "
+        "FROM Job_Opening "
+        "WHERE j_location LIKE %s AND j_skills LIKE %s "
+        "AND due_date_apply BETWEEN %s AND %s",
+        ('%' + des_location + '%', '%' + des_skill + '%', start_date, end_date)
     )
 
     table = cursor.fetchall()
+    print(table)
 
     return jsonify({'table': table}), 200
 
