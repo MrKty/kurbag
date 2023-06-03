@@ -15,18 +15,29 @@ import React, {useEffect, useState} from "react";
 import RecruiterNavBar from "../components/RecruiterNavBar";
 import sendRequest from "../utils/request";
 
-const JobListing = ({position, postDate, numOfApplications}) => (
-    <Row className="border-bottom p-2" style={{backgroundColor: position === "Data Analyst" ? "#ecebeb" : "white"}}>
+const JobListing = ({position, postDate, jobId, numOfApplications, onClick, selectedJobId}) => (
+    <Row
+        className="border-bottom p-2"
+        style={{
+            backgroundColor: selectedJobId === jobId ? "#ecebeb" : "white",
+        }}
+        onClick={() => onClick(jobId)}>
         <Col>
             <h5>{position}</h5>
             <p className="mb-1">Post Date: {postDate}</p>
             <p className="mb-0">Number of Applications: {numOfApplications}</p>
+            <p className="mb-0">Job ID: {jobId}</p>
         </Col>
     </Row>
 );
 
-const ApplicantListing = ({name, date, photo, resume}) => (
-    <Row className="border-bottom p-2" style={{backgroundColor: name === "John Doe" ? "#ecebeb" : "white"}}>
+const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, selectedApplicantId }) => (
+    <Row
+        className="border-bottom p-2"
+        style={{
+            backgroundColor: selectedApplicantId === applicantId ? "#ecebeb" : "white",
+        }}
+        onClick={() => onClick(applicantId)}>
         <Col md={2}>
             <Image src={photo} fluid rounded/>
         </Col>
@@ -37,7 +48,7 @@ const ApplicantListing = ({name, date, photo, resume}) => (
             </Row>
             <Row>
                 <Col className={"col-4 align-self-center"}>
-                    <Link to={"#"} className={"no-underline"}>Resume</Link>
+                    <Link to={resume} className={"no-underline"}>Resume</Link>
                 </Col>
                 <Col>
                     <button className={"btn btn-success btn-sm"}>
@@ -56,96 +67,6 @@ const ApplicantListing = ({name, date, photo, resume}) => (
     </Row>
 );
 
-const data = [
-    {
-        position: 'Data Analyst',
-        postDate: '24.03.2023',
-        numOfApplications: 5
-    },
-    {
-        position: 'Software Engineer',
-        postDate: '01.04.2023',
-        numOfApplications: 750
-    },
-    {
-        position: 'Marketing Manager',
-        postDate: '12.04.2023',
-        numOfApplications: 500
-    },
-    {
-        position: 'Graphic Designer',
-        postDate: '03.04.2023',
-        numOfApplications: 250
-    },
-    {
-        position: 'Customer Support Specialist',
-        postDate: '18.04.2023',
-        numOfApplications: 800
-    },
-    {
-        position: 'Financial Analyst',
-        postDate: '09.04.2023',
-        numOfApplications: 600
-    },
-    {
-        position: 'Human Resources Coordinator',
-        postDate: '06.04.2023',
-        numOfApplications: 400
-    },
-    {
-        position: 'Sales Representative',
-        postDate: '20.04.2023',
-        numOfApplications: 900
-    },
-    {
-        position: 'Web Developer',
-        postDate: '14.04.2023',
-        numOfApplications: 700
-    },
-    {
-        position: 'Project Manager',
-        postDate: '08.04.2023',
-        numOfApplications: 550
-    }
-];
-
-const appData = [
-    {
-        id: 1,
-        name: "John Doe",
-        date: "2022-02-14",
-        photo: "https://randomuser.me/api/portraits/men/1.jpg",
-        resume: "link goes here"
-    },
-    {
-        id: 2,
-        name: "Jane Doe",
-        date: "2022-02-12",
-        resume: "link goes here",
-        photo: "https://randomuser.me/api/portraits/women/2.jpg"
-    },
-    {
-        id: 3,
-        name: "Bob Smith",
-        date: "2022-02-10",
-        photo: "https://randomuser.me/api/portraits/men/3.jpg",
-        resume: "link goes here"
-    },
-    {
-        id: 4,
-        name: "Alice Johnson",
-        date: "2022-02-09",
-        photo: "https://randomuser.me/api/portraits/women/4.jpg",
-        resume: "link goes here"
-    },
-    {
-        id: 5,
-        name: "Michael Brown",
-        date: "2022-02-08",
-        photo: "https://randomuser.me/api/portraits/men/5.jpg",
-        resume: "link goes here"
-    },
-];
 
 function ApplicantEducation(props) {
     const {institutionName, degree, department, educationDate} = props.details
@@ -189,10 +110,26 @@ const RecruiterViewer = () => {
     const [coverLetter, setCoverLetter] = useState("");
     const [skillArray, setSkillArray] = useState([]);
     const [profilePhoto, setProfilePhoto] = useState("");
+    const [applicantList, setApplicantList] = useState([]);
+    const [postedJobs, setPostedJobs] = useState([]);
+    const [selectedApplicantId, setSelectedApplicantId] = useState(null);
+    const [selectedJobId, setSelectedJobId] = useState(null);
+
+    useEffect(() => {
+        sendRequest('get-applications', 'POST', {selectedJobId}, (data) => {
+            setApplicantList(data.applications);
+        });
+    }, [selectedJobId]);
+
+    useEffect(() => {
+        sendRequest('get-job-listings', 'POST', {}, (data) => {
+            setPostedJobs(data.job_listings);
+        });
+    }, []);
 
     useEffect(() => {
         // Fetch data from Sends_Request table
-        sendRequest('get-application-info', 'POST', {applicantId: 4}, (data) => {
+        sendRequest('get-application-info', 'POST', {selectedApplicantId}, (data) => {
             if (data.application_info) {
                 setSummary(data.application_info.summary)
                 setResume(data.application_info.resume)
@@ -200,7 +137,7 @@ const RecruiterViewer = () => {
                 setSkillArray(data.application_info.skills.split(','));
             }
         });
-        sendRequest('get-applicant-info', 'POST', {applicantId: 4}, (data) => {
+        sendRequest('get-applicant-info', 'POST', {selectedApplicantId}, (data) => {
             if (data.applicant_info) {
                 console.log(data)
                 setName(data.applicant_info.name)
@@ -209,7 +146,7 @@ const RecruiterViewer = () => {
                 setProfilePhoto(data.applicant_info.profilePhoto)
             }
         });
-        sendRequest('get-work-experience', 'POST', {userId: 4}, (data) => {
+        sendRequest('get-work-experience', 'POST', {selectedApplicantId}, (data) => {
             if (data) {
                 const workExperiences = []
                 for (let i = 0; i < data.length; i++) {
@@ -227,7 +164,7 @@ const RecruiterViewer = () => {
                 setWorkExperiences(workExperiences)
             }
         });
-        sendRequest('get-education', 'POST', {userId: 4}, (data) => {
+        sendRequest('get-education', 'POST', {selectedApplicantId}, (data) => {
             console.log(data)
             if (data) {
                 const educations = []
@@ -243,7 +180,10 @@ const RecruiterViewer = () => {
                 setEducations(educations)
             }
         });
-    }, []);
+    }, [selectedApplicantId]);
+
+
+
 
 
     return (
@@ -251,28 +191,42 @@ const RecruiterViewer = () => {
             <RecruiterNavBar activeLink={"recruiter-view"}/>
             <Row>
                 <Col className="col-3 border">
-                    {data.map(job => (
-                        <JobListing
-                            key={job.position}
-                            position={job.position}
-                            postDate={job.postDate}
-                            numOfApplications={job.numOfApplications}
-                        />
-                    ))}
+                    {postedJobs.length ? (
+                        postedJobs.map(jobListing => (
+                            <JobListing
+                                position={jobListing.job_title}
+                                postDate={jobListing.post_date}
+                                numOfApplications={jobListing.num_applications}
+                                jobId={jobListing.job_id}
+                                onClick={() => setSelectedJobId(jobListing.job_id)}
+                                selectedJobId={selectedJobId}
+                            />
+                        ))
+                    ) : (
+                        <p>No listings...</p>
+                    )}
                 </Col>
                 <Col className="col-4 border">
-                    {appData.map(application => (
-                        <ApplicantListing
-                            key={application.id}
-                            name={application.name}
-                            date={application.date}
-                            photo={application.photo}
-                            resume={application.resume}
-                        />
-                    ))}
+                    <div>Current Job ID: {selectedJobId}</div>
+                    <div>Current Applicant ID: {selectedApplicantId}</div>
+                    {applicantList.length ? (
+                        applicantList.map(application => (
+                            <ApplicantListing
+                                applicantId={application.applicantId}
+                                name={application.name}
+                                date={application.dueDateApply}
+                                photo={application.profilePhoto}
+                                resume={application.resume}
+                                onClick={() => setSelectedApplicantId(application.applicantId)}
+                                selectedApplicantId={selectedApplicantId}
+                            />
+                        ))
+                    ) : (
+                        <p>No applications...</p>
+                    )}
                 </Col>
                 <Col className="col-5 border" style={{backgroundColor: "#ecebeb"}}>
-                    <h3 className={"p-2 border-bottom"}>Application Info:</h3>
+                    <h3 className={"p-2 border-bottom"}>Application Info: {selectedApplicantId}</h3>
                     <h5 className={"p-2 border-bottom"}>Contact Info:</h5>
                     <Col className="d-flex align-items-center mb-3">
                         <img src={profilePhoto} alt="Profile photo"

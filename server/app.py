@@ -434,7 +434,7 @@ def create_job():
     job_location = data.get('location')
     job_mode = data.get('workMode')
     job_due_date = data.get('dueDate')
-    job_recruiter_id = data.get('userId')
+    job_recruiter_id = data.get('id')
     job_min_age = data.get('minAge')
     job_max_age = data.get('maxAge')
     job_skills = data.get('skillsString')
@@ -530,7 +530,7 @@ def apply_job():
     job_id = data.get("jobId")
     resume = data.get("resume")
     cover_letter = data.get("coverLetter")
-    skills = data.get("skills")
+    skills = data.get("skillsString")
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -569,7 +569,7 @@ def delete_application():
 @app.route('/get-application-info', methods=['POST'])
 def get_application_info():
     data = request.json
-    applicant_id = data.get("applicantId")
+    applicant_id = data.get("selectedApplicantId")
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -585,7 +585,7 @@ def get_application_info():
 @app.route('/get-applicant-info', methods=['POST'])
 def get_applicant_info():
     data = request.json
-    applicant_id = data.get("applicantId")
+    applicant_id = data.get("selectedApplicantId")
     print("get-application-i")
     print(applicant_id)
 
@@ -601,6 +601,51 @@ def get_applicant_info():
     print(applicant_info)
 
     return jsonify({'applicant_info': applicant_info}), 200
+
+@app.route('/get-applications', methods=['POST'])
+def get_applications():
+    data = request.json
+    rec_id = data.get("id")
+    job_id = data.get("selectedJobId")
+
+    print("job id: ", job_id)
+    print("recruiterid", rec_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.phone_no AS phoneNumber, U.mail_addr AS email, "
+        "U.profile_pic AS profilePhoto, JO.j_title as jobTitle, JO.due_date_apply as dueDateApply,"
+        "JO.j_timestamp as datePosted, JO.j_id as jobId, U.user_id as applicantId, AJ.resume as resume "
+        "FROM Person P "
+        "INNER JOIN User U ON P.user_id = U.user_id "
+        "INNER JOIN Applies_Job AJ ON AJ.user_id = U.user_id "
+        "INNER JOIN Job_Opening JO ON JO.j_id = AJ.j_id "
+        "WHERE JO.recruiter_id = %s AND JO.j_id = %s", (rec_id, job_id))
+
+    applications = cursor.fetchall()
+    print(applications)
+
+    return jsonify({'applications': applications}), 200
+
+@app.route('/get-job-listings', methods=['POST'])
+def get_job_listings():
+    data = request.json
+    rec_id = data.get("id")
+    print("recruiterid", rec_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT JO.j_id AS job_id, JO.j_title AS job_title, JO.j_timestamp AS post_date, "
+        "COUNT(AJ.user_id) AS num_applications "
+        "FROM Job_Opening JO "
+        "LEFT JOIN Applies_Job AJ ON JO.j_id = AJ.j_id "
+        "WHERE JO.recruiter_id = %s "
+        "GROUP BY JO.j_id", (rec_id,))
+    listings = cursor.fetchall()
+    print(listings)
+
+    return jsonify({'job_listings': listings}), 200
+
 
 
 @app.route('/home-get-post', methods=['POST'])
@@ -1351,7 +1396,7 @@ def add_education():
 
 @app.route("/get-work-experience", methods=["POST"])
 def fetch_work_experience_data():
-    user_id = request.json["userId"]
+    user_id = request.json["selectedApplicantId"]
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     print(request.json)
     cursor.execute(
@@ -1380,7 +1425,7 @@ def fetch_work_experience_data():
 # Route to fetch data from Education joined with CV_Component
 @app.route("/get-education", methods=["POST"])
 def fetch_education_data():
-    user_id = request.json["userId"]
+    user_id = request.json["selectedApplicantId"]
     print(request.json)
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
