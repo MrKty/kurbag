@@ -21,7 +21,7 @@ const Analysis = () => {
     };
 
     // Assuming sendRequest is a function to make the API call
-    sendRequest('analysis-1', 'POST', { requestData }, (data) => {
+    sendRequest('analysis-1', 'POST', requestData, (data) => {
       // Handle the response data here
     });
   };

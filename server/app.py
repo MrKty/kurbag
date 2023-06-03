@@ -1706,12 +1706,6 @@ def find_contacts():
         # Return an error response
         return jsonify({'message': 'Failed to find contact'}), 500
 
-
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
-
-
 @app.route('/analysis-1', methods=['POST'])
 def analysis_page_1():
     data = request.json  # Get the form data from the request body
@@ -1734,10 +1728,18 @@ def analysis_page_1():
         'COUNT(*) AS job_count, COUNT(*) / total_jobs * 100 AS job_percentage '
         'FROM Job_Opening '
         'WHERE j_location LIKE %s AND j_skills LIKE %s '
-        'AND due_date_apply >= %timestamp AND due_date_apply <= %timestamp ',
+        'AND due_date_apply >= %s AND due_date_apply <= %s ',
         (des_location, des_skill, des_start_date, des_end_date)
     )
-    blogs = list(cursor.fetchall())
-    print(blogs)
-    print("here")
-    return jsonify({'blogs': blogs}), 200
+
+    table = cursor.fetchall()
+
+    return jsonify({'table': table}), 200
+
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
+
+
