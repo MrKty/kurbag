@@ -1710,3 +1710,34 @@ def find_contacts():
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
+
+
+@app.route('/analysis-1', methods=['POST'])
+def analysis_page_1():
+    data = request.json  # Get the form data from the request body
+    print(data)
+    des_location = data.get("location")
+    des_skill = (data.get("skill"))
+    des_start_date = data.get("startDate")
+    des_end_date = data.get("endDate")
+
+    print(des_location)
+    print(des_skill)
+    print(des_start_date)
+    print(des_end_date)
+
+    # SQL query to retrieve blogs based on owner_id and b_id
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        'SELECT j_location AS location, j_type AS type, '
+        'COUNT(*) AS job_count, COUNT(*) / total_jobs * 100 AS job_percentage '
+        'FROM Job_Opening '
+        'WHERE j_location LIKE %s AND j_skills LIKE %s '
+        'AND due_date_apply >= %timestamp AND due_date_apply <= %timestamp ',
+        (des_location, des_skill, des_start_date, des_end_date)
+    )
+    blogs = list(cursor.fetchall())
+    print(blogs)
+    print("here")
+    return jsonify({'blogs': blogs}), 200
