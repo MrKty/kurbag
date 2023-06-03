@@ -370,7 +370,16 @@ def create_tables():
             FOREIGN KEY (person1_id) REFERENCES Person (user_id),
             FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
         );
-
+        
+        CREATE TABLE IF NOT EXISTS Likes_Post (
+            user_id INT,
+            post_id INT,
+            PRIMARY KEY (user_id, post_id),
+            FOREIGN KEY (user_id) REFERENCES User (user_id),
+            FOREIGN KEY (post_id) REFERENCES Post (p_id),
+            CONSTRAINT unique_user_post UNIQUE (user_id, post_id)
+        );
+        
         CREATE TABLE IF NOT EXISTS Has_Messaged(
         	person1_id        	INT,
             person2_id         	INT,
@@ -378,14 +387,8 @@ def create_tables():
             FOREIGN KEY (person1_id) REFERENCES Person (user_id),
             FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
         );
-
-        CREATE TABLE IF NOT EXISTS Likes_Post(
-        	user_id        		INT,
-            post_id         	INT,
-            PRIMARY KEY (user_id, post_id),
-            FOREIGN KEY (user_id) REFERENCES User (user_id),
-            FOREIGN KEY (post_id) REFERENCES Post (p_id) 
-        );
+        
+        
     """)
 
     # Split the create_table string into individual CREATE TABLE statements
@@ -407,6 +410,17 @@ def create_tables():
 
     conn.commit()
 
+def like_trigger():
+        cursor = conn.cursor()
+        cursor.execute('''
+                    CREATE TRIGGER IF NOT EXISTS increment_like_count 
+                    AFTER INSERT ON Likes_Post
+                    FOR EACH ROW
+                    BEGIN
+                        UPDATE Post SET p_like_count = p_like_count + 1 WHERE p_id = NEW.post_id;
+                    END;
+                ''')
+        conn.commit()
 
 def populate_table():
     cursor = conn.cursor()

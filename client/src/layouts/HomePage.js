@@ -220,7 +220,7 @@ const HomePage = () => {
                                     {feed.likeNumber >= 0 &&
                                         <PostCard content={feed.content} name={feed.name} title={feed.title}
                                                   likeNumber={feed.likeNumber} commentNumber={feed.commentNumber}
-                                                  timestamp={feed.timestamp}/>}
+                                                  timestamp={feed.timestamp} postId={feed.id}/>}
                                 </Row>
                             ))}
                         </ul>
