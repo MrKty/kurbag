@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import sendRequest from '../utils/request';
 import AdminNavBar from '../components/AdminNavBar';
-import {Container, Row, Col, Button, Card, Badge, Image, Modal, Form} from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Badge, Image, Modal, Form } from 'react-bootstrap';
 
 const Analysis = () => {
 
@@ -9,6 +9,7 @@ const Analysis = () => {
   const [skill, setSkill] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [analysisData, setAnalysisData] = useState({});
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -19,48 +20,49 @@ const Analysis = () => {
       startDate: startDate,
       endDate: endDate
     };
-
     // Assuming sendRequest is a function to make the API call
     sendRequest('analysis-1', 'POST', requestData, (data) => {
-      // Handle the response data here
+         // Handle the response data here
     });
+
+    sendRequest('analysis', 'POST', {}, (data) => {
+        setAnalysisData(data); // Set the response data in state
+      });
+    
   };
 
   useEffect(() => {
-
-    const user_id = localStorage.getItem("userId")
-
-
+    const user_id = localStorage.getItem("userId");
     //initial send request here
-
-
   }, []);
-
 
   return (
     <Container fluid>
-            <AdminNavBar activeLink="analysis"/>
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {/* Rest of your admin page content */}
-
-      <h2 style={{ textAlign: 'center' }}>Analysis</h2>
-      <table style={{ width: '80%', border: '1px solid black', borderRadius: '5px', padding: '10px' }}>
-        <tbody>
-          <tr>
-            <th>Top 5 Users with Highest Average Post Likes</th>
-          </tr>
-          <tr>
-            <th>User with Minimum Number of Comments on Their Post</th>
-          </tr>
-          <tr>
-            <th>Top 5 Organizations by Number of Applications (Descending Order)</th>
-          </tr>
-          <tr>
-            <th>Author of the Most Liked Post</th>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <AdminNavBar activeLink="analysis" />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Rest of your admin page content */}
+        <h2 style={{ textAlign: 'center' }}>Analysis</h2>
+        <table style={{ width: '80%', border: '1px solid black', borderRadius: '5px', padding: '10px' }}>
+          <tbody>
+            <tr>
+              <th>Top 5 Users with Highest Average Post Likes</th>
+              <td>{analysisData.top_5_users_avg_likes}</td>
+            </tr>
+            <tr>
+              <th>User with Minimum Number of Comments on Their Post</th>
+              <td>{analysisData.user_with_min_comments}</td>
+            </tr>
+            <tr>
+              <th>Top 5 Organizations by Number of Applications (Descending Order)</th>
+              <td>{analysisData.top_5_applications_per_organization}</td>
+            </tr>
+            <tr>
+              <th>Author of the Most Liked Post</th>
+              <td>{analysisData.author_most_liked_post}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div>
         <Form>
           <label>

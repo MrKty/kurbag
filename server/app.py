@@ -1813,22 +1813,82 @@ def analysis_page_1():
     print(des_start_date)
     print(des_end_date)
 
+    # Convert start and end dates to datetime objects
+    start_date = datetime.strptime(des_start_date, "%Y-%m-%d")
+    end_date = datetime.strptime(des_end_date, "%Y-%m-%d")
+
     # SQL query to retrieve blogs based on owner_id and b_id
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     cursor.execute(
-        'SELECT j_location AS location, j_type AS type, '
-        'COUNT(*) AS job_count, COUNT(*) / total_jobs * 100 AS job_percentage '
-        'FROM Job_Opening '
-        'WHERE j_location LIKE %s AND j_skills LIKE %s '
-        'AND due_date_apply >= %s AND due_date_apply <= %s ',
-        (des_location, des_skill, des_start_date, des_end_date)
+        "SELECT SUM(CASE WHEN j_type = 'full-time' THEN 1 ELSE 0 END) AS full_time_job_count, "
+        "SUM(CASE WHEN j_type = 'part-time' THEN 1 ELSE 0 END) AS part_time_job_count, "
+        "SUM(CASE WHEN j_type = 'internship' THEN 1 ELSE 0 END) AS internship_job_count "
+        "FROM Job_Opening "
+        "WHERE j_location LIKE %s AND j_skills LIKE %s "
+        "AND due_date_apply BETWEEN %s AND %s",
+        ('%' + des_location + '%', '%' + des_skill + '%', start_date, end_date)
     )
 
     table = cursor.fetchall()
+    print(table)
 
     return jsonify({'table': table}), 200
 
+@app.route('/analysis', methods=['POST'])
+def analysis_page_2():
+    # SQL query to retrieve jobs between certain dates
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # SQL query to retrieve the top 5 users with the highest average post likes
+    cursor.execute(
+        "SELECT U.mail_addr AS user_email, AVG(P.p_like_count) AS avg_likes "
+        "FROM User U JOIN Post P ON U.user_id = P.user_id "
+        "GROUP BY U.mail_addr "
+        "ORDER BY avg_likes DESC "
+        "LIMIT 5"
+    )
+    top_5_users_avg_likes = cursor.fetchall()
+    print("Top 5 Users with Highest Average Post Likes:", top_5_users_avg_likes)
+
+    # SQL query to retrieve the user with the minimum number of comments on their post
+    cursor.execute(
+        "SELECT U.mail_addr AS author_name, MIN(P.p_com_count) AS min_com "
+        "FROM User U JOIN Post P ON U.user_id = P.user_id "
+        "GROUP BY U.mail_addr "
+        "ORDER BY min_com ASC "
+        "LIMIT 1"
+    )
+    user_with_min_comments = cursor.fetchall()
+    print("User with Minimum Number of Comments on Their Post:", user_with_min_comments)
+
+    # SQL query to list the top 5 number of applications per organization in descending order
+    cursor.execute(
+        "SELECT j_organization, COUNT(*) AS application_count "
+        "FROM Job_Opening "
+        "JOIN Applies_Job ON Job_Opening.j_id = Applies_Job.j_id "
+        "GROUP BY j_organization "
+        "ORDER BY application_count DESC "
+        "LIMIT 5"
+    )
+    top_5_applications_per_organization = cursor.fetchall()
+    print("Top 5 Organizations by Number of Applications (Descending Order):", top_5_applications_per_organization)
+
+    # SQL query to list the name of the author who posted the most liked post
+    cursor.execute(
+        "SELECT U.mail_addr AS author_name "
+        "FROM User U JOIN Post P ON U.user_id = P.user_id "
+        "WHERE P.p_like_count = (SELECT MAX(p_like_count) FROM Post)"
+    )
+    author_most_liked_post = cursor.fetchall()
+    print("Author of the Most Liked Post:", author_most_liked_post)
+
+    return jsonify({
+        'top_5_users_avg_likes': top_5_users_avg_likes,
+        'user_with_min_comments': user_with_min_comments,
+        'top_5_applications_per_organization': top_5_applications_per_organization,
+        'author_most_liked_post': author_most_liked_post
+    }), 200
 
 
 if __name__ == "__main__":
