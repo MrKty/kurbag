@@ -8,6 +8,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [position, setPosition] = useState('');
+  const [about, setAbout] = useState('');
   const [sector, setSector] = useState('');
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
@@ -19,6 +20,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
       setProfileData(data);
       setFirstName(data.first_name);
       setLastName(data.last_name);
+      setAbout(data.about);
       setPosition(data.current_position);
       setSector(data.current_sector);
       setCountry(data.current_country);
@@ -59,6 +61,10 @@ const EditProfileModal = ({ showModal, handleClose }) => {
     setCountry(event.target.value);
   };
 
+  const handleAboutChange = (event) => {
+    setAbout(event.target.value);
+  };
+
   const handleCityChange = (event) => {
     setCity(event.target.value);
   };
@@ -71,6 +77,7 @@ const EditProfileModal = ({ showModal, handleClose }) => {
       id,
       firstName,
       lastName,
+      about,
       position,
       sector,
       country,
@@ -129,6 +136,11 @@ const EditProfileModal = ({ showModal, handleClose }) => {
           <Form.Group controlId="formCity">
             <Form.Label>City</Form.Label>
             <Form.Control type="text" placeholder={profileData.current_city}  value={city} onChange={handleCityChange} />
+          </Form.Group>
+
+          <Form.Group controlId="formAbout">
+            <Form.Label>About</Form.Label>
+            <Form.Control type="text" placeholder={profileData.about}  value={about} onChange={handleAboutChange} />
           </Form.Group>
 
           <div className="d-grid gap-2 mt-2">

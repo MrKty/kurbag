@@ -440,6 +440,11 @@ def update_profile():
                        'current_country = %s, current_city = %s WHERE user_id = %s',
                        (data.get('firstName'), data.get('lastName'), data.get('position'), data.get('sector'),
                         data.get('country'), data.get('city'), data.get('id')))
+
+        # Update the about_info in the User table
+        cursor.execute('UPDATE User SET about_info = %s WHERE user_id = %s',
+                       (data.get('about'), data.get('id')))
+
         cursor.execute('COMMIT')
 
     except Exception as e:
@@ -1360,7 +1365,7 @@ def fetch_person_data():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     cursor.execute(
-        "SELECT Person.*, User.profile_pic AS profilePicture FROM Person "
+        "SELECT Person.*, User.profile_pic AS profilePicture, User.about_info as about FROM Person "
         "INNER JOIN User ON Person.user_id = User.user_id WHERE Person.user_id = %s",
         (user_id,)
     )
@@ -1842,7 +1847,7 @@ def analysis_page_2():
 
     # SQL query to retrieve the top 5 users with the highest average post likes
     cursor.execute(
-        "SELECT U.mail_addr AS user_email, AVG(P.p_like_count) AS avg_likes "
+        "SELECT AVG(P.p_like_count) AS avg_likes "
         "FROM User U JOIN Post P ON U.user_id = P.user_id "
         "GROUP BY U.mail_addr "
         "ORDER BY avg_likes DESC "
