@@ -31,6 +31,48 @@ const Jobs = () => {
     const [hiringManagerName, setHiringManagerName] = useState("");
     const [hiringManagerPosition, setHiringManagerPosition] = useState("");
 
+    const [filters, setFilters] = useState({
+        earliestDate: '',
+        latestDate: '',
+        workType: '',
+        workMode: '',
+        skills: '',
+        location: '',
+    });
+
+    const handleApplyFilters = (e) => {
+        e.preventDefault(); // Prevent form submission
+
+        const { earliestDate, latestDate, workType, workMode, skills, location } = filters;
+
+        const filterData = {
+            earliestDate,
+            latestDate,
+            workType,
+            workMode,
+            skills,
+            location,
+        };
+
+        sendRequest('filtered-jobs', 'POST', filterData, (data) => {
+            setJobs(data)
+        });
+    };
+
+    const handleClearFilters = (e) => {
+        e.preventDefault(); // Prevent form submission
+
+        setFilters("")
+
+        const user_id = localStorage.getItem("userId")
+
+        sendRequest('jobs', 'POST', {user_id}, (data) => {
+            // Here comes blog data from backend
+            setJobs(data);
+        });
+    };
+
+
     const handleJobClick = (job) => {
         setSelectedJob(job);
 
@@ -88,8 +130,98 @@ const Jobs = () => {
     return (
         <Container fluid className="p-1">
             <NavBar activeLink="jobs"/>
-            <FilterBar
-                filters={["Date posted", "Experience level", "Company", "Job Type", "On-site/Remote", "Location", "Industry", "Job Title"]}/>
+            <Row className="mb-3">
+                <Col>
+                    <Form>
+                        <Row className="align-items-center">
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterWorkType">
+                                    <Form.Label>Work Type</Form.Label>
+                                    <Form.Select
+                                        value={filters.workType}
+                                        onChange={(e) => setFilters({ ...filters, workType: e.target.value })}
+                                    >
+                                        <option value="">Choose...</option>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Internship">Internship</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterWorkMode">
+                                    <Form.Label>Work Mode</Form.Label>
+                                    <Form.Select
+                                        value={filters.workMode}
+                                        onChange={(e) => setFilters({ ...filters, workMode: e.target.value })}
+                                    >
+                                        <option value="">Choose...</option>
+                                        <option value="Remote">Remote</option>
+                                        <option value="On-site">On-site</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterLocation">
+                                    <Form.Label>Location</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter location"
+                                        value={filters.location}
+                                        onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row className="align-items-center">
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterDatePosted">
+                                    <Form.Label>Earliest Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        placeholder="Earliest date"
+                                        value={filters.earliestDate}
+                                        onChange={(e) => setFilters({ ...filters, earliestDate: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterDatePosted">
+                                    <Form.Label>Latest Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        placeholder="Latest date"
+                                        value={filters.latestDate}
+                                        onChange={(e) => setFilters({ ...filters, latestDate: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col xs={12} sm={6} md={4}>
+                                <Form.Group className="mb-2" controlId="filterSkills">
+                                    <Form.Label>Skills</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        placeholder="Enter skills"
+                                        value={filters.skills}
+                                        onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Button variant="primary" type="submit" className="mt-4 me-2" onClick={handleApplyFilters}>
+                                    Apply
+                                </Button>
+                                <Button variant="primary" type="submit" className="mt-4 ms-2" onClick={handleClearFilters}>
+                                    Clear
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Col>
+            </Row>
             <Row className="flex-grow-1">
                 <Col className="col-3 mt-3 me-2" style={{overflowY: "scroll", maxHeight: maxHeight}}>
                     <Card className={"border p-2"} style={{overflowY: "auto", maxHeight: maxHeight}}>

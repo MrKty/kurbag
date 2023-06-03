@@ -24,7 +24,7 @@ mysql = MySQL(app)
 # Initiate database
 db.create_tables()
 db.populate_table()
-
+#db.like_trigger()
 
 @app.route('/')
 @app.route('/login', methods=['POST'])
@@ -325,6 +325,68 @@ def get_jobs():
     return jsonify(jobs_data)
 
 
+@app.route('/filtered-jobs', methods=['POST'])
+def get_filtered_jobs():
+
+
+    earliest_date = request.json.get('earliestDate', None)
+    latest_date = request.json.get('latestDate', None)
+    work_type = request.json.get('workType', None)
+    work_mode = request.json.get('workMode', None)
+    skills = request.json.get('skills', None)
+    location = request.json.get('location', None)
+
+    print(earliest_date)
+    print(latest_date)
+    print(work_mode)
+    print(work_type)
+    print(skills)
+    print(location)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query = "SELECT J.*, U.profile_pic as companyLogo, U.about_info as about, O.num_followers as companyFollowers FROM Job_Opening J " \
+            "JOIN Organization O ON O.org_name = J.j_organization " \
+            "JOIN User U ON U.user_id = O.user_id "
+
+    conditions = []
+    parameters = {}
+
+    if earliest_date:
+        conditions.append("j_timestamp >= %(earliest_date)s")
+        parameters['earliest_date'] = earliest_date
+
+    if latest_date:
+        conditions.append("j_timestamp <= %(latest_date)s")
+        parameters['latest_date'] = latest_date
+
+    if work_type:
+        conditions.append("j_type = %(work_type)s")
+        parameters['work_type'] = work_type
+
+    if work_mode:
+        conditions.append("j_mode = %(work_mode)s")
+        parameters['work_mode'] = work_mode
+
+    if skills:
+        conditions.append("j_skills LIKE %(skills)s")
+        parameters['skills'] = f"%{skills}%"
+
+    if location:
+        conditions.append("j_location LIKE %(location)s")
+        parameters['location'] = f"%{location}%"
+
+    if conditions:
+        query += "WHERE " + " AND ".join(conditions)
+
+    cursor.execute(query, parameters)
+    jobs_data = cursor.fetchall()
+
+    for job in jobs_data:
+        job["j_timestamp"] = job["j_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+
+    return jsonify(jobs_data)
+
 @app.route('/get-recruiter-info', methods=['POST'])
 def get_recruiter_info():
     data = request.json
@@ -418,6 +480,37 @@ def create_post():
     else:
         # Return an error response
         return jsonify({'message': 'Failed to create post'}), 500
+
+
+@app.route('/like-post', methods=['POST'])
+def like_post():
+    # Get user_id and post_id from the request
+    data = request.json
+    user_id = data.get('userId')
+    post_id = data.get('postId')
+
+    print(user_id)
+    print(post_id)
+
+    try:
+        # Establish a database connection
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Insert the like into Likes_Post table
+        cursor.execute('INSERT INTO Likes_Post (user_id, post_id) VALUES (%s, %s)', (user_id, post_id))
+
+        cursor.execute('COMMIT')
+
+        # Return a success response
+        return jsonify({'message': 'Post liked successfully'}), 200
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+        # Return an error response
+        return jsonify({'message': 'Failed to like post'}), 500
+
 
 
 # Endpoint for creating a new job (by a recruiter)
