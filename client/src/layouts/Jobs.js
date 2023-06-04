@@ -246,14 +246,19 @@ const Jobs = () => {
                                         </Row>
                                         <Row>
                                             <Col>
-                                                <p className="mt-2 me-auto fw-bold">{job.j_mode} - {job.j_type}</p>
+                                                <p className="mt-2 me-auto fw-bold">{job.j_mode} || {job.j_type}</p>
                                             </Col>
 
                                         </Row>
                                         <Row>
-                                            <Button onClick={() => handleDeleteApplication(job.j_id)} className="btn btn-danger btn-sm text-left">
-                                                Cancel
-                                            </Button>
+                                            <Col className="col-6">
+                                                <Button onClick={() => handleDeleteApplication(job.j_id)} className="btn btn-danger btn-sm text-left">
+                                                    Cancel
+                                                </Button>
+                                            </Col>
+                                            <Col>
+                                                {job.isApproved ? "Approved" : "Pending"}
+                                            </Col>
                                         </Row>
                                     </Col>
                                     <hr></hr>

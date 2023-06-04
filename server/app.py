@@ -415,7 +415,7 @@ def get_applied_jobs():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT Job_Opening.*, Applies_Job.resume, Applies_Job.cover_letter, Applies_Job.skills FROM Job_Opening "
+        "SELECT Job_Opening.*, Applies_Job.resume, Applies_Job.cover_letter, Applies_Job.skills, Applies_Job.isApproved FROM Job_Opening "
         "JOIN Applies_Job ON Job_Opening.j_id = Applies_Job.j_id "
         "WHERE Applies_Job.user_id = %s",
         (user_id,)
@@ -1380,6 +1380,32 @@ def blog_editor_get_tag():
     else:
         tag = None
     return jsonify({"tag": tag}), 200
+
+@app.route('/approve-application', methods=['POST'])
+def approve_application():
+    data = request.json  # Get the form data from the request body
+    applicant_id = data.get("applicantId")
+    job_id = data.get("jobId")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    try:
+        # Update the isApproved attribute to True for the specified applicant and job
+        cursor.execute(
+            "UPDATE Applies_Job SET isApproved = TRUE WHERE user_id = %s AND j_id = %s",
+            (applicant_id, job_id)
+        )
+        cursor.execute("COMMIT")
+
+        return jsonify({"message": "Application approved successfully"}), 200
+
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+
 
 
 @app.route('/blogEditorer', methods=['POST'])

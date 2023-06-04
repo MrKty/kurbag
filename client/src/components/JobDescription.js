@@ -90,12 +90,6 @@ const JobDescription = (props) => {
                         Apply
                     </Button>
                 </Col>
-                <Col className={"col-2"}>
-                    <Button variant="success">
-                        <FontAwesomeIcon icon={faSave} className={"px-2"}/>
-                        Save
-                    </Button>
-                </Col>
             </Row>
             <hr/>
             <Row>

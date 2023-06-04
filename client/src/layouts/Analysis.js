@@ -147,11 +147,10 @@ const Analysis = () => {
                   </tr>
                   </tbody>
                 </table>
-
-
               </div>
               <hr/>
               <Row className="align-items-center border-dark">
+                <h6 className="fw-bold">Amount of full-time / part-time / internship jobs opened in %location%, %requiring skill% during the time %start_date% to %end_date%</h6>
                 <Col className="col-3">
                   <Form className="mt-4">
                     <label className="mb-2">
@@ -180,7 +179,7 @@ const Analysis = () => {
                   </Form>
                 </Col>
                 <Col className="col-3">
-                    <strong>Job Type Statistics:</strong>
+                    <strong>Job Type Statistics: </strong>
                     <ul>
                       <li>Full-time Jobs: {jobTypeStats.full_time_job_count}</li>
                       <li>Part-time Jobs: {jobTypeStats.part_time_job_count}</li>

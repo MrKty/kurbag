@@ -31,35 +31,53 @@ const JobListing = ({position, postDate, jobId, numOfApplications, onClick, sele
     </Row>
 );
 
-const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, userId}) => (
-    <Row
-        className="border-bottom p-2"
-        style={{
-            backgroundColor: userId === applicantId ? "#ecebeb" : "white",
-        }}
-        onClick={() => onClick(applicantId)}>
-        <Col md={2}>
-            <Image src={photo} fluid rounded/>
-        </Col>
-        <Col md={10}>
-            <Row>
-                <Col><h6>{name}</h6></Col>
-                <Col className={"ms-2"}>{date}</Col>
-            </Row>
-            <Row>
-                <Col className={"align-self-center"}>
-                    <a href={resume} target={"_blank"} className={"no-underline"}>Resume</a>
-                </Col>
-                <Col>
-                    <button className={"btn btn-success btn-sm"}>
-                        <FontAwesomeIcon icon={faCheck} className="me-2"/>
-                        Approve
-                    </button>
-                </Col>
-            </Row>
-        </Col>
-    </Row>
-);
+const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, userId, jobId}) => {
+    const handleApproveClick = () => {
+        const requestData = {
+            jobId,
+            applicantId
+        };
+        sendRequest('approve-application', 'POST', requestData, (data) => {
+            // Handle the response data here
+        });
+    };
+
+    return (
+        <Row
+            className="border-bottom p-2"
+            style={{
+                backgroundColor: userId === applicantId ? "#ecebeb" : "white",
+            }}
+            onClick={() => onClick(applicantId)}>
+            <Col md={2}>
+                <Image src={photo} fluid rounded/>
+            </Col>
+            <Col md={10}>
+                <Row>
+                    <Col><h6>{name}</h6></Col>
+                    <Col>{date}</Col>
+                </Row>
+                <Row>
+                    <Col className={"col-4 align-self-center"}>
+                        <Link to={resume} className={"no-underline"}>Resume</Link>
+                    </Col>
+                    <Col>
+                        <button className={"btn btn-success btn-sm"} onClick={handleApproveClick}>
+                            <FontAwesomeIcon icon={faCheck} className="me-2"/>
+                            Approve
+                        </button>
+                    </Col>
+                    <Col>
+                        <button className={"btn btn-secondary btn-sm"}>
+                            <FontAwesomeIcon icon={faEnvelope} className="me-2"/>
+                            Message
+                        </button>
+                    </Col>
+                </Row>
+            </Col>
+        </Row>
+    );
+};
 
 
 function ApplicantEducation(props) {
