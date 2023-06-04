@@ -1950,6 +1950,22 @@ def analysis_page_2():
     }), 200
 
 
+@app.route('/analysis-3', methods=['POST'])
+def custom_query():
+    data = request.json  # Get the form data from the request body
+    custom_query = data.get("query")
+
+    # Execute the custom query
+    cursor = mysql.connection.cursor(MySQLdb.cursors.Cursor)
+    cursor.execute(custom_query)
+    result = [list(x) for x in cursor.fetchall()]
+    print(result)
+    column_names = [desc[0] for desc in cursor.description]
+    print(column_names)
+
+    return jsonify({'rows': result, 'headers': column_names}), 200
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
