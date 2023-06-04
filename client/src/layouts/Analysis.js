@@ -47,23 +47,38 @@ const Analysis = () => {
         <h2 style={{ textAlign: 'center' }}>Analysis</h2>
         <table style={{ width: '80%', border: '1px solid black', borderRadius: '5px', padding: '10px' }}>
           <tbody>
-            <tr>
-              <th>Top 5 Users with Highest Average Post Likes</th>
-              <td>{analysisData.top_5_users_avg_likes}</td>
-            </tr>
-            <tr>
-              <th>User with Minimum Number of Comments on Their Post</th>
-              <td>{analysisData.user_with_min_comments}</td>
-            </tr>
-            <tr>
-              <th>Top 5 Organizations by Number of Applications (Descending Order)</th>
-              <td>{analysisData.top_5_applications_per_organization}</td>
-            </tr>
-            <tr>
-              <th>Author of the Most Liked Post</th>
-              <td>{analysisData.author_most_liked_post}</td>
-            </tr>
-          </tbody>
+          <tr>
+            <th>Top 5 Users with Highest Average Post Likes</th>
+            <td>
+              {analysisData.top_5_users_avg_likes && analysisData.top_5_users_avg_likes.map((user, index) => (
+                  <div key={index}>{user.avg_likes}</div>
+              ))}
+            </td>
+          </tr>
+          <tr>
+            <th>User with Minimum Number of Comments on Their Post</th>
+            <td>
+              {analysisData.user_with_min_comments && analysisData.user_with_min_comments.map((user, index) => (
+                  <div key={index}>{user.author_name}: {user.min_com}</div>
+              ))}
+            </td>
+          </tr>
+          <tr>
+            <th>Top 5 Organizations by Number of Applications (Descending Order)</th>
+            <td>
+              {analysisData.top_5_applications_per_organization && analysisData.top_5_applications_per_organization.map((org, index) => (
+                  <div key={index}>{org.j_organization}: {org.application_count}</div>
+              ))}
+            </td>
+          </tr>
+          <tr>
+            <th>Author of the Most Liked Post</th>
+            <td>
+              {analysisData.author_most_liked_post && analysisData.author_most_liked_post.map((author, index) => (
+                  <div key={index}>{author.author_name}</div>
+              ))}
+            </td>
+          </tr>          </tbody>
         </table>
       </div>
       <div>

@@ -86,6 +86,11 @@ function LoginCard() {
                                 Create new account
                             </Alert.Link>
                         </Col>
+                        <Col className="text-right">
+                            <Alert.Link href="/admin-login" className="no-underline">
+                                Admin Login
+                            </Alert.Link>
+                        </Col>
                     </Col>
                 </Form>
             </Card.Body>

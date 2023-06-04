@@ -27,6 +27,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import CreateJob from "./layouts/CreateJob";
 import OrganizationProfile from "./layouts/OrganizationProfile";
+import AdminLogin from "./layouts/AdminLogin";
 
 
 const firebaseConfig = {
@@ -44,6 +45,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Login/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/admin-login" element={<AdminLogin/>}/>
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/blogs" element={<Blogs/>}/>
                 <Route path="/jobs" element={<Jobs/>}/>

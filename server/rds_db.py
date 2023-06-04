@@ -281,6 +281,7 @@ def create_tables():
             j_id            int,
             resume 	        varchar(128),
             cover_letter 	varchar(256),
+            isApproved 		BOOLEAN DEFAULT FALSE,
             skills 		    TEXT,
             PRIMARY KEY (user_id, j_id),
             FOREIGN KEY (user_id) REFERENCES Person(user_id),
