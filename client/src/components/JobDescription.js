@@ -20,6 +20,7 @@ const JobDescription = (props) => {
         companyAbout,
         companyFollowers,
         dueDateApply,
+        hiringManagerId,
         hiringManagerPhoto,
         hiringManagerName,
         hiringManagerPosition,
@@ -113,7 +114,7 @@ const JobDescription = (props) => {
                                 />
                             </Col>
                             <Col xs={8}>
-                                <Link to={"#"} className={"text-start no-underline fw-bold"}>{hiringManagerName}</Link>
+                                <Link to={"/profile/" + hiringManagerId} className={"text-start no-underline fw-bold"}>{hiringManagerName}</Link>
                                 <div className={"text-start fw-bold"}>{hiringManagerPosition} at {companyName}
                                 </div>
                             </Col>

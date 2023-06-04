@@ -396,7 +396,7 @@ def get_recruiter_info():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.current_position as position "
+        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.user_id as rec_id, P.current_position as position "
         "FROM Person P "
         "JOIN User U ON U.user_id = P.user_id "
         "WHERE P.user_id = %s ", (recId,)

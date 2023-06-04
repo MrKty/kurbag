@@ -29,6 +29,7 @@ const Jobs = () => {
     const [appliedJobs, setAppliedJobs] = useState([]);
     const [hiringManagerPhoto, setHiringManagerPhoto] = useState("");
     const [hiringManagerName, setHiringManagerName] = useState("");
+    const [hiringManagerId, setHiringManagerId] = useState("");
     const [hiringManagerPosition, setHiringManagerPosition] = useState("");
 
     const [filters, setFilters] = useState({
@@ -76,11 +77,13 @@ const Jobs = () => {
     const handleJobClick = (job) => {
         setSelectedJob(job);
 
+
         sendRequest("get-recruiter-info", "POST", {"recruiterId": selectedJob.recruiter_id}, (data) => {
             // Handle the response from the backend
             setHiringManagerName(data.name)
             setHiringManagerPhoto(data.photo)
             setHiringManagerPosition(data.position)
+            setHiringManagerId(data.rec_id)
         });
     };
 
@@ -289,6 +292,7 @@ const Jobs = () => {
                         companyAbout={selectedJob ? selectedJob.about : ''}
                         hiringManagerPhoto={selectedJob ? hiringManagerPhoto : ''}
                         hiringManagerName={selectedJob ? hiringManagerName : ''}
+                        hiringManagerId={selectedJob ? hiringManagerId : ''}
                         hiringManagerPosition={selectedJob ? hiringManagerPosition : ''}
                         companyFollowers={selectedJob ? selectedJob.companyFollowers : ''}
                         dueDateApply={selectedJob ? selectedJob.due_date_apply : ''}
