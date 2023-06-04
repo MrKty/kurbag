@@ -395,7 +395,7 @@ def get_recruiter_info():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.current_position as position "
+        "SELECT CONCAT(P.first_name, ' ', P.last_name) AS name, U.profile_pic as photo, P.user_id as rec_id, P.current_position as position "
         "FROM Person P "
         "JOIN User U ON U.user_id = P.user_id "
         "WHERE P.user_id = %s ", (recId,)
@@ -1962,12 +1962,13 @@ def analysis_page_2():
 
     # SQL query to retrieve the top 5 users with the highest average post likes
     cursor.execute(
-        "SELECT AVG(P.p_like_count) AS avg_likes "
+        "SELECT U.mail_addr, AVG(P.p_like_count) AS avg_likes "
         "FROM User U JOIN Post P ON U.user_id = P.user_id "
         "GROUP BY U.mail_addr "
         "ORDER BY avg_likes DESC "
         "LIMIT 5"
     )
+
     top_5_users_avg_likes = cursor.fetchall()
     print("Top 5 Users with Highest Average Post Likes:", top_5_users_avg_likes)
 
