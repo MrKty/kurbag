@@ -15,6 +15,8 @@ const ProfileCard = ({
                          handleEditProfile,
                          handleAddEducation,
                          handleAddWorkExperience,
+                         handleFollow,
+                         ownProfile
                      }) => {
 
     return (
@@ -37,9 +39,43 @@ const ProfileCard = ({
                     </Col>
                     <Col xs={3} sm={3} md={3}>
                         <Row>
-                            <Button className="mt-2" variant="primary" onClick={handleEditProfile} style={{ padding: "0.5rem" }}>Edit Profile</Button>
-                            <Button className="mt-2" variant="primary" onClick={handleAddEducation} style={{ padding: "0.5rem" }}>Add Education</Button>
-                            <Button className="mt-2" variant="primary" onClick={handleAddWorkExperience} style={{ padding: "0.5rem" }}>Add Work Exp</Button>
+                            {ownProfile ? (
+                                <>
+                                    <Button
+                                        className="mt-2"
+                                        variant="primary"
+                                        onClick={handleEditProfile}
+                                        style={{ padding: "0.5rem" }}
+                                    >
+                                        Edit Profile
+                                    </Button>
+                                    <Button
+                                        className="mt-2"
+                                        variant="primary"
+                                        onClick={handleAddEducation}
+                                        style={{ padding: "0.5rem" }}
+                                    >
+                                        Add Education
+                                    </Button>
+                                    <Button
+                                        className="mt-2"
+                                        variant="primary"
+                                        onClick={handleAddWorkExperience}
+                                        style={{ padding: "0.5rem" }}
+                                    >
+                                        Add Work Exp
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button
+                                    className="mt-2"
+                                    variant="primary"
+                                    onClick={handleFollow}
+                                    style={{ padding: "0.5rem" }}
+                                >
+                                    Follow
+                                </Button>
+                            )}
                         </Row>
                     </Col>
 

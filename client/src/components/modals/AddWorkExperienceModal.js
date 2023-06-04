@@ -129,7 +129,7 @@ const AddWorkExperienceModal = ({showModal, handleClose}) => {
                         <Form.Label>Company</Form.Label>
                         <ReactSearchBox
                             placeholder="Enter Company Name"
-                            name={"instName"}
+                            name={"orgName"}
                             value={orgName}
                             data={companyList}
                             onChange={handleOrgNameChange}

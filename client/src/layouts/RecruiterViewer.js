@@ -31,11 +31,11 @@ const JobListing = ({position, postDate, jobId, numOfApplications, onClick, sele
     </Row>
 );
 
-const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, selectedApplicantId }) => (
+const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, userId}) => (
     <Row
         className="border-bottom p-2"
         style={{
-            backgroundColor: selectedApplicantId === applicantId ? "#ecebeb" : "white",
+            backgroundColor: userId === applicantId ? "#ecebeb" : "white",
         }}
         onClick={() => onClick(applicantId)}>
         <Col md={2}>
@@ -112,7 +112,7 @@ const RecruiterViewer = () => {
     const [profilePhoto, setProfilePhoto] = useState("");
     const [applicantList, setApplicantList] = useState([]);
     const [postedJobs, setPostedJobs] = useState([]);
-    const [selectedApplicantId, setSelectedApplicantId] = useState(null);
+    const [userId, setuserId] = useState(null);
     const [selectedJobId, setSelectedJobId] = useState(null);
 
     useEffect(() => {
@@ -129,7 +129,7 @@ const RecruiterViewer = () => {
 
     useEffect(() => {
         // Fetch data from Sends_Request table
-        sendRequest('get-application-info', 'POST', {selectedApplicantId}, (data) => {
+        sendRequest('get-application-info', 'POST', {userId}, (data) => {
             if (data.application_info) {
                 setSummary(data.application_info.summary)
                 setResume(data.application_info.resume)
@@ -137,7 +137,7 @@ const RecruiterViewer = () => {
                 setSkillArray(data.application_info.skills.split(','));
             }
         });
-        sendRequest('get-applicant-info', 'POST', {selectedApplicantId}, (data) => {
+        sendRequest('get-applicant-info', 'POST', {userId}, (data) => {
             if (data.applicant_info) {
                 console.log(data)
                 setName(data.applicant_info.name)
@@ -146,7 +146,7 @@ const RecruiterViewer = () => {
                 setProfilePhoto(data.applicant_info.profilePhoto)
             }
         });
-        sendRequest('get-work-experience', 'POST', {selectedApplicantId}, (data) => {
+        sendRequest('get-work-experience', 'POST', {userId}, (data) => {
             if (data) {
                 const workExperiences = []
                 for (let i = 0; i < data.length; i++) {
@@ -164,7 +164,7 @@ const RecruiterViewer = () => {
                 setWorkExperiences(workExperiences)
             }
         });
-        sendRequest('get-education', 'POST', {selectedApplicantId}, (data) => {
+        sendRequest('get-education', 'POST', {userId}, (data) => {
             console.log(data)
             if (data) {
                 const educations = []
@@ -180,7 +180,7 @@ const RecruiterViewer = () => {
                 setEducations(educations)
             }
         });
-    }, [selectedApplicantId]);
+    }, [userId]);
 
 
 
@@ -208,7 +208,7 @@ const RecruiterViewer = () => {
                 </Col>
                 <Col className="col-4 border">
                     <div>Current Job ID: {selectedJobId}</div>
-                    <div>Current Applicant ID: {selectedApplicantId}</div>
+                    <div>Current Applicant ID: {userId}</div>
                     {applicantList.length ? (
                         applicantList.map(application => (
                             <ApplicantListing
@@ -217,8 +217,8 @@ const RecruiterViewer = () => {
                                 date={application.dueDateApply}
                                 photo={application.profilePhoto}
                                 resume={application.resume}
-                                onClick={() => setSelectedApplicantId(application.applicantId)}
-                                selectedApplicantId={selectedApplicantId}
+                                onClick={() => setuserId(application.applicantId)}
+                                userId={userId}
                             />
                         ))
                     ) : (
@@ -226,7 +226,7 @@ const RecruiterViewer = () => {
                     )}
                 </Col>
                 <Col className="col-5 border" style={{backgroundColor: "#ecebeb"}}>
-                    <h3 className={"p-2 border-bottom"}>Application Info: {selectedApplicantId}</h3>
+                    <h3 className={"p-2 border-bottom"}>Application Info: {userId}</h3>
                     <h5 className={"p-2 border-bottom"}>Contact Info:</h5>
                     <Col className="d-flex align-items-center mb-3">
                         <img src={profilePhoto} alt="Profile photo"

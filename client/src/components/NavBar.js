@@ -14,6 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import CareerExpertModal from "./modals/CareerExpertModal";
 import sendRequest from "../utils/request";
+import ReactSearchBox from "react-search-box";
 
 
 
@@ -21,6 +22,10 @@ const NavBar = (props) => {
     const [activeLink, setActiveLink] = useState(props.activeLink);
     const [showModal, setShowModal] = useState(false);
     const [userType, setUserType] = useState(0);
+    const [userName, setUserName] = useState("");
+    const [userList, setUserList] = useState([]);
+    const [profileLink, setProfileLink] = useState("");
+
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
@@ -41,8 +46,42 @@ const NavBar = (props) => {
 
     useEffect( () => {
         setUserType(localStorage.getItem("userType"));
+        const userId = localStorage.getItem("userId")
+        setProfileLink("/profile/" + userId);
     }, []);
 
+
+
+    const handleUserNameChange = (event) => {
+        console.log(event)
+        if (event) {
+            if (event.item) {
+                setUserName(event)
+            } else {
+                setUserName(event)
+                sendRequest('search-profile', 'POST', {userName}, (data) => {
+                    setUserList(data.userList);
+                });
+            }
+        }
+    };
+
+    const selectUserName = (event) => {
+        console.log(event)
+        if (event) {
+            if (event.item) {
+                console.log(event.item)
+                window.location.href = "/profile/" + event.item.key;
+
+                setUserName(event)
+            } else {
+                setUserName(event)
+                sendRequest('search-profile', 'POST', {userName}, (data) => {
+                    setUserList(data.userList);
+                });
+            }
+        }
+    };
 
     return (
         <Navbar bg="light" expand="lg">
@@ -51,12 +90,14 @@ const NavBar = (props) => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Form className={"col-5 me-auto"}>
-                        <InputGroup className="mb-3">
-                            <Form.Control type="search" placeholder="Search Anything" aria-label="Search"/>
-                            <Button variant="outline-secondary">
-                                <FontAwesomeIcon icon={faSearch}/>
-                            </Button>
-                        </InputGroup>
+                        <ReactSearchBox
+                            placeholder="Search User Name"
+                            value={userName}
+                            data={userList}
+                            onChange={handleUserNameChange}
+                            clearOnSelect={false}
+                            onSelect={selectUserName}
+                        />
                     </Form>
                     <Nav>
                         <Nav.Link
@@ -119,7 +160,7 @@ const NavBar = (props) => {
                                 <div className="mt-1">Notifications</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="/profile" className="d-flex align-items-center mt-2">
+                        <Nav.Link href={profileLink} className="d-flex align-items-center mt-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faUser} size="2x"/>
                                 <NavDropdown
@@ -127,8 +168,6 @@ const NavBar = (props) => {
                                     id="basic-nav-dropdown"
                                     menuAlign="right"
                                 >
-                                    <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                                    <NavDropdown.Divider/>
                                     <NavDropdown.Item href="/login">Logout</NavDropdown.Item>
                                 </NavDropdown>
                             </div>

@@ -62,7 +62,7 @@ function App() {
                 <Route path="/blog-viewer/:id" element={<BlogViewer/>}/>
                 <Route path="/previous-blogs" element={<PreviousBlogs/>}/>
                 <Route path="/recruiter-view" element={<RecruiterViewer/>}/>
-                <Route path="/profile" element={<Profile/>}/>
+                <Route path="/profile/:id" element={<Profile/>}/>
                 <Route path="/analysis" element={<Analysis/>}/>
                 <Route path="/admin" element={<Admin/>}/>
                 <Route path="/org-profile" element={<OrganizationProfile/>}/>

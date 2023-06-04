@@ -24,7 +24,8 @@ mysql = MySQL(app)
 # Initiate database
 db.create_tables()
 db.populate_table()
-#db.like_trigger()
+db.like_trigger()
+db.connection_trigger()
 
 @app.route('/')
 @app.route('/login', methods=['POST'])
@@ -456,6 +457,36 @@ def update_profile():
     return jsonify({'message': 'Profile updated successfully'}), 200
 
 
+@app.route('/search-profile', methods=['POST'])
+def search_profile():
+    # Get post data from the request
+    data = request.json
+    user_name = data.get("userName")
+
+    print(user_name)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if user_name:
+        cursor.execute(
+            "SELECT user_id AS 'key', CONCAT(P.first_name, ' ', P.last_name) as 'value' FROM Person P "
+            "WHERE LOWER(CONCAT(P.first_name, ' ', P.last_name)) LIKE %s",
+            ('%' + user_name.lower() + '%',)
+        )
+
+        # Fetch all the results
+        user_names = cursor.fetchall()
+        print(user_names)
+
+        # Close the cursor
+        cursor.close()
+        return jsonify({'userList': user_names}), 200
+
+    else:
+        user_names = []
+        return jsonify({'userList': user_names}), 400
+
+
+
 # Endpoint for creating a new post
 @app.route('/home-create-post', methods=['POST'])
 def create_post():
@@ -667,7 +698,7 @@ def delete_application():
 @app.route('/get-application-info', methods=['POST'])
 def get_application_info():
     data = request.json
-    applicant_id = data.get("selectedApplicantId")
+    applicant_id = data.get("userId")
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -683,7 +714,7 @@ def get_application_info():
 @app.route('/get-applicant-info', methods=['POST'])
 def get_applicant_info():
     data = request.json
-    applicant_id = data.get("selectedApplicantId")
+    applicant_id = data.get("userId")
     print("get-application-i")
     print(applicant_id)
 
@@ -1494,7 +1525,7 @@ def add_education():
 
 @app.route("/get-work-experience", methods=["POST"])
 def fetch_work_experience_data():
-    user_id = request.json["selectedApplicantId"]
+    user_id = request.json["userId"]
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     print(request.json)
     cursor.execute(
@@ -1523,7 +1554,7 @@ def fetch_work_experience_data():
 # Route to fetch data from Education joined with CV_Component
 @app.route("/get-education", methods=["POST"])
 def fetch_education_data():
-    user_id = request.json["selectedApplicantId"]
+    user_id = request.json["userId"]
     print(request.json)
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -1717,6 +1748,29 @@ def make_employee_recruiter():
     return jsonify({"message": "Employee successfully becomes recruiter"}), 200
 
 
+@app.route('/connect-user', methods=['POST'])
+def connect_user():
+    data = request.json
+    user_id = data.get('id')  # Current user's id
+    other_user_id = data.get('targetId')  # Other user's id
+
+    print("target user:", other_user_id)
+    print("current user:", user_id)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    try:
+        # Insert a new record into the Connected_With table
+        cursor.execute("INSERT INTO Connected_With (person1_id, person2_id) VALUES (%s, %s)", (user_id, other_user_id))
+        cursor.execute('COMMIT')
+
+        return jsonify({"message": "Users connected successfully"}), 200
+    except Exception as e:
+        # Handle any exceptions that may occur during the database operation
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 @app.route('/search-company', methods=['POST'])
 def find_company_list():
     data = request.json  # Get the form data from the request body
@@ -1729,7 +1783,7 @@ def find_company_list():
 
         # Execute the query to fetch case-insensitive school names matching the criteria
         cursor.execute(
-            "SELECT user_id AS 'key', org_name as value FROM Organization WHERE LOWER(org_name) LIKE %s",
+            "SELECT user_id AS 'key', org_name as 'value' FROM Organization WHERE LOWER(org_name) LIKE %s",
             ('%' + org_name.lower() + '%',)
         )
 

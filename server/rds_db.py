@@ -363,13 +363,15 @@ def create_tables():
             FOREIGN KEY (expert_id) REFERENCES Career_Expert (user_id) 
         );
         
-        CREATE TABLE IF NOT EXISTS Connected_With(
-        	person1_id        	INT,
-            person2_id         	INT,
+        CREATE TABLE IF NOT EXISTS Connected_With (
+            person1_id INT,
+            person2_id INT,
             PRIMARY KEY (person1_id, person2_id),
             FOREIGN KEY (person1_id) REFERENCES Person (user_id),
-            FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
+            FOREIGN KEY (person2_id) REFERENCES Person (user_id),
+            UNIQUE (person1_id, person2_id)
         );
+
         
         CREATE TABLE IF NOT EXISTS Likes_Post (
             user_id INT,
@@ -421,6 +423,20 @@ def like_trigger():
                     END;
                 ''')
         conn.commit()
+
+
+def connection_trigger():
+    cursor = conn.cursor()
+    cursor.execute('''
+                    CREATE TRIGGER IF NOT EXISTS update_connections AFTER INSERT ON Connected_With
+                    FOR EACH ROW
+                    BEGIN
+                    UPDATE Person
+                    SET connections = connections + 1
+                    WHERE user_id = NEW.person1_id OR user_id = NEW.person2_id;
+                    END
+                ''')
+    conn.commit()
 
 def populate_table():
     cursor = conn.cursor()

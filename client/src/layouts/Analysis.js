@@ -25,16 +25,19 @@ const Analysis = () => {
          // Handle the response data here
     });
 
-    sendRequest('analysis', 'POST', {}, (data) => {
-        setAnalysisData(data); // Set the response data in state
-      });
-    
   };
 
   useEffect(() => {
     const user_id = localStorage.getItem("userId");
     //initial send request here
   }, []);
+
+  useEffect(() => {
+    sendRequest('analysis', 'POST', {}, (data) => {
+      setAnalysisData(data); // Set the response data in state
+    });
+  }, []);
+
 
   return (
     <Container fluid>

@@ -9,6 +9,7 @@ import ProfileCard from "../components/ProfileCard";
 import sendRequest from "../utils/request";
 import AddEducationModal from "../components/modals/AddEducationModal";
 import AddWorkExperienceModal from "../components/modals/AddWorkExperienceModal";
+import {useParams} from "react-router-dom";
 
 
 const Profile = () => {
@@ -22,6 +23,10 @@ const Profile = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEducationModal, setShowEducationModal] = useState(false);
     const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
+    const [ownProfile, setOwnProfile] = useState(false);
+
+    const {id} = useParams();
+    const current_id = localStorage.getItem("userId");
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -55,7 +60,7 @@ const Profile = () => {
     };
 
     const profileFetch = () => {
-        const userId = localStorage.getItem("userId");
+        const userId = ownProfile ? localStorage.getItem("userId") : id;
 
         sendRequest('profile-real', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
@@ -63,8 +68,17 @@ const Profile = () => {
         });
     }
 
+    const handleFollow = () => {
+
+        const targetId = id;
+
+        sendRequest('connect-user', 'POST', {targetId}, (data) => {
+            // Here comes blog data from backend
+        });
+    }
+
     const workExpFetch = () => {
-        const userId = localStorage.getItem("userId");
+        const userId = ownProfile ? localStorage.getItem("userId") : id;
 
         sendRequest('get-work-experience', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
@@ -73,7 +87,7 @@ const Profile = () => {
     }
 
     const eduFetch = () => {
-        const userId = localStorage.getItem("userId");
+        const userId = ownProfile ? localStorage.getItem("userId") : id;
 
         sendRequest('get-education', 'POST', {userId}, (data) => {
             // Here comes blog data from backend
@@ -83,6 +97,11 @@ const Profile = () => {
 
     //fetch the profile data from backend.
     useEffect( () => {
+
+        if (id === current_id) {    //render own or other profile view by comparing id's from url and local-storage.
+            setOwnProfile(true)
+        }
+
         profileFetch()
         workExpFetch()
         eduFetch()
@@ -117,9 +136,11 @@ const Profile = () => {
                                     country={profileData.current_country}
                                     connectionCount={profileData.connections}
                                     profilePicture={profileData.profilePicture}
+                                    ownProfile={ownProfile}
                                     handleEditProfile={handleEditProfile}
                                     handleAddWorkExperience={handleAddWorkExperience}
                                     handleAddEducation={handleAddEducation}
+                                    handleFollow={handleFollow}
                                 />
                             </Col>
                         </Row>
