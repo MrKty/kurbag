@@ -9,6 +9,9 @@ import {faArrowDown} from '@fortawesome/free-solid-svg-icons'
 import sendRequest from "../utils/request";
 
 const PostCard = ({ title, content, timestamp, name, likeNumber, commentNumber, postId }) => {
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeNo, setLikeNo] = useState(likeNumber);
+
 
     const handleLikeClick = () => {
         const requestData = {
@@ -18,8 +21,16 @@ const PostCard = ({ title, content, timestamp, name, likeNumber, commentNumber, 
 
         sendRequest('like-post', 'POST', requestData, (data) => {
             // Update the state with the new data
+            setIsLiked(!isLiked);
+            if (!isLiked){
+                setLikeNo((prev) => (prev + 1));
+            } else {
+                setLikeNo((prev) => (prev - 1));
+            }
         });
     };
+
+    const heartColor = isLiked ? "red" : "black";
 
     return (
         <Card className={"col-6 mt-2 mb-2"} style={{ minHeight: "100px", maxHeight: "400px", overflowY: "auto" }}>
@@ -31,10 +42,10 @@ const PostCard = ({ title, content, timestamp, name, likeNumber, commentNumber, 
             <Card.Footer>
                 <Row>
                     <Col className="d-flex card-likes justify-content-center align-content-center">
-                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faHeart} onClick={handleLikeClick} /> {likeNumber}
+                        <FontAwesomeIcon className="align-self-center me-2" icon={faHeart} onClick={handleLikeClick} style={{ color: heartColor, cursor: "pointer" }} /> {likeNo}
                     </Col>
                     <Col className="d-flex card-comments justify-content-center">
-                        <FontAwesomeIcon className={"align-self-center me-2"} icon={faComment} /> {commentNumber}
+                        <FontAwesomeIcon className={"align-self-center me-2"} style={{ cursor: "pointer"}} icon={faComment} /> {commentNumber}
                     </Col>
                 </Row>
             </Card.Footer>

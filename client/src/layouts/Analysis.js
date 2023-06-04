@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import sendRequest from '../utils/request';
-import AdminNavBar from '../components/AdminNavBar';
 import { Container, Row, Col, Button, Card, Badge, Image, Modal, Form } from 'react-bootstrap';
-import {Page, Text, View, Document, StyleSheet, pdf} from '@react-pdf/renderer';
 
 const Analysis = () => {
 

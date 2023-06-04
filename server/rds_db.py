@@ -88,12 +88,10 @@ def create_tables():
                 birth_date DATE,
                 gender varchar(20),
                 connections INT DEFAULT 0,
-                liked_post int,
                 works_for int,
                 works_since DATE,
                 PRIMARY KEY (user_id),
                 FOREIGN KEY (user_id) REFERENCES User (user_id),
-                FOREIGN KEY (liked_post) REFERENCES Post(p_id),
                 FOREIGN KEY (works_for) REFERENCES User (user_id)
             );
 
@@ -123,13 +121,6 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS Tag (
                 tag_name varchar(20),
                 PRIMARY KEY (tag_name)
-            );
-
-            CREATE TABLE IF NOT EXISTS Skill (
-                s_id int AUTO_INCREMENT,
-                s_lvl int,
-                s_name varchar(20),
-                PRIMARY KEY (s_id)
             );
 
             CREATE TABLE IF NOT EXISTS Job_Opening (
@@ -162,6 +153,7 @@ def create_tables():
                 b_like_count INT DEFAULT 0,
                 b_com_count INT DEFAULT 0,
                 PRIMARY KEY (b_id),
+                FOREIGN KEY (b_tag) REFERENCES Tag(tag_name),
                 FOREIGN KEY (owner_id) REFERENCES Career_Expert (user_id)
             );
 
@@ -176,18 +168,6 @@ def create_tables():
                 FOREIGN KEY (owner_id) REFERENCES User (user_id),
                 FOREIGN KEY (root_blog_id) REFERENCES Blog_Post (b_id),
                 FOREIGN KEY (root_post_id) REFERENCES Post (p_id)
-            );
-
-            CREATE TABLE IF NOT EXISTS Message (
-                m_id int AUTO_INCREMENT,
-                sender_id int NOT NULL,
-                receiver_id int NOT NULL,
-                m_content TEXT,
-                m_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                m_status BOOLEAN,
-                PRIMARY KEY (m_id),
-                FOREIGN KEY (sender_id) REFERENCES Person (user_id),
-                FOREIGN KEY (receiver_id) REFERENCES Person (user_id)
             );
 
             CREATE TABLE IF NOT EXISTS Organization (
@@ -268,14 +248,6 @@ def create_tables():
 
     create_tables_relation = textwrap.dedent("""
 
-        CREATE TABLE IF NOT EXISTS Requires(
-        	s_id    int,
-            j_id    int,
-            PRIMARY KEY (s_id, j_id),
-            FOREIGN KEY (s_id) REFERENCES Skill(s_id),
-            FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)
-        );
-
         CREATE TABLE IF NOT EXISTS Applies_Job(
             user_id         int,
             j_id            int,
@@ -287,15 +259,7 @@ def create_tables():
             FOREIGN KEY (user_id) REFERENCES Person(user_id),
             FOREIGN KEY (j_id) REFERENCES Job_Opening(j_id)
         );
-        
-        CREATE TABLE IF NOT EXISTS Follows_Tag(
-        	user_id           INT,
-            tag_name          char(20),
-            PRIMARY KEY (user_id, tag_name),
-            FOREIGN KEY (user_id) REFERENCES Person(user_id),
-            FOREIGN KEY (tag_name) REFERENCES Tag(tag_name) 
-        );
-        
+
         CREATE TABLE IF NOT EXISTS Likes_Blog(
         	b_id              INT,
             user_id           INT,
@@ -303,23 +267,7 @@ def create_tables():
             FOREIGN KEY (b_id) REFERENCES Blog_Post(b_id),
             FOREIGN KEY (user_id) REFERENCES User(user_id) 
         );
-        
-        CREATE TABLE IF NOT EXISTS Has_Tag_Blog(
-        	c_id              	INT,
-            user_id	         	INT,
-            PRIMARY KEY (user_id, c_id),
-            FOREIGN KEY (c_id) REFERENCES Comment(c_id),
-            FOREIGN KEY (user_id) REFERENCES User(user_id) 
-        );
 
-        CREATE TABLE IF NOT EXISTS Has_Skill(
-        	s_id    INT,
-            user_id INT,
-            PRIMARY KEY (user_id, s_id),
-            FOREIGN KEY (s_id) REFERENCES Skill(s_id),
-            FOREIGN KEY (user_id) REFERENCES Person (user_id) 
-        );
-        
         CREATE TABLE IF NOT EXISTS Has_Proficiency(
         	tag_name            char(20),
             user_id	         	INT,
@@ -334,14 +282,6 @@ def create_tables():
             PRIMARY KEY (org_id, person_id),
             FOREIGN KEY (org_id) REFERENCES Organization(user_id),
             FOREIGN KEY (person_id) REFERENCES Person(user_id) 
-        );
-
-        CREATE TABLE IF NOT EXISTS Follows_Expert(
-        	expert_id         	INT,
-            user_id	         	INT,
-            PRIMARY KEY (expert_id, user_id),
-            FOREIGN KEY (expert_id) REFERENCES Career_Expert(user_id),
-            FOREIGN KEY (user_id) REFERENCES Regular_User(user_id) 
         );
 
         CREATE TABLE IF NOT EXISTS Used_Skill(
@@ -383,15 +323,14 @@ def create_tables():
             CONSTRAINT unique_user_post UNIQUE (user_id, post_id)
         );
         
-        CREATE TABLE IF NOT EXISTS Has_Messaged(
-        	person1_id        	INT,
-            person2_id         	INT,
-            PRIMARY KEY (person1_id, person2_id),
-            FOREIGN KEY (person1_id) REFERENCES Person (user_id),
-            FOREIGN KEY (person2_id) REFERENCES Person (user_id) 
+        CREATE TABLE IF NOT EXISTS Registers_Event(
+            event_id        	INT,
+            user_id         	INT,
+            PRIMARY KEY (event_id, user_id),
+            FOREIGN KEY (event_id) REFERENCES Event (e_id),
+            FOREIGN KEY (user_id) REFERENCES User (user_id) 
         );
-        
-        
+
     """)
 
     # Split the create_table string into individual CREATE TABLE statements
@@ -413,9 +352,10 @@ def create_tables():
 
     conn.commit()
 
+
 def like_trigger():
-        cursor = conn.cursor()
-        cursor.execute('''
+    cursor = conn.cursor()
+    cursor.execute('''
                     CREATE TRIGGER IF NOT EXISTS increment_like_count 
                     AFTER INSERT ON Likes_Post
                     FOR EACH ROW
@@ -423,7 +363,7 @@ def like_trigger():
                         UPDATE Post SET p_like_count = p_like_count + 1 WHERE p_id = NEW.post_id;
                     END;
                 ''')
-        conn.commit()
+    conn.commit()
 
 
 def connection_trigger():
@@ -438,6 +378,7 @@ def connection_trigger():
                     END
                 ''')
     conn.commit()
+
 
 def unfollow_trigger():
     cursor = conn.cursor()

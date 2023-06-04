@@ -24,6 +24,8 @@ const Profile = () => {
     const [showEducationModal, setShowEducationModal] = useState(false);
     const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
     const [ownProfile, setOwnProfile] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+
 
     const {id} = useParams();
     const current_id = localStorage.getItem("userId");
@@ -74,6 +76,7 @@ const Profile = () => {
 
         sendRequest('connect-user', 'POST', {targetId}, (data) => {
             // Here comes blog data from backend
+            setIsFollowing(!isFollowing);
         });
     }
 
@@ -100,6 +103,13 @@ const Profile = () => {
 
         if (id === current_id) {    //render own or other profile view by comparing id's from url and local-storage.
             setOwnProfile(true)
+        }else {
+            const targetId = id;
+
+            sendRequest('is-follow-user', 'POST', {targetId}, (data) => {
+                // Here comes blog data from backend
+                setIsFollowing(data.following);
+            });
         }
 
         profileFetch()
@@ -136,7 +146,9 @@ const Profile = () => {
                                     country={profileData.current_country}
                                     connectionCount={profileData.connections}
                                     profilePicture={profileData.profilePicture}
+                                    about={profileData.about}
                                     ownProfile={ownProfile}
+                                    isFollowing={isFollowing}
                                     handleEditProfile={handleEditProfile}
                                     handleAddWorkExperience={handleAddWorkExperience}
                                     handleAddEducation={handleAddEducation}

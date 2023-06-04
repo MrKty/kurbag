@@ -44,22 +44,16 @@ const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, use
         <Col md={10}>
             <Row>
                 <Col><h6>{name}</h6></Col>
-                <Col>{date}</Col>
+                <Col className={"ms-2"}>{date}</Col>
             </Row>
             <Row>
-                <Col className={"col-4 align-self-center"}>
-                    <Link to={resume} className={"no-underline"}>Resume</Link>
+                <Col className={"align-self-center"}>
+                    <a href={resume} target={"_blank"} className={"no-underline"}>Resume</a>
                 </Col>
                 <Col>
                     <button className={"btn btn-success btn-sm"}>
                         <FontAwesomeIcon icon={faCheck} className="me-2"/>
                         Approve
-                    </button>
-                </Col>
-                <Col>
-                    <button className={"btn btn-secondary btn-sm"}>
-                        <FontAwesomeIcon icon={faEnvelope} className="me-2"/>
-                        Message
                     </button>
                 </Col>
             </Row>
@@ -139,7 +133,6 @@ const RecruiterViewer = () => {
         });
         sendRequest('get-applicant-info', 'POST', {userId}, (data) => {
             if (data.applicant_info) {
-                console.log(data)
                 setName(data.applicant_info.name)
                 setPhoneNumber(data.applicant_info.phoneNumber)
                 setEmail(data.applicant_info.email)
@@ -207,8 +200,6 @@ const RecruiterViewer = () => {
                     )}
                 </Col>
                 <Col className="col-4 border">
-                    <div>Current Job ID: {selectedJobId}</div>
-                    <div>Current Applicant ID: {userId}</div>
                     {applicantList.length ? (
                         applicantList.map(application => (
                             <ApplicantListing
@@ -226,7 +217,7 @@ const RecruiterViewer = () => {
                     )}
                 </Col>
                 <Col className="col-5 border" style={{backgroundColor: "#ecebeb"}}>
-                    <h3 className={"p-2 border-bottom"}>Application Info: {userId}</h3>
+                    <h3 className={"p-2 border-bottom"}>Application Info:</h3>
                     <h5 className={"p-2 border-bottom"}>Contact Info:</h5>
                     <Col className="d-flex align-items-center mb-3">
                         <img src={profilePhoto} alt="Profile photo"

@@ -32,8 +32,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const HomePage = () => {
     const [showCreatePostModal, setShowCreatePostModal] = useState(false);
     const [showCreateEventModal, setShowCreateEventModal] = useState(false);
-    const [filtering, setFiltering] = useState(0);
-    const [sorting, setSorting] = useState(0);
+    const [filtering, setFiltering] = useState(1);
+    const [sorting, setSorting] = useState(1);
 
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
     const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -57,25 +57,23 @@ const HomePage = () => {
 
 
     const handleFilterSelection = (option) => {
-        let filterValue = 0;
-        if (option === 'Recent') {
+        let filterValue = 1;
+        if (option === 'Both') {
             filterValue = 1;
-        } else if (option === 'Most Liked') {
+        } else if (option === 'Only Posts') {
             filterValue = 2;
-        } else if (option === 'Most Commented') {
+        } else if (option === 'Only Events') {
             filterValue = 3;
         }
         setFiltering(filterValue);
     };
 
     const handleSortingSelection = (option) => {
-        let sortingValue = 0;
-        if (option === 'Recent') {
+        let sortingValue = 1;
+        if (option === 'FiFo') {
             sortingValue = 1;
-        } else if (option === 'Most Liked') {
+        } else if (option === 'Recent') {
             sortingValue = 2;
-        } else if (option === 'Most Commented') {
-            sortingValue = 3;
         }
         setSorting(sortingValue);
     };
@@ -96,7 +94,7 @@ const HomePage = () => {
             const e_id = events.length > 0 ? events[events.length - 1].id : 0
 
             // Make an API request to fetch more data
-            sendRequest('home-get-post', 'POST', {page, p_id, e_id}, (data) => {
+            sendRequest('home-get-post', 'POST', {page, p_id, e_id, sorting, filtering}, (data) => {
                 // Update the state with the new data
                 setPosts([...posts, ...data.posts]);
                 setEvents([...events, ...data.events]);
@@ -142,46 +140,6 @@ const HomePage = () => {
             <NavBar activeLink="home"/>
             <Col className="d-flex bd-highlight mt-3 mb-2 align-items-end">
                 <Col className="d-flex col-9">
-                    <Row className="justify-content-center">
-                        <Dropdown className="me-2" show={filterDropdownOpen} onToggle={toggleFilterDropdown}>
-                            <DropdownToggle variant="primary" id="dropdown-sorting">
-                                Sorting Options
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                <DropdownItem onClick={() => handleFilterSelection('Recent')} active={filtering === 1}>
-                                    Recent
-                                </DropdownItem>
-                                <DropdownItem onClick={() => handleFilterSelection('Most Liked')}
-                                              active={filtering === 2}>
-                                    Most Liked
-                                </DropdownItem>
-                                <DropdownItem onClick={() => handleFilterSelection('Most Commented')}
-                                              active={filtering === 3}>
-                                    Most Commented
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </Row>
-                    <Row>
-                        <Dropdown show={sortDropdownOpen} onToggle={toggleSortDropdown}>
-                            <DropdownToggle variant="primary" id="dropdown-filtering">
-                                Filter Options
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                <DropdownItem onClick={() => handleSortingSelection('Recent')} active={sorting === 1}>
-                                    Normal User Posts
-                                </DropdownItem>
-                                <DropdownItem onClick={() => handleSortingSelection('Most Liked')}
-                                              active={sorting === 2}>
-                                    Company Posts
-                                </DropdownItem>
-                                <DropdownItem onClick={() => handleSortingSelection('Most Commented')}
-                                              active={sorting === 3}>
-                                    Institution Post
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </Row>
                 </Col>
                 <Col className="d-flex col-3 justify-content-evenly">
                     <Row>

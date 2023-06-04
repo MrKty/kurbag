@@ -20,13 +20,13 @@ app.config['MYSQL_DB'] = 'kurbagdb'
 CORS(app)  # Initialize Flask-CORS
 mysql = MySQL(app)
 
-
 # Initiate database
 db.create_tables()
 db.populate_table()
 db.like_trigger()
 db.connection_trigger()
 db.unfollow_trigger()
+
 
 @app.route('/')
 @app.route('/login', methods=['POST'])
@@ -329,8 +329,6 @@ def get_jobs():
 
 @app.route('/filtered-jobs', methods=['POST'])
 def get_filtered_jobs():
-
-
     earliest_date = request.json.get('earliestDate', None)
     latest_date = request.json.get('latestDate', None)
     work_type = request.json.get('workType', None)
@@ -388,6 +386,7 @@ def get_filtered_jobs():
         job["j_timestamp"] = job["j_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
 
     return jsonify(jobs_data)
+
 
 @app.route('/get-recruiter-info', methods=['POST'])
 def get_recruiter_info():
@@ -487,7 +486,6 @@ def search_profile():
         return jsonify({'userList': user_names}), 400
 
 
-
 # Endpoint for creating a new post
 @app.route('/home-create-post', methods=['POST'])
 def create_post():
@@ -547,7 +545,6 @@ def like_post():
 
         # Return an error response
         return jsonify({'message': 'Failed to like post'}), 500
-
 
 
 # Endpoint for creating a new job (by a recruiter)
@@ -676,6 +673,7 @@ def apply_job():
 
     return jsonify({"message": "Successfully applied"}), 200
 
+
 @app.route('/delete-application', methods=['POST'])
 def delete_application():
     data = request.json  # Get the data from the request body
@@ -695,6 +693,7 @@ def delete_application():
     cursor.close()
 
     return jsonify({"message": "Application deleted successfully"}), 200
+
 
 @app.route('/get-application-info', methods=['POST'])
 def get_application_info():
@@ -732,6 +731,7 @@ def get_applicant_info():
 
     return jsonify({'applicant_info': applicant_info}), 200
 
+
 @app.route('/get-applications', methods=['POST'])
 def get_applications():
     data = request.json
@@ -755,7 +755,11 @@ def get_applications():
     applications = cursor.fetchall()
     print(applications)
 
+    for application in applications:
+        application["dueDateApply"] = application["dueDateApply"].strftime("%d-%m-%Y")
+
     return jsonify({'applications': applications}), 200
+
 
 @app.route('/get-job-listings', methods=['POST'])
 def get_job_listings():
@@ -777,14 +781,11 @@ def get_job_listings():
     return jsonify({'job_listings': listings}), 200
 
 
-
 @app.route('/home-get-post', methods=['POST'])
 def get_posts():
     print("here")
     p_id = int(request.json.get("p_id"))
     e_id = int(request.json.get("e_id"))
-    print(p_id)
-    print(e_id)
 
     # Retrieve paginated posts
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -1403,7 +1404,7 @@ def fetch_person_data():
     )
     person_data = cursor.fetchone()
 
-    person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%y")
+    person_data["birth_date"] = person_data["birth_date"].strftime("%d-%m-%Y")
 
     return jsonify(person_data)
 
@@ -1545,9 +1546,9 @@ def fetch_work_experience_data():
     print("work_experience_data")
     print(work_experience_data)
     for work_experience in work_experience_data:
-        work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%y")
+        work_experience["start_date"] = work_experience["start_date"].strftime("%d-%m-%Y")
         if work_experience["end_date"]:
-            work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%y")
+            work_experience["end_date"] = work_experience["end_date"].strftime("%d-%m-%Y")
     cursor.close()
     return jsonify(work_experience_data)
 
@@ -1574,8 +1575,8 @@ def fetch_education_data():
     print("education_data")
     print(education_data)
     for education in education_data:
-        education["start_date"] = education["start_date"].strftime("%d-%m-%y")
-        education["end_date"] = education["end_date"].strftime("%d-%m-%y")
+        education["start_date"] = education["start_date"].strftime("%d-%m-%Y")
+        education["end_date"] = education["end_date"].strftime("%d-%m-%Y")
 
     cursor.close()
     return jsonify(education_data)
@@ -1761,16 +1762,53 @@ def connect_user():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     try:
-        # Insert a new record into the Connected_With table
-        cursor.execute("INSERT INTO Connected_With (person1_id, person2_id) VALUES (%s, %s)", (user_id, other_user_id))
-        cursor.execute('COMMIT')
+        # Check if the connection already exists in the Connected_With table
+        cursor.execute(
+            "SELECT * FROM Connected_With WHERE (person1_id = %s AND person2_id = %s) OR (person1_id = %s AND person2_id = %s)",
+            (user_id, other_user_id, other_user_id, user_id))
+        connection = cursor.fetchone()
+        print("connection ", connection)
+        if connection:
+            # Delete the existing connection
+            cursor.execute(
+                "DELETE FROM Connected_With WHERE (person1_id = %s AND person2_id = %s) OR (person1_id = %s AND person2_id = %s)",
+                (user_id, other_user_id, other_user_id, user_id))
+            print("Deleted existing connection:", connection)
+            message = "Users connection deleted successfully"
+        else:
+            # Insert a new record into the Connected_With table
+            cursor.execute("INSERT INTO Connected_With (person1_id, person2_id) VALUES (%s, %s)",
+                           (user_id, other_user_id))
 
-        return jsonify({"message": "Users connected successfully"}), 200
+            message = "Users connected successfully"
+        cursor.execute('COMMIT')
+        return jsonify({"message": message}), 200
     except Exception as e:
         # Handle any exceptions that may occur during the database operation
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+
+
+@app.route('/is-follow-user', methods=['POST'])
+def is_follow_user():
+    data = request.json
+    user_id = data.get('id')  # Current user's id
+    other_user_id = data.get('targetId')  # Other user's id
+
+    print("target user:", other_user_id)
+    print("current user:", user_id)
+    print("is-follow-user")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Check if the connection already exists in the Connected_With table
+    cursor.execute(
+        "SELECT * FROM Connected_With WHERE (person1_id = %s AND person2_id = %s) OR (person1_id = %s AND person2_id = %s)",
+        (user_id, other_user_id, other_user_id, user_id))
+    connection = cursor.fetchone()
+    return jsonify({"following": connection is not None}), 200
+
 
 @app.route('/search-company', methods=['POST'])
 def find_company_list():
@@ -1859,6 +1897,7 @@ def find_contacts():
         # Return an error response
         return jsonify({'message': 'Failed to find contact'}), 500
 
+
 @app.route('/analysis-1', methods=['POST'])
 def analysis_page_1():
     data = request.json  # Get the form data from the request body
@@ -1877,8 +1916,8 @@ def analysis_page_1():
     start_date = datetime.strptime(des_start_date, "%Y-%m-%d")
     end_date = datetime.strptime(des_end_date, "%Y-%m-%d")
 
-    print("startDate formatted: ",start_date)
-    print("endDAte formatted: ",end_date)
+    print("startDate formatted: ", start_date)
+    print("endDAte formatted: ", end_date)
 
     # SQL query to drop the view if it exists
     drop_view_query = """
@@ -1991,5 +2030,3 @@ def custom_query():
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
-
-

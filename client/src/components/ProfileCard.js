@@ -16,7 +16,9 @@ const ProfileCard = ({
                          handleAddEducation,
                          handleAddWorkExperience,
                          handleFollow,
-                         ownProfile
+                         ownProfile,
+                         isFollowing,
+                         about
                      }) => {
 
     return (
@@ -45,7 +47,7 @@ const ProfileCard = ({
                                         className="mt-2"
                                         variant="primary"
                                         onClick={handleEditProfile}
-                                        style={{ padding: "0.5rem" }}
+                                        style={{padding: "0.5rem"}}
                                     >
                                         Edit Profile
                                     </Button>
@@ -53,7 +55,7 @@ const ProfileCard = ({
                                         className="mt-2"
                                         variant="primary"
                                         onClick={handleAddEducation}
-                                        style={{ padding: "0.5rem" }}
+                                        style={{padding: "0.5rem"}}
                                     >
                                         Add Education
                                     </Button>
@@ -61,7 +63,7 @@ const ProfileCard = ({
                                         className="mt-2"
                                         variant="primary"
                                         onClick={handleAddWorkExperience}
-                                        style={{ padding: "0.5rem" }}
+                                        style={{padding: "0.5rem"}}
                                     >
                                         Add Work Exp
                                     </Button>
@@ -71,16 +73,21 @@ const ProfileCard = ({
                                     className="mt-2"
                                     variant="primary"
                                     onClick={handleFollow}
-                                    style={{ padding: "0.5rem" }}
+                                    style={{padding: "0.5rem"}}
                                 >
-                                    Follow
+                                    {!isFollowing ? "Follow" : "Unfollow"}
                                 </Button>
                             )}
                         </Row>
                     </Col>
-
-
-
+                </Row>
+                <Row>
+                    <h5>
+                        About:
+                    </h5>
+                    <p>
+                        {about}
+                    </p>
                 </Row>
             </Card.Body>
         </Card>

@@ -30,28 +30,6 @@ const Blogs = () => {
         setSelectedTag(tag);
     };
 
-    const [mockData, setMockData] = useState([
-        {tag: 'Career', isChecked: true},
-        {tag: 'Job Search', isChecked: false},
-        {tag: 'Workplace', isChecked: true},
-        {tag: 'Technology', isChecked: false},
-        {tag: 'Engineering', isChecked: true},
-        {tag: 'Job Skills', isChecked: false},
-        {tag: 'Education', isChecked: true},
-        {tag: 'Marketing', isChecked: false},
-    ]);
-
-    const handleFollowTag = (tag) => {
-        const updatedData = mockData.map((item) => {
-            if (item.tag === tag) {
-                return {...item, isChecked: !item.isChecked};
-            }
-            return item;
-        });
-
-        setMockData(updatedData);
-    };
-
     const handleClose = () => {
         setShowModal(false);
     };
@@ -83,16 +61,6 @@ const Blogs = () => {
         fetchData()
     }, [selectedTag]);
 
-    const [showFollowTagModal, setShowFollowTagModal] = useState(false);
-
-    const handleFollowTagModal = () => {
-        // Add your logic to handle the "Follow Tag" button click here
-        setShowFollowTagModal(true);
-    };
-    const handleFollowTagClose = () => {
-        setShowFollowTagModal(false);
-    };
-
 
     return (
         <Container fluid>
@@ -103,38 +71,9 @@ const Blogs = () => {
                         <Row className="align-items-center">
                             <Col xs="auto">
                                 <h2 className="mt-2" style={{fontSize: '2.5rem'}}>
-                                    From Your Followings
+                                    Select
                                 </h2>
                             </Col>
-                            <Col xs="auto">
-                                <Button variant="primary" onClick={handleFollowTagModal}>
-                                    Follow Tag
-                                </Button>
-                            </Col>
-                            <Modal show={showFollowTagModal} onHide={handleFollowTagClose}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Follow Tags</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Form>
-                                        {mockData.map(({tag, isChecked}) => (
-                                            <Form.Check
-                                                key={tag}
-                                                type="checkbox"
-                                                id={tag}
-                                                label={tag}
-                                                defaultChecked={isChecked}
-                                                onChange={() => handleFollowTag(tag)}
-                                            />
-                                        ))}
-                                    </Form>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleFollowTagClose}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
                         </Row>
 
                         <div className={"mb-2"} style={{display: "flex", flexWrap: "wrap"}}>

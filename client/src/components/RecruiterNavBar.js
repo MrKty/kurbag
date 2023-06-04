@@ -37,30 +37,12 @@ const RecruiterNavBar = (props) => {
                     </Form>
                     <Nav className="ms-auto">
                         <Nav.Link
-                            href="/cv-pool"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('cv-pool')}>
-                            <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faUsers} size="2x"/>
-                                <div className="mt-1">CV Pool</div>
-                            </div>
-                        </Nav.Link>
-                        <Nav.Link
                             href="/create-job"
                             className={`d-flex align-items-center me-2 ${activeLink === 'create-job' ? 'active-link' : ''}`}
                             onClick={() => handleLinkClick('create-job')}>
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faUsers} size="2x"/>
                                 <div className="mt-1">Create Job</div>
-                            </div>
-                        </Nav.Link>
-                        <Nav.Link
-                            href="/cv-pool"
-                            className={`d-flex align-items-center me-2 ${activeLink === 'cv-pool' ? 'active-link' : ''}`}
-                            onClick={() => handleLinkClick('cv-pool')}>
-                            <div className="d-flex flex-column">
-                                <FontAwesomeIcon icon={faBriefcase} size="2x"/>
-                                <div className="mt-1">Posted Jobs</div>
                             </div>
                         </Nav.Link>
                         <Nav.Link
