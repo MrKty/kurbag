@@ -1923,12 +1923,13 @@ def analysis_page_2():
 
     # SQL query to retrieve the top 5 users with the highest average post likes
     cursor.execute(
-        "SELECT AVG(P.p_like_count) AS avg_likes "
+        "SELECT U.mail_addr, AVG(P.p_like_count) AS avg_likes "
         "FROM User U JOIN Post P ON U.user_id = P.user_id "
         "GROUP BY U.mail_addr "
         "ORDER BY avg_likes DESC "
         "LIMIT 5"
     )
+
     top_5_users_avg_likes = cursor.fetchall()
     print("Top 5 Users with Highest Average Post Likes:", top_5_users_avg_likes)
 

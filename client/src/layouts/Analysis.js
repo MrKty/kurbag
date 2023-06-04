@@ -60,7 +60,7 @@ const Analysis = () => {
     };
     // Assuming sendRequest is a function to make the API call
     sendRequest('analysis-1', 'POST', requestData, (data) => {
-        setJobTypeStats(data)
+        setJobTypeStats(data.table[0])
         console.log(jobTypeStats)
     });
 
@@ -91,7 +91,8 @@ const Analysis = () => {
 
   useEffect(() => {
     sendRequest('analysis', 'POST', {}, (data) => {
-      setAnalysisData(data); // Set the response data in state
+      setAnalysisData(data);
+      console.log(analysisData);
     });
   }, []);
 
@@ -115,7 +116,7 @@ const Analysis = () => {
                     <td>
                       {analysisData.top_5_users_avg_likes &&
                           analysisData.top_5_users_avg_likes.map((user, index) => (
-                              <div key={index}>{user.avg_likes}</div>
+                              <div key={index}>{user.mail_addr} -> {user.avg_likes}</div>
                           ))}
                     </td>
                   </tr>
@@ -124,7 +125,7 @@ const Analysis = () => {
                     <td>
                       {analysisData.user_with_min_comments &&
                           analysisData.user_with_min_comments.map((user, index) => (
-                              <div key={index}>{user.author_name}: {user.min_com}</div>
+                              <div key={index}>{user.author_name} -> {user.min_com}</div>
                           ))}
                     </td>
                   </tr>
