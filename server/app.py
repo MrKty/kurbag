@@ -26,6 +26,7 @@ db.create_tables()
 db.populate_table()
 db.like_trigger()
 db.connection_trigger()
+db.unfollow_trigger()
 
 @app.route('/')
 @app.route('/login', methods=['POST'])
@@ -1876,23 +1877,44 @@ def analysis_page_1():
     start_date = datetime.strptime(des_start_date, "%Y-%m-%d")
     end_date = datetime.strptime(des_end_date, "%Y-%m-%d")
 
-    # SQL query to retrieve blogs based on owner_id and b_id
+    print("startDate formatted: ",start_date)
+    print("endDAte formatted: ",end_date)
+
+    # SQL query to drop the view if it exists
+    drop_view_query = """
+    DROP VIEW IF EXISTS job_counts_view
+    """
+
+    # SQL query to create the view
+    create_view_query = f"""
+    CREATE VIEW job_counts_view AS
+    SELECT SUM(CASE WHEN j_type = 'full-time' THEN 1 ELSE 0 END) AS full_time_job_count,
+           SUM(CASE WHEN j_type = 'part-time' THEN 1 ELSE 0 END) AS part_time_job_count,
+           SUM(CASE WHEN j_type = 'internship' THEN 1 ELSE 0 END) AS internship_job_count
+    FROM Job_Opening
+    WHERE j_location LIKE %s AND j_skills LIKE %s
+          AND j_timestamp BETWEEN %s AND %s
+    """
+
+    # SQL query to retrieve data from the view
+    select_view_query = """
+    SELECT * FROM job_counts_view
+    """
+
+    # Execute the queries
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    cursor.execute(
-        "SELECT SUM(CASE WHEN j_type = 'full-time' THEN 1 ELSE 0 END) AS full_time_job_count, "
-        "SUM(CASE WHEN j_type = 'part-time' THEN 1 ELSE 0 END) AS part_time_job_count, "
-        "SUM(CASE WHEN j_type = 'internship' THEN 1 ELSE 0 END) AS internship_job_count "
-        "FROM Job_Opening "
-        "WHERE j_location LIKE %s AND j_skills LIKE %s "
-        "AND due_date_apply BETWEEN %s AND %s",
-        ('%' + des_location + '%', '%' + des_skill + '%', start_date, end_date)
-    )
-
+    cursor.execute(drop_view_query)
+    cursor.execute(create_view_query, ('%' + des_location + '%', '%' + des_skill + '%', start_date, end_date))
+    cursor.execute(select_view_query)
     table = cursor.fetchall()
+    print("printing results")
     print(table)
 
+    # Drop the view after fetching the data
+    cursor.execute(drop_view_query)
+
     return jsonify({'table': table}), 200
+
 
 @app.route('/analysis', methods=['POST'])
 def analysis_page_2():

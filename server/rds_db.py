@@ -439,6 +439,20 @@ def connection_trigger():
                 ''')
     conn.commit()
 
+def unfollow_trigger():
+    cursor = conn.cursor()
+    cursor.execute('''
+                    CREATE TRIGGER IF NOT EXISTS unfollow_connections AFTER DELETE ON Connected_With
+                    FOR EACH ROW
+                    BEGIN
+                    UPDATE Person
+                    SET connections = connections - 1
+                    WHERE user_id = OLD.person1_id OR user_id = OLD.person2_id;
+                    END
+                ''')
+    conn.commit()
+
+
 def populate_table():
     cursor = conn.cursor()
 
