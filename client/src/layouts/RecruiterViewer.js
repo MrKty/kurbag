@@ -32,6 +32,8 @@ const JobListing = ({position, postDate, jobId, numOfApplications, onClick, sele
 );
 
 const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, userId, jobId}) => {
+
+    const [approve, setApprove] = useState("Approve")
     const handleApproveClick = () => {
         const requestData = {
             jobId,
@@ -40,6 +42,8 @@ const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, use
         sendRequest('approve-application', 'POST', requestData, (data) => {
             // Handle the response data here
         });
+
+        setApprove("Approved")
     };
 
     return (
@@ -64,7 +68,7 @@ const ApplicantListing = ({ applicantId, name, date, photo, resume, onClick, use
                     <Col>
                         <button className={"btn btn-success btn-sm"} onClick={handleApproveClick}>
                             <FontAwesomeIcon icon={faCheck} className="me-2"/>
-                            Approve
+                            {approve}
                         </button>
                     </Col>
                     <Col>
@@ -228,6 +232,7 @@ const RecruiterViewer = () => {
                                 resume={application.resume}
                                 onClick={() => setuserId(application.applicantId)}
                                 userId={userId}
+                                jobId={selectedJobId}
                             />
                         ))
                     ) : (

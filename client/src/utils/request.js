@@ -16,7 +16,7 @@ const sendRequest = (url, method, data, callback) => {
         options.body = JSON.stringify(data);
     }
 
-    fetch("http://localhost:5000/" + url, options)
+    fetch("http://localhost:8080/" + url, options)
         .then((response) => response.json())
         .then((data) => {
             if (callback) {

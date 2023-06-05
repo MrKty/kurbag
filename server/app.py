@@ -89,7 +89,7 @@ def signup():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     # Perform additional operations, such as storing the data in a database
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (email,))
     account = cursor.fetchone()
     if account:
@@ -126,13 +126,15 @@ def signup():
                 (user_id,))
 
             if user_type == 1:
-                cursor.execute('INSERT INTO Career_Expert (user_id, expert_in_tag) VALUES (%s, "all")', user_id)
+                cursor.execute('INSERT INTO Career_Expert (user_id, expert_in_tag) VALUES (%s, "all")', (user_id,))
 
             # Commit the transaction
             cursor.execute('COMMIT')
 
             message = 'User successfully created!'
-        except:
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+
             # Rollback the transaction if an error occurs
             cursor.execute('ROLLBACK')
             message = 'Error occurred during signup. Please try again.'
@@ -173,7 +175,7 @@ def create_organization():
     hashed_password = bcrypt.hashpw(org_password.encode('utf-8'), bcrypt.gensalt())
 
     # Perform additional operations, such as storing the data in a database
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM User WHERE mail_addr = %s', (org_email,))
     account = cursor.fetchone()
     if account:
@@ -240,7 +242,7 @@ def apply_career_expert():
     print(selected_tag, motivation, certificateURLs, certificateNames)
     print(form_data["id"])
 
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         # Start a transaction
@@ -287,15 +289,15 @@ def apply_career_expert():
 def fill_career_expert_modal():
     u_id = request.json.get('id')
     print(u_id)
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT tag_name, motivation_letter FROM Sends_Request WHERE applicant_id = %s',
                    (u_id,))
-    application = db.fetch_one(cursor)
+    application = cursor.fetchone()
 
     if application:
         cursor.execute('SELECT cert_url, cert_name FROM Certificate WHERE applicant_id = %s',
                        (u_id,))
-        certificates = db.fetch_all(cursor)
+        certificates = cursor.fetchall()
 
         print(certificates)
         print(application)
@@ -433,7 +435,7 @@ def get_applied_jobs():
 def update_profile():
     # Get post data from the request
     data = request.json
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     print(data)
     try:
         # Update the profile information in the Person table
@@ -493,7 +495,7 @@ def create_post():
     data = request.json
     post_title = data.get('postTitle')
     post_content = data.get('postContent')
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     p_id = None
     print(post_title, post_content)
 
@@ -848,7 +850,7 @@ def create_event():
     print(data)
     if not data.get("coverPhotoUrl"):
         data["coverPhotoUrl"] = "NULL"
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     e_id = None
 
     try:
@@ -987,7 +989,7 @@ def approve_c_e_application():
 def creates_event():
     # Get post data from the request
     data = request.json
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         # Save the event to the database
@@ -1334,7 +1336,7 @@ def blog_editor():
     content = data.get('content')
     selected_tag = data.get('selectedTag')
 
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         # Start a transaction
@@ -1386,6 +1388,9 @@ def approve_application():
     data = request.json  # Get the form data from the request body
     applicant_id = data.get("applicantId")
     job_id = data.get("jobId")
+
+    print("applicant id: ",applicant_id)
+    print("job id: ",job_id)
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -1874,7 +1879,7 @@ def find_contacts():
 
     print(u_id)
 
-    cursor = db.get_cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         # Start a transaction
@@ -2055,5 +2060,5 @@ def custom_query():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8080))
     app.run(debug=True, host='0.0.0.0', port=port)
