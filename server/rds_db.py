@@ -302,7 +302,7 @@ def create_tables():
             PRIMARY KEY (person1_id, person2_id),
             FOREIGN KEY (person1_id) REFERENCES Person (user_id),
             FOREIGN KEY (person2_id) REFERENCES Person (user_id),
-            UNIQUE (person1_id, person2_id)
+            CONSTRAINT unique_connection UNIQUE (person1_id, person2_id)
         );
 
         
