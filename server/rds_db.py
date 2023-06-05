@@ -284,14 +284,6 @@ def create_tables():
             FOREIGN KEY (person_id) REFERENCES Person(user_id) 
         );
 
-        CREATE TABLE IF NOT EXISTS Used_Skill(
-        	exp_id         	    INT,
-            s_id	         	INT,
-            PRIMARY KEY (exp_id, s_id),
-            FOREIGN KEY (exp_id) REFERENCES Work_Experience (exp_id),
-            FOREIGN KEY (s_id) REFERENCES Skill (s_id) 
-        );
-
         CREATE TABLE IF NOT EXISTS Sends_Request(
         	applicant_id       	INT,
             expert_id         	INT,
@@ -310,7 +302,7 @@ def create_tables():
             PRIMARY KEY (person1_id, person2_id),
             FOREIGN KEY (person1_id) REFERENCES Person (user_id),
             FOREIGN KEY (person2_id) REFERENCES Person (user_id),
-            UNIQUE (person1_id, person2_id)
+            CONSTRAINT unique_connection UNIQUE (person1_id, person2_id)
         );
 
         
