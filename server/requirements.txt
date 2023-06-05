@@ -2,6 +2,6 @@ Flask==2.3.2
 mysqlclient~=2.1.1
 flask_mysqldb
 PyMySQL~=1.0.3
-bcrypt~=4.0.1
+bcrypt
 Flask-Session
 flask_cors
