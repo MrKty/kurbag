@@ -120,6 +120,14 @@ const CreateEventModal = ({showModal, toggleCreateEventModal}) => {
                     alert('Error fetching contacts')
                 }
             });
+            sendRequest('/api/get-user-name', 'POST', {}, (data) => {
+                if (data.name) {
+                    console.log(data.name)
+                    setEventOrganizer(data.name)
+                } else {
+                    alert('Error fetching creator name')
+                }
+            });
         }
 
     }, [showModal]);
@@ -176,18 +184,13 @@ const CreateEventModal = ({showModal, toggleCreateEventModal}) => {
                         </Form.Group>
                         <Form.Group controlId="eventOrganizer">
                             <Form.Label>Organizer</Form.Label>
-                            <Form.Select
+                            <Form.Control
+                                type="text"
                                 value={eventOrganizer}
                                 onChange={handleEventOrganizerChange}
-                                placeholder="Select event organizer"
-                            >
-                                <option value="">Select organizer</option>
-                                {contacts.map(contact => (
-                                    <option key={contact.id} value={contact.id}>
-                                        {contact.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                                placeholder="Select Event Organizer"
+                                readOnly={true}
+                            />
                         </Form.Group>
                         <Form.Group controlId="eventPlatform">
                             <Form.Label>Platform</Form.Label>

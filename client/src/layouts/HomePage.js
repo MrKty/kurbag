@@ -3,15 +3,7 @@ import {
     Container,
     Row,
     Col,
-    Button,
-    Card,
-    Badge,
-    Image,
-    ToggleButton,
-    Form,
-    DropdownButton,
-    Dropdown,
-    Modal
+    Button
 } from 'react-bootstrap';
 import NavBar from "../components/NavBar";
 import PostCard from "../components/PostCard";

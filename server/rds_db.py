@@ -371,6 +371,23 @@ def connection_trigger():
                 ''')
     conn.commit()
 
+def event_register_trigger():
+    cursor = conn.cursor()
+    cursor.execute('''
+                    CREATE TRIGGER IF NOT EXISTS update_event_limit AFTER INSERT ON Registers_Event
+                    FOR EACH ROW
+                    BEGIN
+                    UPDATE Event
+                    SET e_limit = e_limit - 1
+                    WHERE e_id = NEW.event_id;
+                    END
+                ''')
+    conn.commit()
+
+def drop_event_register_trigger():
+    cursor = conn.cursor()
+    cursor.execute('DROP TRIGGER IF EXISTS update_event_limit')
+    conn.commit()
 
 def unfollow_trigger():
     cursor = conn.cursor()

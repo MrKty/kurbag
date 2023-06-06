@@ -26,6 +26,7 @@ db.populate_table()
 db.like_trigger()
 db.connection_trigger()
 db.unfollow_trigger()
+db.event_register_trigger()
 
 
 @app.route('/')
@@ -53,6 +54,45 @@ def login():
             print(response)
             return jsonify(response)
 
+        else:
+            # Passwords don't match
+            # Perform further actions or return an error response
+            message = "Password mismatch"
+    else:
+        message = 'Please enter correct email / password !'
+
+    # Create a response object
+    response = {'message': message}
+
+    # Return the response as JSON
+    return jsonify(response)
+
+
+@app.route('/admin-login', methods=['POST'])
+def admin_login():
+    # Retrieve the login data from the request
+    login_data = request.get_json()
+    # Extract the email and password from the login data
+    email = login_data['email']
+    password = login_data['password']
+
+    # Perform authentication logic
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT admin_id, admin_mail, admin_password, a_name, a_last_name FROM Admin WHERE admin_mail = %s',
+                   (email,))
+
+    user = cursor.fetchone()
+    print("not into")
+    if user:
+        print(password)
+        print(user)
+        # Compare the hashed passwords
+        if user["admin_password"] == password:
+            print("here")
+            message = 'Logged in successfully!'
+            response = {'message': message, 'id': user['admin_id']}
+            print(response)
+            return jsonify(response)
         else:
             # Passwords don't match
             # Perform further actions or return an error response
@@ -549,6 +589,35 @@ def like_post():
         return jsonify({'message': 'Failed to like post'}), 500
 
 
+@app.route('/register-event', methods=['POST'])
+def register_event():
+    # Get user_id and post_id from the request
+    data = request.json
+    user_id = data.get('userId')
+    event_id = data.get('eventId')
+
+    print(user_id)
+    print(event_id)
+
+    try:
+        # Establish a database connection
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Insert the like into Likes_Post table
+        cursor.execute('INSERT INTO Registers_Event (event_id, user_id) VALUES (%s, %s)', (event_id, user_id))
+
+        cursor.execute('COMMIT')
+
+        # Return a success response
+        return jsonify({'message': 'Event registered successfully'}), 200
+
+    except Exception as e:
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+
+        # Return an error response
+        return jsonify({'message': 'Failed to register event'}), 500
+
 # Endpoint for creating a new job (by a recruiter)
 @app.route('/create-job', methods=['POST'])
 def create_job():
@@ -827,7 +896,7 @@ def get_posts():
         'SELECT E.e_id as id, e_name as eventName, CONCAT(P.first_name, " ", P.last_name) AS organizer, '
         'cover_photo as coverPhoto,'
         'e_start_date as startDate, e_end_date as endDate, e_limit as "limit", '
-        'e_link as websiteLink, e_content as content, e_timestamp as creation_date, '
+        'e_link as websiteLink, e_content as content, e_timestamp as creationDate, platform, '
         'e_speakers as speakers '
         'FROM Event E '
         'JOIN Person AS P ON P.user_id = E.organizer_id '
@@ -857,7 +926,7 @@ def create_event():
         # Save the event to the database
         cursor.execute(
             'INSERT INTO Event (e_name, organizer_id, cover_photo, platform, e_start_date, e_end_date, e_limit, e_link, e_content, e_speakers) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-            (data['eventTitle'], data['eventOrganizer'], data['coverPhotoUrl'], data['eventPlatform'],
+            (data['eventTitle'], data["id"], data['coverPhotoUrl'], data['eventPlatform'],
              data['eventStartDate'], data['eventEndDate'], data['eventLimit'], data['eventLink'], data['eventContent'],
              ', '.join(data['eventSpeakers'])))
         e_id = cursor.lastrowid
@@ -982,29 +1051,6 @@ def approve_c_e_application():
 
         # Return an error response
         return jsonify({'message': 'Failed to approve application. Please try again.'}), 500
-
-
-# Endpoint for creating a new event
-@app.route('/homes-event', methods=['POST'])
-def creates_event():
-    # Get post data from the request
-    data = request.json
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    try:
-        # Save the event to the database
-        pass
-
-    except Exception as e:
-        # Print the error message
-        print(f"An error occurred: {str(e)}")
-
-    if e_id:
-        # Return a success response
-        return jsonify({'message': 'Event created successfully', 'postId': p_id}), 200
-    else:
-        # Return an error response
-        return jsonify({'message': 'Failed to create event'}), 500
 
 
 @app.route('/conversations', methods=['POST'])
@@ -1383,14 +1429,15 @@ def blog_editor_get_tag():
         tag = None
     return jsonify({"tag": tag}), 200
 
+
 @app.route('/approve-application', methods=['POST'])
 def approve_application():
     data = request.json  # Get the form data from the request body
     applicant_id = data.get("applicantId")
     job_id = data.get("jobId")
 
-    print("applicant id: ",applicant_id)
-    print("job id: ",job_id)
+    print("applicant id: ", applicant_id)
+    print("job id: ", job_id)
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -1410,7 +1457,6 @@ def approve_application():
 
     finally:
         cursor.close()
-
 
 
 @app.route('/blogEditorer', methods=['POST'])
@@ -1885,32 +1931,26 @@ def find_contacts():
         # Start a transaction
         cursor.execute('START TRANSACTION')
 
-        # Fetch owner details
-        cursor.execute("SELECT mail_addr FROM User WHERE user_id = %s", (u_id,))
-        owner_name = cursor.fetchone()[0]
-
         # Fetch contacts
         sql = """
-        SELECT CASE
-            WHEN cw.person1_id = %s THEN p2.user_id
-            ELSE p1.user_id
-        END AS connected_person_id,
-        CASE
-            WHEN cw.person1_id = %s THEN p2.mail_addr
-            ELSE p1.mail_addr
-        END AS connected_person_name
-        FROM Connected_With AS cw
-        INNER JOIN User AS p1 ON cw.person1_id = p1.user_id
-        INNER JOIN User AS p2 ON cw.person2_id = p2.user_id
-        WHERE cw.person1_id = %s OR cw.person2_id = %s;
+            SELECT CONCAT(p.first_name, ' ', p.last_name) AS name, id
+            FROM (
+                SELECT cw.person2_id AS id
+                FROM Connected_With AS cw
+                WHERE cw.person1_id = %s
+                
+                UNION ALL
+                
+                SELECT cw.person1_id AS id
+                FROM Connected_With AS cw
+                WHERE cw.person2_id = %s
+            ) AS subquery
+            JOIN Person AS p ON p.user_id = subquery.id OR p.user_id = %s;
         """
 
-        cursor.execute(sql, (u_id, u_id, u_id, u_id))
-        rows = cursor.fetchall()
-
-        contacts = [{"id": row[0], "name": row[1]} for row in rows]
-        contacts.append({"id": u_id, "name": owner_name})
-        # Commit the transaction
+        cursor.execute(sql, (u_id, u_id, u_id))
+        contacts = cursor.fetchall()
+        print(contacts)
         cursor.execute('COMMIT')
 
     except Exception as e:
@@ -1919,11 +1959,47 @@ def find_contacts():
 
         # Print the error message
         print(f"An error occurred: {str(e)}")
+        contacts = []
 
-    contacts = [{"id": 1, "name": 'Omer Oktay Gültekin'}, {"id": 2, "name": 'Mert Ünlü'}]
     if contacts:
         # Return a success response
         return jsonify({'message': 'Contacts found successfully', 'contacts': contacts}), 200
+    else:
+        # Return an error response
+        return jsonify({'message': 'Failed to find contact'}), 500
+
+
+# Endpoint for creating a new post
+@app.route('/api/get-user-name', methods=['POST'])
+def get_user_name():
+    # Get post data from the request
+    data = request.json
+    u_id = data.get("id")
+
+    print(u_id)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    try:
+        # Start a transaction
+        cursor.execute('START TRANSACTION')
+
+        # Fetch owner details
+        cursor.execute("SELECT CONCAT(P.first_name, ' ', P.last_name) AS name "
+                       "FROM Person P WHERE user_id = %s", (u_id,))
+        owner_name = cursor.fetchone()["name"]
+
+    except Exception as e:
+        # Rollback the transaction if an error occurs
+        cursor.execute('ROLLBACK')
+
+        # Print the error message
+        print(f"An error occurred: {str(e)}")
+        owner_name = None
+
+    if owner_name:
+        # Return a success response
+        return jsonify({'message': 'Contacts found successfully', 'name': owner_name}), 200
     else:
         # Return an error response
         return jsonify({'message': 'Failed to find contact'}), 500

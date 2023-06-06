@@ -1,5 +1,6 @@
 import React from "react";
 import {Card, Button, Image} from "react-bootstrap";
+import sendRequest from "../utils/request";
 
 const EventCard = ({ event, onRegisterEvent }) => {
     const {
@@ -14,12 +15,19 @@ const EventCard = ({ event, onRegisterEvent }) => {
         content,
         speakers,
         creationDate,
+        id
     } = event;
 
     const handleRegisterEvent = () => {
-        // Perform registration logic here
-        // You can pass additional event information to the onRegisterEvent function if needed
-        //onRegisterEvent(event);
+        const requestData = {
+            userId: localStorage.getItem("userId"),
+            eventId: id
+        }
+
+        sendRequest('register-event', 'POST', requestData, (data) => {
+            // Update the state with the new data
+            alert(data.message)
+        });
     };
 
     function formatDate(dateString) {
@@ -42,7 +50,7 @@ const EventCard = ({ event, onRegisterEvent }) => {
                 <Card.Text>Platform: {platform}</Card.Text>
                 <Card.Text>Website: {websiteLink}</Card.Text>
                 <Card.Text>Creation Date: {creationDate}</Card.Text>
-                <Card.Text>Limit: {limit}</Card.Text>
+                <Card.Text>Remaining Quota: {limit}</Card.Text>
             </Card.Body>
             <Card.Footer>
                 <Button variant="primary" onClick={handleRegisterEvent}>
@@ -50,8 +58,6 @@ const EventCard = ({ event, onRegisterEvent }) => {
                 </Button>
             </Card.Footer>
         </Card>
-
-
     );
 };
 

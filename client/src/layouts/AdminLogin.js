@@ -19,13 +19,11 @@ function AdminLogin() {
             password
         };
 
-        sendRequest('login', 'POST', loginData, (data) => {
+        sendRequest('admin-login', 'POST', loginData, (data) => {
             // Handle the response from the backend
             if (data.message === 'Logged in successfully!') {
                 // Store the ID in the local storage
                 localStorage.setItem('userId', data.id);
-                localStorage.setItem('userType', data.userType);
-                console.log(data.userType);
                 window.location.href = "/analysis";
             } else {
                 setErrorMessage(data.message);
