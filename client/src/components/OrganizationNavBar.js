@@ -49,16 +49,14 @@ const OrganizationNavBar = (props) => {
                                 <div className="mt-1">Notifications</div>
                             </div>
                         </Nav.Link>
-                        <Nav.Link href="#" className="d-flex align-items-center mt-2">
+                        <Nav.Link href="/login" className="d-flex align-items-center mt-2">
                             <div className="d-flex flex-column">
                                 <FontAwesomeIcon icon={faBuilding} size="2x"/>
                                 <NavDropdown
-                                    title={"Profile"}
+                                    title={"Logout"}
                                     id="basic-nav-dropdown"
                                     menuAlign="right"
                                 >
-                                    <NavDropdown.Item href="#">Profile 1</NavDropdown.Item>
-                                    <NavDropdown.Item href="#">Profile 2</NavDropdown.Item>
                                     <NavDropdown.Divider/>
                                     <NavDropdown.Item href="/login">Logout</NavDropdown.Item>
                                 </NavDropdown>
